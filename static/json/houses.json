@@ -1,0 +1,56 @@
+[
+  {
+    "name": "Downtown Condo",
+    "price": 380000,
+    "app_rate_annual": 0.03,
+    "rent_monthly": 2000,
+    "prop_tax_rate_annual": 0.011,
+    "upkeep_monthly": 250,
+    "desc": "1-bed luxury condo downtown."
+  },
+  {
+    "name": "Suburban Family Home",
+    "price": 650000,
+    "app_rate_annual": 0.035,
+    "rent_monthly": 3200,
+    "prop_tax_rate_annual": 0.012,
+    "upkeep_monthly": 400,
+    "desc": "4-bed, 3-bath; family area."
+  },
+  {
+    "name": "Lakefront Villa",
+    "price": 1800000,
+    "app_rate_annual": 0.04,
+    "rent_monthly": 9000,
+    "prop_tax_rate_annual": 0.013,
+    "upkeep_monthly": 1500,
+    "desc": "Waterfront dream home."
+  },
+  {
+    "name": "Penthouse Apartment",
+    "price": 2750000,
+    "app_rate_annual": 0.05,
+    "rent_monthly": 15000,
+    "prop_tax_rate_annual": 0.014,
+    "upkeep_monthly": 2500,
+    "desc": "Skyline views; world-class."
+  },
+  {
+    "name": "Country Estate",
+    "price": 3800000,
+    "app_rate_annual": 0.03,
+    "rent_monthly": 12000,
+    "prop_tax_rate_annual": 0.012,
+    "upkeep_monthly": 3500,
+    "desc": "10-acre estate; high upkeep."
+  },
+  {
+    "name": "Mega Mansion (Beverly Hills)",
+    "price": 15000000,
+    "app_rate_annual": 0.05,
+    "rent_monthly": 75000,
+    "prop_tax_rate_annual": 0.015,
+    "upkeep_monthly": 15000,
+    "desc": "Iconic ultra-luxury residence."
+  }
+]

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>🏆 LottoLife Leaderboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body{font-family:'Jost',sans-serif;background:#050810;color:#fff;margin:0}
+nav{background:#0b1222;padding:10px 20px;display:flex;gap:10px}
+nav a{color:#fff;text-decoration:none;padding:8px 12px;border-radius:8px;border:1px solid #1b233a;background:#0f1730}
+nav a:hover{background:#0d6efd;border-color:transparent}
+main{max-width:700px;margin:40px auto;padding:20px;background:#0f1730;border-radius:14px;border:1px solid #1b233a}
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px;border-bottom:1px solid #1b233a;text-align:left}
+th{color:#b9c7e0}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/">🎮 Game</a>
+  <a href="/leaderboard" style="background:#0d6efd">🏆 Leaderboard</a>
+  <a href="/guide">📘 Guide</a>
+</nav>
+
+<main>
+<h1>🏆 Top Players</h1>
+<table>
+<tr><th>Rank</th><th>Player</th><th>State</th><th>Net Worth</th><th>Reputation</th></tr>
+{% for p in players %}
+<tr>
+  <td>{{ loop.index }}</td>
+  <td>{{ p['name'] }}</td>
+  <td>{{ p['state'] }}</td>
+  <td>${{ '%.2f'|format(p['net']) }}</td>
+  <td>{{ p['rep'] }}</td>
+</tr>
+{% else %}
+<tr><td colspan="5">No players yet! Play the game and click “Update Leaderboard.”</td></tr>
+{% endfor %}
+</table>
+</main>
+
+</body>
+</html>

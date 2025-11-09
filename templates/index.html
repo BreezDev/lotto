@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>🎰 LottoLife Simulator — Win • Spend • Grow</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root{
+    --bg:#070b12; --panel:#0e1525; --ink:#eaf2ff; --muted:#97a7c2; --line:#1a2440;
+    --brand:#0d6efd; --good:#22c55e; --bad:#ef4444; --gold:#facc15; --pink:#ff5ea8; --vio:#7c5cff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 700px at 70% -10%, #13213a 0%, #070b12 60%);color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  header{position:sticky;top:0;z-index:20;background:linear-gradient(90deg,#0b1222,#0a101b);border-bottom:1px solid var(--line)}
+  .topbar{max-width:1200px;margin:auto;padding:14px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between}
+  .logo{display:flex;gap:10px;align-items:center;font-weight:800;letter-spacing:.3px}
+  .logo .spin{display:inline-block;filter:drop-shadow(0 0 12px rgba(13,110,253,.3))}
+  nav{display:flex;gap:8px;flex-wrap:wrap}
+  nav a{color:var(--ink);text-decoration:none;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:#0b1222;opacity:.9}
+  nav a.active{background:var(--brand);border-color:transparent}
+  .wrap{max-width:1200px;margin:auto;padding:18px}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(12,1fr)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-6{grid-column:span 6}.span-4{grid-column:span 4}
+  @media (max-width: 980px){.span-8,.span-6,.span-4{grid-column:span 12}}
+  label{display:block;font-size:13px;color:var(--muted);margin:8px 0 6px}
+  input,select,button,textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #1c2744;background:#0b1222;color:var(--ink)}
+  input::placeholder,textarea::placeholder{color:#6f83a7}
+  button{cursor:pointer;background:var(--brand);border:none;font-weight:700}
+  button.ghost{background:transparent;border:1px solid var(--line)}
+  button.good{background:var(--good);color:#06210f}
+  button.bad{background:var(--bad)}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>*{flex:1}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .kpi{background:#0a1120;border:1px solid var(--line);border-radius:12px;padding:12px}
+  .kpi .t{color:var(--muted);font-size:12px}
+  .kpi .v{font-weight:800;font-size:18px}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:8px 6px;border-bottom:1px dashed #213055}
+  th{color:#b9c7e0;text-align:left}
+  td.right{text-align:right}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:#0b1222;font-size:12px;color:var(--muted)}
+  .notice{background:#0a1120;border:1px solid var(--line);padding:10px;border-radius:12px}
+  .flex{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .tiny{font-size:12px;color:var(--muted)}
+  .link{color:#87b3ff;text-decoration:underline;cursor:pointer}
+  .hr{height:1px;background:var(--line);margin:12px 0}
+  .emoji{filter:drop-shadow(0 0 10px rgba(250,204,21,.25))}
+  .pop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,10,25,.65);z-index:40}
+  .pop .box{max-width:520px;background:#0e1526;border:1px solid var(--line);border-radius:16px;padding:18px}
+  .pop.show{display:flex}
+  footer{margin:24px auto 14px;text-align:center;color:#9bb0d0}
+  footer a{color:#cfe1ff}
+</style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="logo">
+        <span class="spin">🎰</span><span>LottoLife Simulator</span>
+      </div>
+      <nav>
+        <a href="#" data-tab="tab-dashboard" class="active">🏠 Dashboard</a>
+        <a href="#" data-tab="tab-bank">🏦 Bank</a>
+        <a href="#" data-tab="tab-spend">🛒 Spend & Gift</a>
+        <a href="#" data-tab="tab-biz">💼 Businesses</a>
+        <a href="/leaderboard">🏆 Leaderboard</a>
+        <a href="/guide">📘 Guide</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <!-- DASHBOARD -->
+    <section id="tab-dashboard" class="tab card span-12" style="display:block">
+      <div class="grid">
+        <div class="span-8">
+          <h2>🎉 Step 1: Enter Winnings & State</h2>
+          <div class="row">
+            <div>
+              <label>Prize Type</label>
+              <select id="prizeType">
+                <option value="cash">Cash value (exact)</option>
+                <option value="jackpot">Advertised jackpot (est. 60% cash)</option>
+              </select>
+            </div>
+            <div>
+              <label>Amount</label>
+              <input id="prize" type="number" min="0" step="1000" placeholder="e.g., 100000000" />
+            </div>
+            <div>
+              <label>State</label>
+              <select id="state"></select>
+            </div>
+            <div>
+              <label>Federal Tax %</label>
+              <input id="fed" type="number" value="24" step="0.01" />
+            </div>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <button id="btnCalc">💥 Calculate After-Tax</button>
+            <button id="btnReset" class="ghost">♻️ Reset</button>
+            <button id="btnStateInfo" class="ghost">🗺️ State Info</button>
+          </div>
+          <div class="hr"></div>
+          <div class="kpis">
+            <div class="kpi"><div class="t">Cash Base</div><div class="v" id="kpiCash">$0</div></div>
+            <div class="kpi"><div class="t">Total Taxes</div><div class="v" id="kpiTax">$0</div></div>
+            <div class="kpi"><div class="t">Net After Tax</div><div class="v" id="kpiNet">$0</div></div>
+            <div class="kpi"><div class="t">🎯 Goal</div><div class="v" id="kpiGoal">—</div></div>
+          </div>
+
+          <div class="notice" style="margin-top:10px">
+            <div class="flex">
+              <span class="emoji">🏦</span>
+              <div><strong>Auto-Savings:</strong> We automatically put <b>10%</b> of your net into <b>Savings</b> (earns interest). The remaining <b>90%</b> stays in your <b>Wallet</b> for spending. You can move money between them anytime.</div>
+            </div>
+          </div>
+
+          <label style="margin-top:10px">Headline Goal (shows in exports)</label>
+          <input id="goal" placeholder="Ex: Pay debt, buy home, fund a cafe, travel the world" />
+        </div>
+
+        <div class="span-4 card" style="background:#0a1120">
+          <h3>👤 Player</h3>
+          <label>Display Name (optional)</label>
+          <input id="playerName" placeholder="Ex: Maya" />
+          <div class="row" style="margin-top:8px">
+            <button id="btnRegister">✨ Get User ID</button>
+            <button id="btnSaveLeaderboard" class="ghost">⬆️ Update Leaderboard</button>
+          </div>
+          <div class="hr"></div>
+          <div class="kpi"><div class="t">User ID</div><div class="v" id="kUser">—</div></div>
+          <div class="kpi" style="margin-top:8px"><div class="t">Your State</div><div class="v" id="kState">—</div></div>
+        </div>
+
+        <div class="span-12">
+          <h3>💰 Snapshot</h3>
+          <div class="kpis">
+            <div class="kpi"><div class="t">Wallet (spendable)</div><div class="v" id="kWallet">$0</div></div>
+            <div class="kpi"><div class="t">Savings (earns APY)</div><div class="v" id="kSavings">$0</div></div>
+            <div class="kpi"><div class="t">Accrued Interest</div><div class="v" id="kInterest">$0</div></div>
+            <div class="kpi"><div class="t">Total Net (Wallet+Savings)</div><div class="v" id="kTotal">$0</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BANK -->
+    <section id="tab-bank" class="tab card span-12" style="display:none">
+      <h2>🏦 Bank & Interest</h2>
+      <div class="row">
+        <div>
+          <label>Annual APY %</label>
+          <input id="apy" type="number" step="0.01" value="4.50" />
+        </div>
+        <div>
+          <label>Move money between Wallet ↔ Savings</label>
+          <div class="row">
+            <input id="moveAmt" type="number" step="1" placeholder="Amount to move" />
+            <select id="moveDir">
+              <option value="toSavings">Wallet → Savings</option>
+              <option value="toWallet">Savings → Wallet</option>
+            </select>
+            <button id="btnMove" class="good">Transfer</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+      <div class="row">
+        <button id="btnDay">▶️ Simulate 1 Day</button>
+        <button id="btnWeek">⏩ Simulate 1 Week</button>
+        <button id="btn30">⏭️ Sim 30 Days</button>
+        <label class="pill"><input type="checkbox" id="chkEvents"> <span>Random Events</span></label>
+      </div>
+
+      <p class="tiny" style="margin-top:8px">Interest compounds daily on <b>Savings</b> only. Random events can add surprise expenses or mini windfalls.</p>
+
+      <h3 style="margin-top:14px">📜 Ledger</h3>
+      <table id="ledger">
+        <thead><tr><th>#</th><th>When</th><th>Type</th><th>Note</th><th class="right">Δ</th><th class="right">Wallet</th><th class="right">Savings</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- SPEND & GIFT -->
+    <section id="tab-spend" class="tab card span-12" style="display:none">
+      <h2>🛒 Spend & 🎁 Gift</h2>
+      <div class="row">
+        <div>
+          <label>Category</label>
+          <input id="spCat" placeholder="House / Car / Travel / Lifestyle / Charity / Debt / Custom" />
+        </div>
+        <div>
+          <label>Details</label>
+          <input id="spDesc" placeholder="e.g., Ocean-view condo down payment" />
+        </div>
+        <div>
+          <label>Amount ($, positive = spend)</label>
+          <input id="spAmt" type="number" step="1" />
+        </div>
+        <div>
+          <label>Frequency</label>
+          <select id="spFreq">
+            <option value="once">Once</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+          </select>
+        </div>
+        <div>
+          <label>To / For (person/business)</label>
+          <input id="spTo" placeholder="Mom / Sibling / My LLC / Charity" />
+        </div>
+        <div style="align-self:end"><button id="btnAddSpend">Add</button></div>
+      </div>
+
+      <div class="hr"></div>
+      <table id="spTable">
+        <thead><tr><th>✓</th><th>Category</th><th>Details</th><th class="right">Amount</th><th>Freq</th><th>To/For</th><th>Actions</th></tr></thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="row" style="margin-top:8px">
+        <button id="btnApplyOnce" class="ghost">Apply all “Once”</button>
+        <button id="btnDeleteSelected" class="ghost">Delete selected</button>
+      </div>
+
+      <div class="notice" style="margin-top:12px">
+        <div class="flex">
+          <span class="emoji">🚨</span>
+          <div>
+            <b>Gift Limit:</b> Gifts over <b>$18,000</b> per recipient/year may incur federal gift tax. Your state may show extra info in the State popup. We’ll warn you when you exceed this amount.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BUSINESSES -->
+    <section id="tab-biz" class="tab card span-12" style="display:none">
+      <h2>💼 Start / Manage Businesses</h2>
+      <div class="row">
+        <div><label>Business Name</label><input id="bizName" placeholder="Ex: Tracky Café LLC" /></div>
+        <div><label>Initial Investment ($)</label><input id="bizInvest" type="number" step="1" /></div>
+        <div><label>Expected Weekly Profit ($)</label><input id="bizProfit" type="number" step="1" placeholder="e.g., 1500" /></div>
+        <div style="align-self:end"><button id="btnAddBiz">Start Business</button></div>
+      </div>
+      <div class="hr"></div>
+      <table id="bizTable">
+        <thead><tr><th>Business</th><th class="right">Invested</th><th class="right">Weekly Profit</th><th>Actions</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <p class="tiny">Weekly profits are credited when you simulate a week.</p>
+    </section>
+  </div>
+
+  <!-- POPUP: STATE -->
+  <div id="popup" class="pop" role="dialog" aria-modal="true">
+    <div class="box">
+      <h3 id="popTitle">🗺️ Your State</h3>
+      <p id="popBody" class="tiny"></p>
+      <div class="hr"></div>
+      <div class="row">
+        <button id="popClose">OK 🎯</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    💼 Follow <a href="https://instagram.com/trackyoursheets" target="_blank">@trackyoursheets</a> for more finance sims & tips!
+  </footer>
+
+<script>
+/* =============================
+   Utilities & App State
+============================= */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const fmt = n => Number(n||0).toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0});
+const now = () => new Date().toLocaleString();
+
+const S = {
+  states: {}, userId: null, playerName: "", userState: "MI",
+  prize: 0, cashBase: 0, tax: 0, net: 0,
+  savings: 0, wallet: 0, accruedInterest: 0,
+  apy: 4.5, goal: "",
+  rows: [], // spends: {id,cat,desc,amt,freq,to,selected}
+  ledger: [], // {ts,kind,note,dWallet,dSavings,wallet,savings}
+  businesses: [], // {id,name,invest,profit}
+  charityLifetime: 0, bizInvested: 0
+};
+
+/* =============================
+   Navigation
+============================= */
+$$('nav a[data-tab]').forEach(a=>{
+  a.addEventListener('click', e=>{
+    e.preventDefault();
+    $$('nav a[data-tab]').forEach(x=>x.classList.remove('active'));
+    a.classList.add('active');
+    const tab = a.getAttribute('data-tab');
+    $$('.tab').forEach(t=>t.style.display='none');
+    $('#'+tab).style.display='block';
+  });
+});
+
+/* =============================
+   Load States
+============================= */
+async function loadStates(){
+  const res = await fetch('/api/states');
+  const data = await res.json();
+  S.states = data;
+  const sel = $('#state'); sel.innerHTML = '';
+  Object.keys(data).sort().forEach(k=>{
+    const o = document.createElement('option');
+    o.value = k; o.textContent = k; sel.appendChild(o);
+  });
+  sel.value = 'MI';
+  $('#kState').textContent = 'MI';
+}
+loadStates();
+
+/* =============================
+   Rendering
+============================= */
+function paintMoney(){
+  $('#kWallet').textContent = fmt(S.wallet);
+  $('#kSavings').textContent = fmt(S.savings);
+  $('#kInterest').textContent = fmt(S.accruedInterest);
+  $('#kTotal').textContent = fmt(S.wallet + S.savings);
+}
+
+function paintCalc(){
+  $('#kpiCash').textContent = fmt(S.cashBase);
+  $('#kpiTax').textContent = fmt(S.tax);
+  $('#kpiNet').textContent = fmt(S.net);
+  $('#kpiGoal').textContent = S.goal || '—';
+  paintMoney();
+}
+
+function pushLedger(kind, note, dW=0, dS=0){
+  S.wallet += dW;
+  S.savings += dS;
+  S.ledger.push({ts: new Date().toISOString(), kind, note, dWallet:dW, dSavings:dS, wallet:S.wallet, savings:S.savings});
+  const tb = $('#ledger tbody');
+  const tr = document.createElement('tr');
+  const delta = (dW+dS);
+  tr.innerHTML = `
+    <td>${S.ledger.length}</td>
+    <td class="tiny">${now()}</td>
+    <td>${kind}</td>
+    <td>${escapeHTML(note)}</td>
+    <td class="right" style="color:${delta>=0?'#22c55e':'#ef4444'}">${fmt(delta)}</td>
+    <td class="right">${fmt(S.wallet)}</td>
+    <td class="right">${fmt(S.savings)}</td>
+  `;
+  tb.appendChild(tr);
+  paintMoney();
+}
+
+function escapeHTML(s){ return (s??"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m])); }
+
+/* =============================
+   State Popup
+============================= */
+function openStatePopup(){
+  const st = $('#state').value;
+  const info = S.states[st] || {lottery:0, gift:0, fact:""};
+  $('#popTitle').textContent = `🗺️ ${st} — Lottery & Gifts`;
+  const body = `
+    <div class="flex"><span>💸 Lottery tax:</span> <b>${info.lottery || 0}%</b></div>
+    <div class="flex"><span>🎁 State gift tax:</span> <b>${info.gift || 0}%</b> <span class="tiny">(most states: 0%)</span></div>
+    <div class="hr"></div>
+    <div>${escapeHTML(info.fact || '')}</div>
+    <div class="tiny" style="margin-top:8px;color:#b4c4e0">Note: This is an educational simulator; your actual situation can vary. Always confirm with a tax professional.</div>
+  `;
+  $('#popBody').innerHTML = body;
+  $('#popup').classList.add('show');
+}
+$('#btnStateInfo').addEventListener('click', openStatePopup);
+$('#popClose').addEventListener('click', ()=>$('#popup').classList.remove('show'));
+$('#popup').addEventListener('click', e=>{ if(e.target.id==='popup') $('#popup').classList.remove('show'); });
+
+/* =============================
+   Calculate Taxes & Allocate 10%
+============================= */
+$('#btnCalc').addEventListener('click', ()=>{
+  const type = $('#prizeType').value;
+  const prize = +($('#prize').value||0);
+  const st = $('#state').value;
+  const fed = +($('#fed').value||24);
+  const stRate = (S.states[st]?.lottery)||0;
+
+  let cash = prize;
+  if (type==='jackpot') cash = prize * 0.60;
+  const totalTax = cash*(fed/100) + cash*(stRate/100);
+  const net = Math.max(0, cash - totalTax);
+
+  S.prize = prize; S.cashBase = cash; S.tax = totalTax; S.net = net;
+  S.userState = st; $('#kState').textContent = st;
+  S.goal = $('#goal').value.trim();
+
+  // Reset balances and auto 10% to savings
+  S.wallet = +(net * 0.90);
+  S.savings = +(net * 0.10);
+  S.accruedInterest = 0;
+  $('#apy').value = S.apy;
+
+  // Reset tables
+  S.ledger = []; $('#ledger tbody').innerHTML = '';
+  pushLedger('init', `After-tax net loaded (Fed ${fed}%, ${st} ${stRate}%) — 10% auto to Savings`, -0, 0);
+  paintCalc();
+});
+
+$('#btnReset').addEventListener('click', ()=>{
+  Object.assign(S,{
+    prize:0,cashBase:0,tax:0,net:0,wallet:0,savings:0,accruedInterest:0,rows:[],ledger:[],goal:"",businesses:[],charityLifetime:0,bizInvested:0
+  });
+  $('#spTable tbody').innerHTML = '';
+  $('#bizTable tbody').innerHTML = '';
+  $('#ledger tbody').innerHTML = '';
+  $('#goal').value = '';
+  $('#prize').value = '';
+  paintCalc();
+});
+
+/* =============================
+   Register / Leaderboard
+============================= */
+$('#btnRegister').addEventListener('click', async ()=>{
+  const payload = {
+    name: ($('#playerName').value||'Player'),
+    state: $('#state').value,
+    balance: (S.wallet + S.savings)
+  };
+  const res = await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const data = await res.json();
+  S.userId = data.id;
+  S.playerName = payload.name;
+  $('#kUser').textContent = S.userId;
+});
+
+$('#btnSaveLeaderboard').addEventListener('click', async ()=>{
+  if(!S.userId){ alert('Get a User ID first (✨ button).'); return; }
+  const body = {
+    id: S.userId,
+    balance: S.wallet + S.savings,
+    charity: S.charityLifetime,
+    business: S.bizInvested
+  };
+  await fetch('/api/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  alert('Leaderboard updated! 🏆');
+});
+
+/* =============================
+   Bank: move & interest
+============================= */
+$('#btnMove').addEventListener('click', ()=>{
+  const amt = +($('#moveAmt').value||0);
+  const dir = $('#moveDir').value;
+  if(!amt) return;
+  if(dir==='toSavings'){
+    if(amt>S.wallet) return alert('Not enough in Wallet.');
+    pushLedger('transfer','Wallet → Savings', -amt, +amt);
+  }else{
+    if(amt>S.savings) return alert('Not enough in Savings.');
+    pushLedger('transfer','Savings → Wallet', +amt, -amt);
+  }
+});
+
+function dailyInterest(){
+  const apy = +($('#apy').value||0);
+  S.apy = apy;
+  const daily = apy/100/365;
+  const interest = S.savings * daily;
+  if(interest!==0){
+    S.accruedInterest += interest;
+    pushLedger('interest', `Daily interest @ ${apy}% APY`, 0, +interest);
+  }
+}
+
+function applyRecurring(freq){
+  S.rows.filter(r=>r.freq===freq).forEach(r=>{
+    // Spending reduces Wallet
+    const amt = Math.abs(r.amt);
+    // Gift warning (recipient threshold)
+    if (r.to && /mom|dad|sister|brother|aunt|uncle|cousin|grand|wife|husband|partner|son|daughter|friend/i.test(r.to) && amt>18000){
+      // Only warn once per apply action
+      console.warn('Gift limit warning!');
+      pushLedger('warning', `Gift to ${r.to} exceeds $18k annual exclusion`, 0, 0);
+    }
+    // Charity tracking
+    if (/charity|donation|foundation/i.test(r.cat) || /charity|donat/i.test(r.to||'')){
+      S.charityLifetime += amt;
+    }
+    // Business tracking (if “Business” category)
+    if (/business|invest|llc|corp/i.test(r.cat) || /llc|inc|corp/i.test(r.to||'')){
+      S.bizInvested += amt;
+    }
+    pushLedger('spend', `${r.cat}: ${r.desc}${r.to?(' → '+r.to):''} (${freq})`, -amt, 0);
+  });
+}
+
+function randomEvent(){
+  if (!$('#chkEvents').checked) return;
+  const pool = [
+    {note:"🎟️ Courtside tickets", dW:-2500},
+    {note:"🛠️ Car repair", dW:-900},
+    {note:"🩺 Urgent care", dW:-1200},
+    {note:"🎁 Gift card found", dW:+150},
+    {note:"📈 Dividend you forgot about", dW:+500},
+    {note:"💡 Business pop-up profit", dW:+2000},
+    {note:"🛫 Flight credit", dW:+300}
+  ];
+  if (Math.random()<0.08){
+    const e = pool[Math.floor(Math.random()*pool.length)];
+    pushLedger('event', e.note, e.dW, 0);
+  }
+}
+
+$('#btnDay').addEventListener('click', ()=>{
+  applyRecurring('daily');
+  dailyInterest();
+  randomEvent();
+});
+
+$('#btnWeek').addEventListener('click', ()=>{
+  for(let i=0;i<7;i++){
+    applyRecurring('daily');
+    dailyInterest();
+    randomEvent();
+  }
+  applyRecurring('weekly');
+  // businesses earn weekly profit to Wallet
+  let totalProfit = 0;
+  S.businesses.forEach(b=> totalProfit += (b.profit||0));
+  if (totalProfit!==0) pushLedger('biz-profit', `Weekly profits from ${S.businesses.length} biz`, +totalProfit, 0);
+});
+
+$('#btn30').addEventListener('click', ()=>{
+  for(let i=0;i<30;i++){
+    applyRecurring('daily'); dailyInterest(); randomEvent();
+    if ((i+1)%7===0){ applyRecurring('weekly'); let p=0; S.businesses.forEach(b=>p+=b.profit||0); if(p) pushLedger('biz-profit','Weekly profits', +p, 0); }
+  }
+});
+
+/* =============================
+   Spending Table
+============================= */
+function paintSpends(){
+  const tb = $('#spTable tbody'); tb.innerHTML = '';
+  S.rows.forEach(r=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input type="checkbox" data-id="${r.id}" class="spSel" ${r.selected?'checked':''}/></td>
+      <td>${escapeHTML(r.cat)}</td>
+      <td>${escapeHTML(r.desc||'')}</td>
+      <td class="right">${fmt(r.amt)}</td>
+      <td>${r.freq}</td>
+      <td>${escapeHTML(r.to||'')}</td>
+      <td>
+        <span class="link" data-act="apply" data-id="${r.id}">apply</span> ·
+        <span class="link" data-act="del" data-id="${r.id}" style="color:#ff8080">delete</span>
+      </td>
+    `;
+    tb.appendChild(tr);
+  });
+
+  $$('.spSel').forEach(cb=>{
+    cb.addEventListener('change', ()=>{
+      const id = cb.getAttribute('data-id');
+      const row = S.rows.find(x=>x.id===id); if(row) row.selected = cb.checked;
+    });
+  });
+
+  $$('#spTable [data-act]').forEach(a=>{
+    a.addEventListener('click', ()=>{
+      const id = a.getAttribute('data-id');
+      const row = S.rows.find(x=>x.id===id); if(!row) return;
+      const act = a.getAttribute('data-act');
+      if (act==='apply'){
+        // Apply once right now
+        const amt = Math.abs(row.amt);
+        // Gift/charity/business tracking same rules
+        if (/charity|donation|foundation/i.test(row.cat) || /charity|donat/i.test(row.to||'')) S.charityLifetime += amt;
+        if (/business|invest|llc|corp/i.test(row.cat) || /llc|inc|corp/i.test(row.to||'')) S.bizInvested += amt;
+        if (row.to && amt>18000) pushLedger('warning', `Gift to ${row.to} exceeds $18k annual exclusion`, 0, 0);
+        pushLedger('spend', `${row.cat}: ${row.desc}${row.to?(' → '+row.to):''} (once)`, -amt, 0);
+      } else {
+        S.rows = S.rows.filter(x=>x.id!==id);
+        paintSpends();
+      }
+    });
+  });
+}
+
+$('#btnAddSpend').addEventListener('click', ()=>{
+  const cat = $('#spCat').value.trim() || 'Custom';
+  const desc = $('#spDesc').value.trim();
+  const amt = +($('#spAmt').value||0);
+  const freq = $('#spFreq').value;
+  const to = $('#spTo').value.trim();
+  if (!amt) return alert('Enter an amount.');
+  const id = Math.random().toString(36).slice(2,10);
+  S.rows.push({id,cat,desc,amt,freq,to,selected:false});
+  $('#spDesc').value=''; $('#spAmt').value=''; $('#spTo').value='';
+  paintSpends();
+});
+
+$('#btnApplyOnce').addEventListener('click', ()=>{
+  const ones = S.rows.filter(r=>r.freq==='once');
+  if (!ones.length) return;
+  ones.forEach(r=>{
+    const amt = Math.abs(r.amt);
+    if (/charity|donation|foundation/i.test(r.cat) || /charity|donat/i.test(r.to||'')) S.charityLifetime += amt;
+    if (/business|invest|llc|corp/i.test(r.cat) || /llc|inc|corp/i.test(r.to||'')) S.bizInvested += amt;
+    if (r.to && amt>18000) pushLedger('warning', `Gift to ${r.to} exceeds $18k annual exclusion`, 0, 0);
+    pushLedger('spend', `${r.cat}: ${r.desc}${r.to?(' → '+r.to):''} (once)`, -amt, 0);
+  });
+});
+
+$('#btnDeleteSelected').addEventListener('click', ()=>{
+  const any = S.rows.some(r=>r.selected);
+  if (!any) return;
+  S.rows = S.rows.filter(r=>!r.selected);
+  paintSpends();
+});
+
+/* =============================
+   Businesses
+============================= */
+function paintBiz(){
+  const tb = $('#bizTable tbody'); tb.innerHTML='';
+  S.businesses.forEach(b=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${escapeHTML(b.name)}</td>
+      <td class="right">${fmt(b.invest)}</td>
+      <td class="right">${fmt(b.profit)}</td>
+      <td><span class="link" data-del="${b.id}" style="color:#ff8080">close</span></td>
+    `;
+    tb.appendChild(tr);
+  });
+  $$('#bizTable [data-del]').forEach(x=>{
+    x.addEventListener('click', ()=>{
+      const id = x.getAttribute('data-del');
+      const b = S.businesses.find(z=>z.id===id);
+      if(!b) return;
+      // no refund for simplicity
+      S.businesses = S.businesses.filter(z=>z.id!==id);
+      pushLedger('biz-close', `Closed ${b.name}`, 0, 0);
+      paintBiz();
+    });
+  });
+}
+
+$('#btnAddBiz').addEventListener('click', ()=>{
+  const name = $('#bizName').value.trim();
+  const invest = +($('#bizInvest').value||0);
+  const profit = +($('#bizProfit').value||0);
+  if(!name || !invest) return alert('Enter a name and initial investment.');
+  if(invest > S.wallet) return alert('Not enough Wallet funds for investment.');
+  const id = Math.random().toString(36).slice(2,10);
+  S.businesses.push({id,name,invest,profit});
+  S.bizInvested += invest;
+  pushLedger('biz-invest', `Started ${name}`, -invest, 0);
+  $('#bizName').value=''; $('#bizInvest').value=''; $('#bizProfit').value='';
+  paintBiz();
+});
+
+/* =============================
+   Misc
+============================= */
+$('#state').addEventListener('change', e=> $('#kState').textContent = e.target.value);
+
+function seedDemo(){
+  // Optional: quick demo rows
+  const seeds = [
+    ['Housing','20% down condo in Miami',250000,'once','Self'],
+    ['Lifestyle','Groceries',75,'daily','Household'],
+    ['Car','Insurance',45,'weekly','Insurer'],
+    ['Travel','2 weeks in Japan',18000,'once','Self'],
+    ['Charity','Local food bank',10000,'once','Charity'],
+    ['Gifts','Monthly to parents',1000,'weekly','Mom & Dad'],
+    ['Business','Fit-out café',120000,'once','My LLC'],
+  ];
+  seeds.forEach(r=>{
+    const id = Math.random().toString(36).slice(2,10);
+    S.rows.push({id,cat:r[0],desc:r[1],amt:r[2],freq:r[3],to:r[4],selected:false});
+  });
+  paintSpends();
+}
+seedDemo();
+paintCalc();
+
+/* =============================
+   End
+============================= */
+</script>
+</body>
+</html>

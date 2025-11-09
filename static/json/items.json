@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Designer Watch",
+    "price": 15000,
+    "rate_annual": -0.02,
+    "upkeep_monthly": 0,
+    "volatility_monthly": 0,
+    "desc": "Luxury accessory; slight depreciation."
+  },
+  {
+    "name": "Diamond Necklace",
+    "price": 45000,
+    "rate_annual": 0.01,
+    "upkeep_monthly": 0,
+    "volatility_monthly": 0.02,
+    "desc": "Jewelry; small appreciation."
+  },
+  {
+    "name": "Yacht",
+    "price": 2000000,
+    "rate_annual": -0.12,
+    "upkeep_monthly": 20000,
+    "volatility_monthly": 0.03,
+    "desc": "Luxury yacht; heavy upkeep."
+  },
+  {
+    "name": "Private Jet",
+    "price": 6500000,
+    "rate_annual": -0.10,
+    "upkeep_monthly": 50000,
+    "volatility_monthly": 0.03,
+    "desc": "Personal jet; expensive to own."
+  },
+  {
+    "name": "Luxury Furniture Set",
+    "price": 80000,
+    "rate_annual": -0.05,
+    "upkeep_monthly": 100,
+    "volatility_monthly": 0,
+    "desc": "Furnish your mansion."
+  },
+  {
+    "name": "Art Collection",
+    "price": 1200000,
+    "rate_annual": 0.04,
+    "upkeep_monthly": 0,
+    "volatility_monthly": 0.08,
+    "desc": "Fine art; volatile valuations."
+  },
+  {
+    "name": "Crypto Portfolio",
+    "price": 250000,
+    "rate_annual": 0,
+    "upkeep_monthly": 0,
+    "volatility_monthly": 0.25,
+    "desc": "Highly volatile digital assets."
+  },
+  {
+    "name": "World Tour Vacation",
+    "price": 120000,
+    "rate_annual": -1.0,
+    "upkeep_monthly": 0,
+    "volatility_monthly": 0,
+    "desc": "Pure expense; priceless fun."
+  },
+  {
+    "name": "Home Theater System",
+    "price": 25000,
+    "rate_annual": -0.08,
+    "upkeep_monthly": 0,
+    "volatility_monthly": 0,
+    "desc": "Cinematic living room."
+  }
+]

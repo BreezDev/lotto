@@ -1,0 +1,66 @@
+[
+  {
+    "name": "Toyota Corolla",
+    "price": 24000,
+    "dep_rate_annual": 0.15,
+    "maint_monthly": 120,
+    "class": "regular",
+    "desc": "Reliable compact; low upkeep."
+  },
+  {
+    "name": "Honda Accord",
+    "price": 29000,
+    "dep_rate_annual": 0.14,
+    "maint_monthly": 140,
+    "class": "regular",
+    "desc": "Solid midsize; balanced costs."
+  },
+  {
+    "name": "Tesla Model 3",
+    "price": 42000,
+    "dep_rate_annual": 0.10,
+    "maint_monthly": 60,
+    "class": "ev",
+    "desc": "Electric sedan; minimal maintenance."
+  },
+  {
+    "name": "BMW M4",
+    "price": 78000,
+    "dep_rate_annual": 0.17,
+    "maint_monthly": 350,
+    "class": "luxury",
+    "desc": "Performance coupe; pricey upkeep."
+  },
+  {
+    "name": "Lamborghini Aventador",
+    "price": 550000,
+    "dep_rate_annual": 0.20,
+    "maint_monthly": 1800,
+    "class": "exotic",
+    "desc": "Exotic supercar; big depreciation."
+  },
+  {
+    "name": "Rolls-Royce Phantom",
+    "price": 620000,
+    "dep_rate_annual": 0.18,
+    "maint_monthly": 2200,
+    "class": "ultra-luxury",
+    "desc": "Ultra-luxury; chauffeur optional."
+  },
+  {
+    "name": "Ford F-150 Raptor",
+    "price": 68000,
+    "dep_rate_annual": 0.15,
+    "maint_monthly": 220,
+    "class": "truck",
+    "desc": "Work & play; durable."
+  },
+  {
+    "name": "Bugatti Chiron",
+    "price": 3200000,
+    "dep_rate_annual": 0.22,
+    "maint_monthly": 8000,
+    "class": "hypercar",
+    "desc": "Hypercar; extreme costs."
+  }
+]

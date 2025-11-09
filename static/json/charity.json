@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Food for All Foundation",
+    "price": 50000,
+    "monthly_drain": 5000,
+    "reputation": 10,
+    "desc": "Meals to families in need."
+  },
+  {
+    "name": "Clean Oceans Project",
+    "price": 100000,
+    "monthly_drain": 8000,
+    "reputation": 12,
+    "desc": "Marine cleanup & research."
+  },
+  {
+    "name": "Animal Rescue Network",
+    "price": 75000,
+    "monthly_drain": 6500,
+    "reputation": 9,
+    "desc": "Shelter & rehab animals."
+  },
+  {
+    "name": "STEM Education Fund",
+    "price": 200000,
+    "monthly_drain": 15000,
+    "reputation": 15,
+    "desc": "Scholarships & coding camps."
+  },
+  {
+    "name": "Global Health Initiative",
+    "price": 500000,
+    "monthly_drain": 25000,
+    "reputation": 20,
+    "desc": "Vaccination & healthcare."
+  },
+  {
+    "name": "Build a School Program",
+    "price": 300000,
+    "monthly_drain": 20000,
+    "reputation": 18,
+    "desc": "Construct rural schools."
+  }
+]

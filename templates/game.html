@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>🎮 LottoLife 2.0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050810;--panel:#0e1526;--line:#1b233a;--ink:#eef3ff;--muted:#9db0d6;
+    --brand:#0d6efd;--good:#22c55e;--bad:#ef4444;--gold:#facc15;--vio:#7c5cff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 700px at 70% -10%, #13213a 0%, #050810 60%);color:var(--ink);font-family:'Jost',system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  header{position:sticky;top:0;z-index:20;background:#0b1222;border-bottom:2px solid var(--brand)}
+  nav{max-width:1200px;margin:auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  nav .left,nav .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  nav a{color:#fff;text-decoration:none;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:#0f1730}
+  nav a.active,nav a:hover{background:var(--brand);border-color:transparent}
+  nav button{background:#1b233a;color:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-weight:700;cursor:pointer}
+  nav button:hover{background:var(--brand);border-color:transparent}
+  .wrap{max-width:1200px;margin:auto;padding:18px}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(12,1fr)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;display:none}
+  .panel.active{display:block}
+  .span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-6{grid-column:span 6}.span-4{grid-column:span 4}
+  h2{margin:0 0 8px 0;color:#cfe1ff}
+  h3{margin:10px 0}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .kpi{background:#0a1120;border:1px solid var(--line);border-radius:12px;padding:12px}
+  .kpi .t{color:var(--muted);font-size:12px}
+  .kpi .v{font-weight:800;font-size:18px}
+  label{display:block;color:var(--muted);font-size:13px;margin-top:6px}
+  input,select,button{padding:10px 12px;border-radius:10px;border:1px solid #1c2744;background:#0b1222;color:var(--ink)}
+  button.primary{background:var(--brand);border-color:transparent;font-weight:800}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left}
+  th{color:#b9c7e0}
+  td.right{text-align:right}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .pill{display:inline-flex;gap:6px;align-items:center;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:#0b1222;color:var(--muted);font-size:12px}
+  .notice{background:#0a1120;border:1px dashed var(--line);padding:10px;border-radius:12px}
+  .mini{font-size:12px;color:var(--muted)}
+  .btn-danger{background:var(--bad);border-color:#c33}
+  .btn-good{background:var(--good);color:#04160c;border-color:#1a6f3a}
+  .storecard{border:1px solid var(--line);border-radius:12px;padding:12px;margin:8px 0;background:#0f1730}
+  .flex{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .toast{position:fixed;right:16px;bottom:16px;background:#0e1526;border:1px solid var(--line);padding:12px 14px;border-radius:12px;box-shadow:0 6px 28px rgba(0,0,0,.35);z-index:50;display:none}
+  .toast.show{display:block;animation:rise .5s ease}
+  @keyframes rise{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+  canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
+  footer{text-align:center;color:#9bb0d0;margin:28px 0}
+  footer a{color:#cfe1ff}
+  @media (max-width:980px){.span-8,.span-6,.span-4{grid-column:span 12}.kpis{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<script>
+window.GAME_START = {{ {
+  "wallet": session.get("wallet", 0),
+  "savings": session.get("savings", 0),
+  "state": session.get("state", ""),
+  "goal": session.get("goal", ""),
+  "net": session.get("net", 0)
+} | tojson }};
+</script>
+
+
+<header>
+  <nav>
+    <div class="left">
+      <a href="#" data-tab="portfolio" class="active">📊 Portfolio</a>
+      <a href="#" data-tab="cars">🏎 Cars</a>
+      <a href="#" data-tab="houses">🏠 Houses</a>
+      <a href="#" data-tab="biz">💼 Businesses</a>
+      <a href="#" data-tab="charity">🎁 Charities</a>
+      <a href="#" data-tab="items">🛍 Items</a>
+      <a href="/leaderboard">🏆 Leaderboard</a>
+      <a href="/guide">📘 Guide</a>
+    </div>
+    <div class="right">
+      <span class="pill">Inflation <input id="infl" type="number" value="2.5" step="0.1" style="width:80px">%</span>
+      <button id="day">▶️ 1 Day</button>
+      <button id="week">⏩ 1 Week</button>
+      <button id="month">⏭️ 1 Month</button>
+    </div>
+  </nav>
+</header>
+
+<canvas id="confetti"></canvas>
+<div id="toast" class="toast">Saved!</div>
+
+<div class="wrap">
+  <!-- PORTFOLIO -->
+  <section id="panel-portfolio" class="panel active">
+    <h2>📊 Portfolio</h2>
+    <div class="kpis">
+      <div class="kpi"><div class="t">Wallet</div><div class="v" id="kWallet">$0</div></div>
+      <div class="kpi"><div class="t">Savings</div><div class="v" id="kSavings">$0</div></div>
+      <div class="kpi"><div class="t">Total Assets</div><div class="v" id="kAssets">$0</div></div>
+      <div class="kpi"><div class="t">Net Worth</div><div class="v" id="kNet">$0</div></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="pill">Reputation: <b id="kRep">0</b></div>
+      <div class="pill">APY <input id="apy" type="number" value="4.5" step="0.1" style="width:80px">%</div>
+      <div class="pill">Events <input id="evt" type="checkbox"></div>
+      <button id="saveLeaderboard" class="primary">⬆️ Update Leaderboard</button>
+    </div>
+    <div class="grid" style="margin-top:12px">
+      <div class="span-6 notice">
+        <h3 style="margin:0 0 6px">Assets Breakdown</h3>
+        <div id="breakdown" class="mini">No assets yet. Buy something from the tabs!</div>
+      </div>
+      <div class="span-6 notice">
+        <h3 style="margin:0 0 6px">Net Worth (last 30 ops)</h3>
+        <canvas id="spark" height="120"></canvas>
+      </div>
+    </div>
+
+    <h3 style="margin-top:14px">📜 Ledger</h3>
+    <table id="ledger">
+      <thead><tr><th>#</th><th>Event</th><th class="right">Δ Wallet</th><th class="right">Δ Assets</th><th class="right">Net</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- CARS -->
+  <section id="panel-cars" class="panel">
+    <h2>🏎 Cars — Store</h2>
+    <div id="carList"></div>
+    <h3>🚗 Garage</h3>
+    <table id="garage">
+      <thead><tr><th>Model</th><th class="right">Value</th><th class="right">Maint/mo</th><th>Action</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- HOUSES -->
+  <section id="panel-houses" class="panel">
+    <h2>🏠 Real Estate — Store</h2>
+    <div id="houseList"></div>
+    <h3>🏚 Owned Properties</h3>
+    <table id="props">
+      <thead><tr><th>Property</th><th class="right">Value</th><th class="right">Rent/mo</th><th class="right">Tax/yr</th><th class="right">Upkeep/mo</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- BUSINESSES -->
+  <section id="panel-biz" class="panel">
+    <h2>💼 Businesses — Store</h2>
+    <div id="bizList"></div>
+    <h3>🏢 Owned Companies</h3>
+    <table id="companies">
+      <thead><tr><th>Company</th><th class="right">Employees</th><th class="right">Payroll/wk</th><th class="right">Revenue/wk</th><th class="right">Margin</th><th>Level</th><th>Actions</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- CHARITIES -->
+  <section id="panel-charity" class="panel">
+    <h2>🎁 Charities — Start or Create</h2>
+    <div id="charityList"></div>
+    <div class="notice" style="margin-top:10px">
+      <h3 style="margin:0 0 6px">➕ Create Custom Charity</h3>
+      <div class="row">
+        <div><label>Name</label><input id="chName" placeholder="My Foundation"></div>
+        <div><label>Initial Funding ($)</label><input id="chSeed" type="number" value="100000"></div>
+        <div><label>Monthly Program Spend ($)</label><input id="chDrain" type="number" value="8000"></div>
+        <div><label>Reputation</label><input id="chRep" type="number" value="12"></div>
+        <div style="align-self:end"><button id="chCreate" class="primary">Create</button></div>
+      </div>
+    </div>
+    <h3>🏛 Your Charities</h3>
+    <table id="charTable">
+      <thead><tr><th>Name</th><th class="right">Monthly Spend</th><th class="right">Reputation</th><th>Action</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- ITEMS -->
+  <section id="panel-items" class="panel">
+    <h2>🛍 Items — Store</h2>
+    <div id="itemList"></div>
+    <h3>🎒 Owned Items</h3>
+    <table id="inv">
+      <thead><tr><th>Item</th><th class="right">Value</th><th class="right">Upkeep/mo</th><th>Action</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+</div>
+
+<footer>
+  💼 Follow <a href="https://instagram.com/trackyoursheets" target="_blank">@trackyoursheets</a> for more finance sims, tips, and updates!
+</footer>
+
+<script src="/static/js/game.js?v=7"></script>
+
+</body>
+</html>

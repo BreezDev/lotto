@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>🎰 LottoLife — Start</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Jost',sans-serif;background:radial-gradient(900px 600px at 60% -10%,#13213a,#050810);color:#fff;text-align:center;padding:30px}
+h1{font-size:2rem;margin-bottom:10px}
+form{max-width:500px;margin:auto;background:#0f1730;border-radius:14px;padding:20px;border:1px solid #1b233a}
+input,select,button,textarea{width:100%;padding:10px;border-radius:8px;margin:8px 0;border:none;font-family:inherit}
+input,select,textarea{background:#0b1222;color:#fff}
+button{background:#0d6efd;color:#fff;font-weight:700;cursor:pointer}
+button:hover{background:#135cf7}
+small{color:#b4bcd3}
+</style>
+</head>
+<body>
+
+<h1>🎉 Welcome to LottoLife</h1>
+<p>See how your winnings could grow (or disappear!) after taxes and smart money choices.</p>
+
+<form action="/startgame" method="POST">
+  <label>💵 How much did you win?</label>
+  <input type="number" name="amount" placeholder="Example: 10000000" required>
+
+  <label>📍 Select your state (for tax rate)</label>
+  <select name="state" required>
+    <option value="MI">Michigan (4.25%)</option>
+    <option value="CA">California (13.3%)</option>
+    <option value="TX">Texas (0%)</option>
+    <option value="FL">Florida (0%)</option>
+    <option value="NY">New York (10.9%)</option>
+    <option value="IL">Illinois (4.95%)</option>
+    <option value="PA">Pennsylvania (3.07%)</option>
+    <option value="OH">Ohio (4%)</option>
+    <option value="NJ">New Jersey (10.75%)</option>
+    <option value="GA">Georgia (5.75%)</option>
+  </select>
+
+  <label>📝 What would you do first?</label>
+  <textarea name="goal" rows="3" placeholder="Example: Buy a house for my parents and start a café."></textarea>
+
+  <button type="submit">Start Simulation →</button>
+  <small>After-tax amount will be automatically calculated for your state.</small>
+</form>
+
+</body>
+</html>

@@ -1,0 +1,90 @@
+[
+  {
+    "name": "Coffee Haven Café",
+    "price": 250000,
+    "employees": 5,
+    "salary_per_employee_annual": 40000,
+    "weekly_revenue": 12000,
+    "gross_margin": 0.45,
+    "fixed_weekly_costs": 3000,
+    "growth_level": 1,
+    "desc": "Neighborhood café; cozy vibes."
+  },
+  {
+    "name": "Auto Detail Shop",
+    "price": 300000,
+    "employees": 4,
+    "salary_per_employee_annual": 42000,
+    "weekly_revenue": 14000,
+    "gross_margin": 0.5,
+    "fixed_weekly_costs": 2500,
+    "growth_level": 1,
+    "desc": "Detailing & ceramic coatings."
+  },
+  {
+    "name": "Tech Startup",
+    "price": 1200000,
+    "employees": 10,
+    "salary_per_employee_annual": 120000,
+    "weekly_revenue": 60000,
+    "gross_margin": 0.7,
+    "fixed_weekly_costs": 15000,
+    "growth_level": 2,
+    "desc": "SaaS growth; could IPO later."
+  },
+  {
+    "name": "Real Estate Investment Co.",
+    "price": 2000000,
+    "employees": 15,
+    "salary_per_employee_annual": 85000,
+    "weekly_revenue": 120000,
+    "gross_margin": 0.4,
+    "fixed_weekly_costs": 35000,
+    "growth_level": 2,
+    "desc": "Buy & operate rentals."
+  },
+  {
+    "name": "Luxury Fashion Brand",
+    "price": 4500000,
+    "employees": 25,
+    "salary_per_employee_annual": 90000,
+    "weekly_revenue": 220000,
+    "gross_margin": 0.55,
+    "fixed_weekly_costs": 55000,
+    "growth_level": 3,
+    "desc": "Designer label; board-ready."
+  },
+  {
+    "name": "Private Jet Charter",
+    "price": 8000000,
+    "employees": 20,
+    "salary_per_employee_annual": 110000,
+    "weekly_revenue": 380000,
+    "gross_margin": 0.35,
+    "fixed_weekly_costs": 120000,
+    "growth_level": 3,
+    "desc": "Operate a small fleet."
+  },
+  {
+    "name": "Gaming Studio",
+    "price": 5500000,
+    "employees": 30,
+    "salary_per_employee_annual": 105000,
+    "weekly_revenue": 260000,
+    "gross_margin": 0.6,
+    "fixed_weekly_costs": 80000,
+    "growth_level": 3,
+    "desc": "Release hits; publisher deals."
+  },
+  {
+    "name": "Biotech Research Firm",
+    "price": 12000000,
+    "employees": 40,
+    "salary_per_employee_annual": 160000,
+    "weekly_revenue": 500000,
+    "gross_margin": 0.35,
+    "fixed_weekly_costs": 180000,
+    "growth_level": 4,
+    "desc": "High risk, high reward, IPO likely."
+  }
+]
