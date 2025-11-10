@@ -65,9 +65,23 @@
   .mini{font-size:12px;color:var(--muted)}
   .notice{background:#0a1120;border:1px dashed var(--line);padding:14px;border-radius:16px}
   .storecard{border:1px solid var(--line);border-radius:16px;padding:16px;margin:10px 0;background:#101a33;box-shadow:0 12px 40px rgba(5,8,18,0.45)}
+  .storecard .mini{color:#9db0d6}
+  .storecard-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .storecard button{min-width:0}
+  .storecard button.secondary{background:transparent;color:#9ab7ff;border:1px solid var(--line)}
+  .storecard button.secondary:hover{background:#1b2542;color:#fff;border-color:transparent}
   .flex{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
   .toast{position:fixed;right:20px;bottom:20px;background:#0e1526;border:1px solid var(--line);padding:14px 16px;border-radius:14px;box-shadow:0 12px 38px rgba(0,0,0,.4);z-index:200;display:none;font-weight:600}
   .toast.show{display:block;animation:rise .5s ease}
+  .modal{position:fixed;inset:0;background:rgba(5,8,16,0.75);display:none;align-items:center;justify-content:center;padding:22px;z-index:250}
+  .modal.show{display:flex}
+  .modal .box{background:#0f1730;border:1px solid var(--line);border-radius:22px;max-width:540px;width:100%;padding:26px;box-shadow:0 22px 60px rgba(0,0,0,0.65)}
+  .modal .box h3{margin:0 0 6px}
+  .modal .box p{color:#b7c6e6;font-size:14px;line-height:1.45}
+  .modal .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:18px 0 24px}
+  .modal .meta-grid div{background:#101a33;border:1px solid var(--line);border-radius:14px;padding:12px}
+  .modal .meta-grid span{display:block;font-size:12px;color:#7da7ff;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+  .modal .actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
   @keyframes rise{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
   canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:150}
   footer{text-align:center;color:#9bb0d0;margin:34px 0}
@@ -125,6 +139,7 @@
 <body>
 <script>
 window.GAME_START = {{ start_data|tojson }};
+window.CATALOG_FALLBACK = {{ catalog_data|tojson }};
 </script>
 <header>
   <nav>
@@ -156,6 +171,23 @@ window.GAME_START = {{ start_data|tojson }};
 </header>
 
 <canvas id="confetti"></canvas>
+<div id="catalogModal" class="modal">
+  <div class="box">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px">
+      <div>
+        <div class="tagline" id="catalogModalTag">Asset Detail</div>
+        <h3 id="catalogModalTitle">Asset Overview</h3>
+      </div>
+      <button class="ghost" type="button" onclick="closeCatalogModal()">Close</button>
+    </div>
+    <p id="catalogModalDesc"></p>
+    <div class="meta-grid" id="catalogModalMeta"></div>
+    <div class="actions">
+      <button class="ghost" type="button" onclick="closeCatalogModal()">Cancel</button>
+      <button id="catalogModalBuy" class="primary" type="button">Buy</button>
+    </div>
+  </div>
+</div>
 <div id="toast" class="toast">Saved!</div>
 <div id="gameOver">
   <div class="box">

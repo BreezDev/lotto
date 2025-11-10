@@ -2,6 +2,7 @@
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 const fmt = (n, opt={}) => Number(n||0).toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:opt.noCents?0:2});
+const pct = (n, digits=1) => `${(Number(n||0)*100).toFixed(digits)}%`;
 const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 const STORAGE_KEY = 'lotto-life-save-v2';
 
@@ -972,23 +973,137 @@ function refreshIdentityEditor(){
 
 /* ================== Store Catalogs ================== */
 async function loadCatalog(cat){
-  const res = await fetch(`/api/catalog/${cat}`);
-  const data = await res.json();
-  S.catalogs[cat] = data;
-  const mount = {cars:'#carList', houses:'#houseList', biz:'#bizList', charity:'#charityList', items:'#itemList'}[cat];
+  const mountSel = {cars:'#carList', houses:'#houseList', biz:'#bizList', charity:'#charityList', items:'#itemList'}[cat];
+  const fallback = (window.CATALOG_FALLBACK && Array.isArray(window.CATALOG_FALLBACK[cat])) ? window.CATALOG_FALLBACK[cat] : [];
+  let payload = [];
+  try {
+    const res = await fetch(`/api/catalog/${cat}`);
+    if (!res.ok) throw new Error(`status ${res.status}`);
+    const data = await res.json();
+    if (Array.isArray(data)) payload = data;
+  } catch(err){
+    console.warn(`Catalog load failed for ${cat}`, err);
+  }
+  if (!payload.length) payload = fallback;
+  S.catalogs[cat] = payload;
+  if (!mountSel) return;
+  const mount = $(mountSel);
   if (!mount) return;
-  $(mount).innerHTML = data.map(d=>renderStoreCard(cat,d)).join('');
+  if (!payload.length){
+    mount.innerHTML = '<div class="notice empty">Catalog temporarily unavailable. Try again later.</div>';
+    return;
+  }
+  mount.innerHTML = payload.map(d=>renderStoreCard(cat,d)).join('');
 }
 function renderStoreCard(cat, d){
   const lines = {
-    cars:[d.class?`Tier ${d.class}`:'',`Dep ${(d.dep_rate_annual*100).toFixed(1)}%/yr`,`Maint ${fmt(d.maint_monthly)}/mo`],
-    houses:[d.tier?`Tier ${d.tier}`:'',`App ${(d.app_rate_annual*100).toFixed(1)}%/yr`,`Rent ${fmt(d.rent_monthly)}/mo`,`Tax ${(d.prop_tax_rate_annual*100).toFixed(2)}%/yr`,`Upkeep ${fmt(d.upkeep_monthly)}/mo`],
-    biz:[d.industry?d.industry:'',`Emp ${d.employees} @ ${fmt(d.salary_per_employee_annual)}/yr`,`Rev ${fmt(d.weekly_revenue)}/wk`,`Margin ${(d.gross_margin*100).toFixed(0)}%`,`Fixed ${fmt(d.fixed_weekly_costs)}/wk`],
-    charity:[d.focus?`Focus ${d.focus}`:'',d.region?d.region:'',`Monthly Spend ${fmt(d.monthly_drain)}`,`Reputation +${d.reputation}`],
-    items:[d.strategy?d.strategy:'',`Rate ${(d.rate_annual*100).toFixed(1)}%/yr`,`Upkeep ${fmt(d.upkeep_monthly)}/mo`,d.volatility_monthly?`Vol ${(d.volatility_monthly*100).toFixed(0)}%/mo`:'' ]
+    cars:[d.class?`Tier ${esc(d.class)}`:'',`Dep ${pct(d.dep_rate_annual,1)}/yr`,`Maint ${fmt(d.maint_monthly)}/mo`],
+    houses:[d.tier?`Tier ${esc(d.tier)}`:'',`App ${pct(d.app_rate_annual,1)}/yr`,`Rent ${fmt(d.rent_monthly)}/mo`,`Tax ${pct(d.prop_tax_rate_annual,2)}/yr`,`Upkeep ${fmt(d.upkeep_monthly)}/mo`],
+    biz:[d.industry?esc(d.industry):'',`Employees ${d.employees}`,`Payroll ${fmt((d.salary_per_employee_annual||0)/52)}/wk`,`Revenue ${fmt(d.weekly_revenue)}/wk`,`Margin ${pct(d.gross_margin,0)}`],
+    charity:[d.focus?`Focus ${esc(d.focus)}`:'',d.region?esc(d.region):'',`Monthly Spend ${fmt(d.monthly_drain)}`,`Reputation +${Number(d.reputation||0).toLocaleString()}`],
+    items:[d.strategy?esc(d.strategy):'',`Rate ${pct(d.rate_annual,1)}/yr`,`Upkeep ${fmt(d.upkeep_monthly)}/mo`,d.volatility_monthly?`Vol ${pct(d.volatility_monthly,0)}/mo`:'' ]
   }[cat].filter(Boolean).join(' • ');
-  return `<div class="storecard"><div class="flex" style="justify-content:space-between;align-items:flex-start"><div><div style="font-weight:800">${d.name}</div><div class="mini">${d.desc||''}</div><div class="mini" style="margin-top:6px;color:#b7c6e6">${lines}</div></div><div style="text-align:right"><div style="font-weight:800">${fmt(d.price)}</div><button class="primary" onclick="buy('${cat}','${encodeURIComponent(d.name)}')">Buy</button></div></div></div>`;
+  return `<div class="storecard"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start"><div><div style="font-weight:800">${esc(d.name)}</div><div class="mini">${esc(d.desc||'')}</div><div class="mini" style="margin-top:6px;color:#b7c6e6">${lines}</div></div><div style="text-align:right"><div style="font-weight:800">${fmt(d.price)}</div></div></div><div class="storecard-actions"><button class="secondary" onclick="viewCatalog('${cat}','${encodeURIComponent(d.name)}')">Details</button><button class="primary" onclick="buy('${cat}','${encodeURIComponent(d.name)}')">Buy</button></div></div>`;
 }
+
+function buildCatalogMeta(cat, d){
+  switch(cat){
+    case 'cars':
+      return [
+        ['Segment', d.class || 'Exclusive'],
+        ['Purchase', fmt(d.price)],
+        ['Depreciation', `${pct(d.dep_rate_annual,1)} per year`],
+        ['Maintenance', `${fmt(d.maint_monthly)}/month`]
+      ];
+    case 'houses':
+      return [
+        ['Tier', d.tier ? `Tier ${d.tier}` : 'Curated estate'],
+        ['Purchase', fmt(d.price)],
+        ['Appreciation', `${pct(d.app_rate_annual,2)} per year`],
+        ['Rent Potential', `${fmt(d.rent_monthly)}/month`],
+        ['Property Tax', `${pct(d.prop_tax_rate_annual,2)} per year`],
+        ['Upkeep', `${fmt(d.upkeep_monthly)}/month`]
+      ];
+    case 'biz':
+      return [
+        ['Industry', d.industry || 'Private venture'],
+        ['Buy-in', fmt(d.price)],
+        ['Employees', Number(d.employees||0).toLocaleString()],
+        ['Payroll', `${fmt((d.salary_per_employee_annual||0)/52)}/week each`],
+        ['Weekly Revenue', `${fmt(d.weekly_revenue)}`],
+        ['Gross Margin', pct(d.gross_margin,0)]
+      ];
+    case 'charity':
+      return [
+        ['Mission Focus', d.focus || 'Philanthropy'],
+        ['Region', d.region || 'Global'],
+        ['Monthly Spend', fmt(d.monthly_drain)],
+        ['Reputation Gain', `+${Number(d.reputation||0).toLocaleString()}`]
+      ];
+    case 'items':
+      return [
+        ['Strategy', d.strategy || 'Alternative play'],
+        ['Entry Cost', fmt(d.price)],
+        ['Yield', `${pct(d.rate_annual,1)} per year`],
+        ['Upkeep', `${fmt(d.upkeep_monthly)}/month`],
+        ['Volatility', d.volatility_monthly ? `${pct(d.volatility_monthly,0)} per month` : 'Managed risk']
+      ];
+  }
+  return [];
+}
+
+function formatCatalogMeta(cat, d){
+  return buildCatalogMeta(cat, d).map(([label, value])=>{
+    return `<div><span>${esc(String(label || ''))}</span><strong>${esc(String(value ?? ''))}</strong></div>`;
+  }).join('');
+}
+
+window.viewCatalog = function(cat, safeName){
+  const name = decodeURIComponent(safeName);
+  const entry = (S.catalogs[cat]||[]).find(x=>x.name===name);
+  if (!entry){ toast('Could not load details.'); return; }
+  const modal = $('#catalogModal');
+  if (!modal) return;
+  $('#catalogModalTitle').textContent = entry.name;
+  $('#catalogModalDesc').textContent = entry.desc || '';
+  $('#catalogModalMeta').innerHTML = formatCatalogMeta(cat, entry) || '<div><span>Price</span><strong>'+fmt(entry.price)+'</strong></div>';
+  $('#catalogModalTag').textContent = ({
+    cars:'Showroom Exotic',
+    houses:'Real Estate',
+    biz:'Private Venture',
+    charity:'Philanthropy',
+    items:'Alternative Asset'
+  }[cat] || 'Asset Detail');
+  const buyBtn = $('#catalogModalBuy');
+  buyBtn.dataset.cat = cat;
+  buyBtn.dataset.name = name;
+  modal.classList.add('show');
+};
+
+window.closeCatalogModal = function(){
+  const modal = $('#catalogModal');
+  if (modal) modal.classList.remove('show');
+};
+
+const modalBuy = document.getElementById('catalogModalBuy');
+if (modalBuy){
+  modalBuy.addEventListener('click', ()=>{
+    const cat = modalBuy.dataset.cat;
+    const name = modalBuy.dataset.name;
+    if (!cat || !name){ closeCatalogModal(); return; }
+    closeCatalogModal();
+    buy(cat, encodeURIComponent(name));
+  });
+}
+const modalShell = document.getElementById('catalogModal');
+if (modalShell){
+  modalShell.addEventListener('click', evt=>{
+    if (evt.target === modalShell) closeCatalogModal();
+  });
+}
+document.addEventListener('keydown', evt=>{
+  if (evt.key === 'Escape') closeCatalogModal();
+});
 
 function purchaseOK(price){
   if (S.wallet < price){ toast('Not enough wallet funds.'); return false; }
@@ -1536,7 +1651,7 @@ function paintEverything(){
 
 restoreLocal();
 updateEmailUI();
-Promise.all([
+Promise.allSettled([
   loadCatalog('cars'),
   loadCatalog('houses'),
   loadCatalog('biz'),
