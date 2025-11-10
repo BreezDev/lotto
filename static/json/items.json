@@ -1,170 +1,290 @@
 [
   {
-    "name": "Designer Watch",
-    "price": 15000,
-    "rate_annual": -0.02,
-    "upkeep_monthly": 0,
-    "volatility_monthly": 0,
-    "desc": "Luxury accessory; slight depreciation."
+    "name": "Art Basel Masterpiece Fund",
+    "price": 850000,
+    "rate_annual": 0.07,
+    "upkeep_monthly": 2200,
+    "volatility_monthly": 0.10,
+    "strategy": "Blue-chip art flips",
+    "desc": "Acquire and rotate museum-grade art secured in climate vaults." 
   },
   {
-    "name": "Diamond Necklace",
-    "price": 45000,
-    "rate_annual": 0.01,
-    "upkeep_monthly": 0,
-    "volatility_monthly": 0.02,
-    "desc": "Jewelry; small appreciation."
-  },
-  {
-    "name": "Yacht",
-    "price": 2000000,
-    "rate_annual": -0.12,
-    "upkeep_monthly": 20000,
-    "volatility_monthly": 0.03,
-    "desc": "Luxury yacht; heavy upkeep."
-  },
-  {
-    "name": "Private Jet",
-    "price": 6500000,
-    "rate_annual": -0.10,
-    "upkeep_monthly": 50000,
-    "volatility_monthly": 0.03,
-    "desc": "Personal jet; expensive to own."
-  },
-  {
-    "name": "Luxury Furniture Set",
-    "price": 80000,
-    "rate_annual": -0.05,
-    "upkeep_monthly": 100,
-    "volatility_monthly": 0,
-    "desc": "Furnish your mansion."
-  },
-  {
-    "name": "Art Collection",
+    "name": "Vintage Supercar Syndicate",
     "price": 1200000,
-    "rate_annual": 0.04,
-    "upkeep_monthly": 0,
-    "volatility_monthly": 0.08,
-    "desc": "Fine art; volatile valuations."
-  },
-  {
-    "name": "Crypto Portfolio",
-    "price": 250000,
-    "rate_annual": 0,
-    "upkeep_monthly": 0,
-    "volatility_monthly": 0.25,
-    "desc": "Highly volatile digital assets."
-  },
-  {
-    "name": "World Tour Vacation",
-    "price": 120000,
-    "rate_annual": -1.0,
-    "upkeep_monthly": 0,
-    "volatility_monthly": 0,
-    "desc": "Pure expense; priceless fun."
-  },
-  {
-    "name": "Home Theater System",
-    "price": 25000,
-    "rate_annual": -0.08,
-    "upkeep_monthly": 0,
-    "volatility_monthly": 0,
-    "desc": "Cinematic living room."
-  },
-  {
-    "name": "Classic Car Collection",
-    "price": 950000,
-    "rate_annual": 0.03,
-    "upkeep_monthly": 1500,
-    "volatility_monthly": 0.05,
-    "desc": "Garage of collectibles that may spike in value."
-  },
-  {
-    "name": "Vineyard Investment",
-    "price": 550000,
-    "rate_annual": 0.025,
-    "upkeep_monthly": 4500,
-    "volatility_monthly": 0.04,
-    "desc": "Bottles your own label; seasonal swings."
-  },
-  {
-    "name": "Metaverse Studio",
-    "price": 350000,
     "rate_annual": 0.05,
+    "upkeep_monthly": 3600,
+    "volatility_monthly": 0.08,
+    "strategy": "Collector car share",
+    "desc": "Co-own rare Ferraris stored in humidity-controlled garages." 
+  },
+  {
+    "name": "Carbon Credit Futures",
+    "price": 420000,
+    "rate_annual": 0.11,
+    "upkeep_monthly": 600,
+    "volatility_monthly": 0.18,
+    "strategy": "Climate arbitrage",
+    "desc": "Speculate on verified carbon credits from global rewilding." 
+  },
+  {
+    "name": "Superyacht Fractional Share",
+    "price": 2500000,
+    "rate_annual": -0.08,
+    "upkeep_monthly": 28000,
+    "volatility_monthly": 0.03,
+    "strategy": "Luxury lifestyle",
+    "desc": "Own charter weeks on a 65m yacht with full crew and marina dues." 
+  },
+  {
+    "name": "Private Aviation Block Hours",
+    "price": 1800000,
+    "rate_annual": -0.06,
+    "upkeep_monthly": 22000,
+    "volatility_monthly": 0.02,
+    "strategy": "Jet retainer",
+    "desc": "Prepay Gulfstream hours with concierge services and hangar fees." 
+  },
+  {
+    "name": "Luxury Hotel Development REIT",
+    "price": 950000,
+    "rate_annual": 0.08,
     "upkeep_monthly": 1800,
+    "volatility_monthly": 0.07,
+    "strategy": "Hospitality equity",
+    "desc": "Stake in ultra-luxe resort builds across Maldives and Seychelles." 
+  },
+  {
+    "name": "Space Tourism Pre-IPO",
+    "price": 650000,
+    "rate_annual": 0.16,
+    "upkeep_monthly": 0,
+    "volatility_monthly": 0.22,
+    "strategy": "High-risk venture",
+    "desc": "Convertible notes in orbital balloon flights." 
+  },
+  {
+    "name": "Esports Franchise Equity",
+    "price": 520000,
+    "rate_annual": 0.09,
+    "upkeep_monthly": 4500,
+    "volatility_monthly": 0.17,
+    "strategy": "Media revenue share",
+    "desc": "Buy-in to streaming rights and prize pools of a global league." 
+  },
+  {
+    "name": "Global Macro Hedge Portfolio",
+    "price": 2000000,
+    "rate_annual": 0.12,
+    "upkeep_monthly": 0,
+    "volatility_monthly": 0.14,
+    "strategy": "Managed fund",
+    "desc": "Institutional hedge fund allocation chasing macro dislocations." 
+  },
+  {
+    "name": "Formula E Race Team",
+    "price": 3200000,
+    "rate_annual": 0.06,
+    "upkeep_monthly": 38000,
     "volatility_monthly": 0.12,
-    "desc": "Virtual world builds; trend-sensitive."
+    "strategy": "Motorsport operations",
+    "desc": "Equity stake funding electric race team with sponsor upside." 
   },
   {
-    "name": "Private Chef Retainer",
-    "price": 180000,
-    "rate_annual": -0.15,
-    "upkeep_monthly": 14000,
-    "volatility_monthly": 0,
-    "desc": "Culinary team on call for every party and trip."
-  },
-  {
-    "name": "Rare Whiskey Collection",
-    "price": 220000,
-    "rate_annual": 0.045,
-    "upkeep_monthly": 250,
-    "volatility_monthly": 0.06,
-    "desc": "Limited casks aging gracefully in climate control."
+    "name": "Rare Whiskey Warehouse",
+    "price": 420000,
+    "rate_annual": 0.09,
+    "upkeep_monthly": 650,
+    "volatility_monthly": 0.08,
+    "strategy": "Aged spirits hold",
+    "desc": "Collect limited barrels aging in bonded Scottish storage." 
   },
   {
     "name": "Luxury Sneaker Vault",
-    "price": 75000,
-    "rate_annual": 0.035,
-    "upkeep_monthly": 120,
-    "volatility_monthly": 0.08,
-    "desc": "Numbered drops stored for appreciation and flex."
+    "price": 150000,
+    "rate_annual": 0.06,
+    "upkeep_monthly": 200,
+    "volatility_monthly": 0.10,
+    "strategy": "Streetwear flips",
+    "desc": "Secure climate lockers for grail releases and brand drops." 
   },
   {
-    "name": "Helicopter Purchase",
-    "price": 2100000,
-    "rate_annual": -0.11,
-    "upkeep_monthly": 28000,
-    "volatility_monthly": 0.02,
-    "desc": "Twin-engine chopper plus hangar and pilot costs."
-  },
-  {
-    "name": "Angel Investment Fund",
-    "price": 1000000,
-    "rate_annual": 0.12,
-    "upkeep_monthly": 0,
-    "volatility_monthly": 0.2,
-    "desc": "Diversified stakes in 25 early-stage startups."
-  },
-  {
-    "name": "Space Exploration ETF",
+    "name": "NFT Blue-Chip Index",
     "price": 300000,
-    "rate_annual": 0.09,
+    "rate_annual": 0.08,
     "upkeep_monthly": 0,
-    "volatility_monthly": 0.16,
-    "desc": "Public fund riding rocket launches and satellite demand."
+    "volatility_monthly": 0.25,
+    "strategy": "Digital collectibles",
+    "desc": "Curated basket of top-tier NFTs with custody insurance." 
   },
   {
-    "name": "Concert Residency Sponsorship",
-    "price": 450000,
-    "rate_annual": 0.02,
-    "upkeep_monthly": 5000,
-    "volatility_monthly": 0.04,
-    "desc": "Co-produce a Vegas residency and take merch revenue."
+    "name": "Private Island Eco-Resort",
+    "price": 3800000,
+    "rate_annual": 0.05,
+    "upkeep_monthly": 42000,
+    "volatility_monthly": 0.05,
+    "strategy": "Hospitality operations",
+    "desc": "Own and operate off-grid villas with premium nightly rates." 
   },
   {
-    "name": "Esports Pro Team",
-    "price": 1250000,
+    "name": "Luxury Fashion House Seed",
+    "price": 480000,
+    "rate_annual": 0.13,
+    "upkeep_monthly": 0,
+    "volatility_monthly": 0.20,
+    "strategy": "Venture capital",
+    "desc": "Back avant-garde couture label launching metaverse collabs." 
+  },
+  {
+    "name": "Private Credit Fund",
+    "price": 1100000,
+    "rate_annual": 0.10,
+    "upkeep_monthly": 0,
+    "volatility_monthly": 0.06,
+    "strategy": "Direct lending",
+    "desc": "Senior secured loans to mid-market companies." 
+  },
+  {
+    "name": "Marina Berth Network",
+    "price": 720000,
     "rate_annual": 0.07,
-    "upkeep_monthly": 18000,
-    "volatility_monthly": 0.15,
-    "desc": "Roster salaries, bootcamp house, and sponsorship upside."
+    "upkeep_monthly": 5400,
+    "volatility_monthly": 0.05,
+    "strategy": "Infrastructure lease",
+    "desc": "Own yacht slips in Mediterranean hotspots with rental income." 
   },
   {
-    "name": "Global Art Fair Tour",
-    "price": 280000,
-    "rate_annual": -0.4,
+    "name": "Helicopter Charter Fleet",
+    "price": 2100000,
+    "rate_annual": -0.05,
+    "upkeep_monthly": 29000,
+    "volatility_monthly": 0.03,
+    "strategy": "Aviation operations",
+    "desc": "Fleet of twin-engine helicopters servicing luxury resorts." 
+  },
+  {
+    "name": "Fine Wine Library",
+    "price": 260000,
+    "rate_annual": 0.065,
+    "upkeep_monthly": 400,
+    "volatility_monthly": 0.07,
+    "strategy": "Wine appreciation",
+    "desc": "Acquire grand cru vintages stored in bonded cellars." 
+  },
+  {
+    "name": "Space Mining Warrants",
+    "price": 600000,
+    "rate_annual": 0.18,
     "upkeep_monthly": 0,
-    "volatility_monthly": 0,
-    "desc": "A whirlwind of VIP passes, shipping, and private previews."
+    "volatility_monthly": 0.28,
+    "strategy": "Speculative warrants",
+    "desc": "Options on asteroid mining ventures." 
+  },
+  {
+    "name": "High Jewelry Capsule",
+    "price": 380000,
+    "rate_annual": 0.04,
+    "upkeep_monthly": 150,
+    "volatility_monthly": 0.06,
+    "strategy": "Luxury goods",
+    "desc": "Commission iconic jewelry stored for appreciation." 
+  },
+  {
+    "name": "Private Equity Secondary",
+    "price": 1500000,
+    "rate_annual": 0.11,
+    "upkeep_monthly": 0,
+    "volatility_monthly": 0.09,
+    "strategy": "Buyout fund tranche",
+    "desc": "Acquire seasoned stakes in late-stage PE funds." 
+  },
+  {
+    "name": "Urban Data Center Stack",
+    "price": 1750000,
+    "rate_annual": 0.09,
+    "upkeep_monthly": 9500,
+    "volatility_monthly": 0.05,
+    "strategy": "Digital infrastructure",
+    "desc": "Own racks and fiber loops leased to hyperscalers." 
+  },
+  {
+    "name": "Luxury Safari Lodge Equity",
+    "price": 900000,
+    "rate_annual": 0.08,
+    "upkeep_monthly": 12500,
+    "volatility_monthly": 0.06,
+    "strategy": "Eco-tourism",
+    "desc": "Stake in Big Five safari lodges with conservation fees." 
+  },
+  {
+    "name": "Cryptocurrency Yield Vault",
+    "price": 500000,
+    "rate_annual": 0.14,
+    "upkeep_monthly": 0,
+    "volatility_monthly": 0.24,
+    "strategy": "DeFi staking",
+    "desc": "Diversified staking across blue-chip DeFi protocols." 
+  },
+  {
+    "name": "Music Catalog Royalty",
+    "price": 650000,
+    "rate_annual": 0.08,
+    "upkeep_monthly": 0,
+    "volatility_monthly": 0.04,
+    "strategy": "Streaming royalties",
+    "desc": "Acquire evergreen publishing rights with quarterly payouts." 
+  },
+  {
+    "name": "Luxury Wellness Franchise",
+    "price": 780000,
+    "rate_annual": 0.07,
+    "upkeep_monthly": 9800,
+    "volatility_monthly": 0.06,
+    "strategy": "Premium fitness",
+    "desc": "Invest in recovery lounges and infrared saunas expanding globally." 
+  },
+  {
+    "name": "Super Bowl Suite Lease",
+    "price": 420000,
+    "rate_annual": 0.02,
+    "upkeep_monthly": 1400,
+    "volatility_monthly": 0.02,
+    "strategy": "Hospitality access",
+    "desc": "Secure annual VIP suite rights with corporate resale potential." 
+  },
+  {
+    "name": "Smart City Infrastructure Bond",
+    "price": 900000,
+    "rate_annual": 0.045,
+    "upkeep_monthly": 0,
+    "volatility_monthly": 0.03,
+    "strategy": "Municipal debt",
+    "desc": "Fund IoT transit upgrades with stable coupon payments." 
+  },
+  {
+    "name": "BioTech Incubator Pool",
+    "price": 1300000,
+    "rate_annual": 0.15,
+    "upkeep_monthly": 0,
+    "volatility_monthly": 0.20,
+    "strategy": "Seed portfolio",
+    "desc": "Convertible notes across ten early-stage biotech labs." 
+  },
+  {
+    "name": "Luxury Timepiece Portfolio",
+    "price": 280000,
+    "rate_annual": 0.05,
+    "upkeep_monthly": 180,
+    "volatility_monthly": 0.06,
+    "strategy": "Watch appreciation",
+    "desc": "Acquire Patek, AP, and Rolex rarities kept in bank vaults." 
+  },
+  {
+    "name": "Premier Soccer Academy",
+    "price": 820000,
+    "rate_annual": 0.07,
+    "upkeep_monthly": 11200,
+    "volatility_monthly": 0.05,
+    "strategy": "Youth development",
+    "desc": "Fund European academy pipeline with future transfer fees." 
   }
 ]
