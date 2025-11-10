@@ -119,5 +119,93 @@
     "fixed_weekly_costs": 28000,
     "growth_level": 2,
     "desc": "Hosts tournaments and brand activations worldwide."
+  },
+  {
+    "name": "Luxury Wellness Spa Group",
+    "price": 2800000,
+    "employees": 35,
+    "salary_per_employee_annual": 68000,
+    "weekly_revenue": 105000,
+    "gross_margin": 0.5,
+    "fixed_weekly_costs": 38000,
+    "growth_level": 2,
+    "desc": "High-end spa retreats with memberships and product lines."
+  },
+  {
+    "name": "AI Robotics Lab",
+    "price": 14000000,
+    "employees": 60,
+    "salary_per_employee_annual": 165000,
+    "weekly_revenue": 520000,
+    "gross_margin": 0.46,
+    "fixed_weekly_costs": 210000,
+    "growth_level": 4,
+    "desc": "Build automation bots for warehouses and hospitals."
+  },
+  {
+    "name": "Premier Sports Franchise Stake",
+    "price": 22000000,
+    "employees": 150,
+    "salary_per_employee_annual": 90000,
+    "weekly_revenue": 980000,
+    "gross_margin": 0.38,
+    "fixed_weekly_costs": 460000,
+    "growth_level": 4,
+    "desc": "Minority ownership in a pro sports team with media upside."
+  },
+  {
+    "name": "Global Logistics Drone Fleet",
+    "price": 6500000,
+    "employees": 48,
+    "salary_per_employee_annual": 95000,
+    "weekly_revenue": 260000,
+    "gross_margin": 0.42,
+    "fixed_weekly_costs": 110000,
+    "growth_level": 3,
+    "desc": "Autonomous deliveries for pharma and luxury goods."
+  },
+  {
+    "name": "Sustainable Energy Farms",
+    "price": 7200000,
+    "employees": 40,
+    "salary_per_employee_annual": 85000,
+    "weekly_revenue": 300000,
+    "gross_margin": 0.37,
+    "fixed_weekly_costs": 125000,
+    "growth_level": 3,
+    "desc": "Hybrid solar and wind farms with long-term utility contracts."
+  },
+  {
+    "name": "Immersive VR Theme Park",
+    "price": 9500000,
+    "employees": 120,
+    "salary_per_employee_annual": 78000,
+    "weekly_revenue": 410000,
+    "gross_margin": 0.43,
+    "fixed_weekly_costs": 190000,
+    "growth_level": 3,
+    "desc": "Cutting-edge VR experiences plus esports training academy."
+  },
+  {
+    "name": "Streaming Content Studio",
+    "price": 5400000,
+    "employees": 55,
+    "salary_per_employee_annual": 95000,
+    "weekly_revenue": 240000,
+    "gross_margin": 0.48,
+    "fixed_weekly_costs": 90000,
+    "growth_level": 3,
+    "desc": "Produces originals for major platforms with lucrative deals."
+  },
+  {
+    "name": "Premium Podcast Network",
+    "price": 1800000,
+    "employees": 22,
+    "salary_per_employee_annual": 65000,
+    "weekly_revenue": 68000,
+    "gross_margin": 0.55,
+    "fixed_weekly_costs": 18000,
+    "growth_level": 2,
+    "desc": "Ad-supported pods plus subscription community extras."
   }
 ]

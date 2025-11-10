@@ -79,5 +79,77 @@
     "prop_tax_rate_annual": 0.009,
     "upkeep_monthly": 1400,
     "desc": "Net-zero property with solar roof and battery backup."
+  },
+  {
+    "name": "Urban Creative Loft",
+    "price": 850000,
+    "app_rate_annual": 0.032,
+    "rent_monthly": 7200,
+    "prop_tax_rate_annual": 0.010,
+    "upkeep_monthly": 1200,
+    "desc": "Downtown live/work loft with rooftop deck and studio space."
+  },
+  {
+    "name": "Beachfront Compound",
+    "price": 5200000,
+    "app_rate_annual": 0.044,
+    "rent_monthly": 42000,
+    "prop_tax_rate_annual": 0.013,
+    "upkeep_monthly": 9800,
+    "desc": "Three-villa complex with private beach club."
+  },
+  {
+    "name": "Dubai Sky Penthouse",
+    "price": 8600000,
+    "app_rate_annual": 0.05,
+    "rent_monthly": 55000,
+    "prop_tax_rate_annual": 0.012,
+    "upkeep_monthly": 15000,
+    "desc": "Triple-level penthouse with infinity pool overlooking the Palm."
+  },
+  {
+    "name": "Tokyo Micro Tower",
+    "price": 2100000,
+    "app_rate_annual": 0.04,
+    "rent_monthly": 16000,
+    "prop_tax_rate_annual": 0.009,
+    "upkeep_monthly": 4200,
+    "desc": "Smart tower of micro apartments—perfect rental yield play."
+  },
+  {
+    "name": "Private Island Retreat",
+    "price": 12500000,
+    "app_rate_annual": 0.052,
+    "rent_monthly": 95000,
+    "prop_tax_rate_annual": 0.014,
+    "upkeep_monthly": 22000,
+    "desc": "Own the whole island with dock, villas, and staff quarters."
+  },
+  {
+    "name": "Safari Lodge Portfolio",
+    "price": 4800000,
+    "app_rate_annual": 0.042,
+    "rent_monthly": 36000,
+    "prop_tax_rate_annual": 0.011,
+    "upkeep_monthly": 8700,
+    "desc": "Eco-lodges on a private reserve—high-end adventure rentals."
+  },
+  {
+    "name": "Mountain Ranch Retreat",
+    "price": 2750000,
+    "app_rate_annual": 0.036,
+    "rent_monthly": 18500,
+    "prop_tax_rate_annual": 0.010,
+    "upkeep_monthly": 5200,
+    "desc": "Horse stables, guest cabins, and helipad in the Rockies."
+  },
+  {
+    "name": "Tiny Home Village",
+    "price": 1650000,
+    "app_rate_annual": 0.034,
+    "rent_monthly": 12800,
+    "prop_tax_rate_annual": 0.009,
+    "upkeep_monthly": 3100,
+    "desc": "Cluster of designer tiny homes perfect for short-term rentals."
   }
 ]

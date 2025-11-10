@@ -16,6 +16,7 @@ const S = {
   goal: start.goal || '',
   playerName: start.playerName || 'Player',
   playerId: start.playerId || null,
+  playerEmail: start.playerEmail || '',
   profile: start.profile || 'balanced',
   payout: start.payout || 'lump',
   lifestylePref: start.lifestylePref || 'smart',
@@ -49,6 +50,7 @@ const S = {
   goalValue: null,
   hadDebt: false,
   gameOverShown: false,
+  flags: {imported:false, emailed:false},
 };
 
 /* ================== Helpers ================== */
@@ -107,36 +109,50 @@ function moodLabel(){
 }
 
 /* ================== Persistence ================== */
+function buildSavePayload(){
+  return {
+    playerId: S.playerId,
+    playerName: S.playerName,
+    playerEmail: S.playerEmail,
+    state: S.state,
+    goal: S.goal,
+    startingAmount: S.startingAmount,
+    taxPaid: S.taxPaid,
+    profile: S.profile,
+    payout: S.payout,
+    lifestylePref: S.lifestylePref,
+    wallet: S.wallet,
+    savings: S.savings,
+    debt: S.debt,
+    net: S.net,
+    happiness: S.happiness,
+    reputation: S.reputation,
+    highNet: S.highNet,
+    day: S.day,
+    stats: S.stats,
+    lifestyle: S.lifestyle,
+    loans: S.loans,
+    cars: S.cars,
+    houses: S.houses,
+    businesses: S.businesses,
+    charities: S.charities,
+    items: S.items,
+    ledger: S.ledger.slice(0,120),
+    timeline: S.timeline.slice(0,120),
+    showEvents: S.showEvents,
+    apy: S.apy,
+    infl: S.infl,
+    goalValue: S.goalValue,
+    hadDebt: S.hadDebt,
+    milestoneLog: S.milestoneLog,
+    milestones: S.milestones,
+    achievements: S.achievements,
+    flags: S.flags,
+  };
+}
 function persistLocal(){
   try {
-    const payload = {
-      playerId: S.playerId,
-      wallet: S.wallet,
-      savings: S.savings,
-      debt: S.debt,
-      net: S.net,
-      happiness: S.happiness,
-      reputation: S.reputation,
-      highNet: S.highNet,
-      day: S.day,
-      stats: S.stats,
-      lifestyle: S.lifestyle,
-      loans: S.loans,
-      cars: S.cars,
-      houses: S.houses,
-      businesses: S.businesses,
-      charities: S.charities,
-      items: S.items,
-      ledger: S.ledger.slice(0,60),
-      timeline: S.timeline.slice(0,60),
-      showEvents: S.showEvents,
-      apy: S.apy,
-      infl: S.infl,
-      goalValue: S.goalValue,
-      hadDebt: S.hadDebt,
-      milestoneLog: S.milestoneLog,
-      achievements: S.achievements,
-    };
+    const payload = buildSavePayload();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   } catch(err){ console.warn('Persist error', err); }
 }
@@ -163,15 +179,18 @@ function restoreLocal(){
       businesses: data.businesses ?? [],
       charities: data.charities ?? [],
       items: data.items ?? [],
-      ledger: data.ledger ?? [],
-      timeline: data.timeline ?? [],
+      ledger: Array.isArray(data.ledger) ? data.ledger : [],
+      timeline: Array.isArray(data.timeline) ? data.timeline : [],
       showEvents: data.showEvents ?? false,
       apy: data.apy ?? S.apy,
       infl: data.infl ?? S.infl,
       goalValue: data.goalValue ?? null,
       hadDebt: data.hadDebt ?? false,
-      milestoneLog: data.milestoneLog ?? [],
+      milestoneLog: Array.isArray(data.milestoneLog) ? data.milestoneLog : S.milestoneLog,
       achievements: data.achievements ?? {},
+      milestones: {...S.milestones, ...(data.milestones||{})},
+      playerEmail: data.playerEmail ?? S.playerEmail,
+      flags: {...S.flags, ...(data.flags||{})},
     });
     $('#evt').checked = S.showEvents;
   } catch(err){ console.warn('Restore error', err); }
@@ -195,6 +214,22 @@ function toast(msg){
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(()=> t.classList.remove('show'), 2200);
+}
+
+function updateEmailUI(){
+  const input = $('#emailInput');
+  if (input && document.activeElement !== input){
+    input.value = S.playerEmail || '';
+  }
+  const status = $('#emailStatus');
+  if (status && S.playerEmail && /Resend API/.test(status.textContent)){
+    status.textContent = `Using ${S.playerEmail} for backups.`;
+  }
+}
+
+function setHelperText(id, text){
+  const el = $(id);
+  if (el){ el.textContent = text; }
 }
 
 function drawSpark(id, arr){
@@ -239,18 +274,180 @@ $('#staffLevel').addEventListener('change', e=>{ S.lifestyle.staff = Number(e.ta
 $('#lifePresetModest').addEventListener('click', ()=>{ S.lifestyle = {burn:40000,security:0,travel:6000,staff:8000}; updateLifestyleUI(); toast('Lifestyle set to modest.'); });
 $('#lifePresetBalanced').addEventListener('click', ()=>{ S.lifestyle = {burn:90000,security:15000,travel:25000,staff:30000}; updateLifestyleUI(); toast('Lifestyle set to balanced.'); });
 $('#lifePresetExtravagant').addEventListener('click', ()=>{ S.lifestyle = {burn:220000,security:50000,travel:90000,staff:120000}; updateLifestyleUI(); toast('Lifestyle set to extravagant!'); });
-$('#clearLocal').addEventListener('click', ()=>{ localStorage.removeItem(STORAGE_KEY); toast('Local save cleared.'); });
-$('#exportState').addEventListener('click', ()=>{
-  const blob = new Blob([JSON.stringify(snapshotForServer(), null, 2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `lotto-life-${S.playerName.replace(/\s+/g,'_')||'player'}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+$('#clearLocal').addEventListener('click', ()=>{
+  localStorage.removeItem(STORAGE_KEY);
+  toast('Local save cleared.');
+  setHelperText('importStatus', 'Local autosave cleared. Export files remain safe.');
 });
+function applySnapshot(data, label='Imported save applied.'){
+  if (!data) return;
+  try {
+    S.wallet = Number(data.wallet ?? S.wallet);
+    S.savings = Number(data.savings ?? S.savings);
+    S.debt = Number(data.debt ?? S.debt);
+    S.net = Number(data.net ?? S.net);
+    S.happiness = Number(data.happiness ?? S.happiness);
+    S.reputation = Number(data.reputation ?? S.reputation);
+    S.highNet = Number(data.highNet ?? S.highNet);
+    S.day = Number(data.day ?? S.day);
+    S.stats = {...S.stats, ...(data.stats||{})};
+    S.lifestyle = {...S.lifestyle, ...(data.lifestyle||{})};
+    S.loans = data.loans ?? [];
+    S.cars = data.cars ?? [];
+    S.houses = data.houses ?? [];
+    S.businesses = data.businesses ?? [];
+    S.charities = data.charities ?? [];
+    S.items = data.items ?? [];
+    S.ledger = Array.isArray(data.ledger) ? data.ledger.slice(0,120) : S.ledger;
+    S.timeline = Array.isArray(data.timeline) ? data.timeline.slice(0,120) : S.timeline;
+    S.showEvents = data.showEvents ?? S.showEvents;
+    S.apy = data.apy ?? S.apy;
+    S.infl = data.infl ?? S.infl;
+    S.goalValue = data.goalValue ?? S.goalValue;
+    S.hadDebt = data.hadDebt ?? S.hadDebt;
+    S.milestones = {...S.milestones, ...(data.milestones||{})};
+    S.milestoneLog = Array.isArray(data.milestoneLog) ? data.milestoneLog.slice() : S.milestoneLog;
+    S.achievements = {...S.achievements, ...(data.achievements||{})};
+    S.flags = {...S.flags, ...(data.flags||{}), imported:true};
+    S.playerId = data.playerId || S.playerId;
+    S.playerName = data.playerName || S.playerName;
+    S.playerEmail = data.playerEmail || S.playerEmail;
+    S.state = data.state || S.state;
+    S.goal = data.goal ?? S.goal;
+    S.startingAmount = Number(data.startingAmount ?? S.startingAmount);
+    S.taxPaid = Number(data.taxPaid ?? S.taxPaid);
+    S.profile = data.profile || S.profile;
+    S.payout = data.payout || S.payout;
+    S.lifestylePref = data.lifestylePref || S.lifestylePref;
+    paintEverything();
+    persistLocal();
+    toast('Save imported!');
+    setHelperText('importStatus', label);
+    updateAchievements();
+  } catch(err){
+    console.error(err);
+    toast('Import failed');
+    setHelperText('importStatus', 'Import failed. Use an export from LottoLife.');
+  }
+}
+
+function exportSave(){
+  try {
+    const payload = buildSavePayload();
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const safeName = (S.playerName || 'player').replace(/\s+/g,'_');
+    a.download = `lotto-life-${safeName}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setHelperText('importStatus', 'Backup downloaded. Keep it safe!');
+  } catch(err){
+    console.error(err);
+    toast('Export failed');
+  }
+}
+['#exportState','#exportFromCard'].forEach(sel=>{
+  const btn = $(sel);
+  if (btn) btn.addEventListener('click', exportSave);
+});
+['#importBtn','#importFromCard'].forEach(sel=>{
+  const btn = $(sel);
+  if (btn) btn.addEventListener('click', ()=>{
+    const input = $('#importFile');
+    if (input){ input.click(); }
+  });
+});
+const importInput = $('#importFile');
+if (importInput){
+  importInput.addEventListener('change', evt=>{
+    const file = evt.target.files && evt.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e=>{
+      try {
+        const data = JSON.parse(e.target.result);
+        applySnapshot(data, `Imported ${file.name}`);
+      } catch(err){
+        console.error(err);
+        toast('Import failed');
+        setHelperText('importStatus', 'Import failed. Use an export from LottoLife.');
+      }
+    };
+    reader.readAsText(file);
+    importInput.value = '';
+  });
+}
+const emailInput = $('#emailInput');
+if (emailInput){
+  emailInput.addEventListener('input', ()=>{ S.playerEmail = emailInput.value.trim(); });
+}
+const saveEmailBtn = $('#saveEmail');
+if (saveEmailBtn){
+  saveEmailBtn.addEventListener('click', ()=>{
+    const value = (emailInput ? emailInput.value : S.playerEmail || '').trim();
+    S.playerEmail = value;
+    updateEmailUI();
+    persistLocal();
+    if (value){
+      toast('Email saved!');
+      setHelperText('emailStatus', `Using ${value} for backups.`);
+    } else {
+      toast('Email cleared.');
+      setHelperText('emailStatus', 'Email cleared. Enter one to receive snapshots.');
+    }
+  });
+}
+const sendEmailBtn = $('#sendEmailBtn');
+if (sendEmailBtn){
+  sendEmailBtn.addEventListener('click', async ()=>{
+    const value = (emailInput ? emailInput.value : S.playerEmail || '').trim() || S.playerEmail;
+    if (!value){
+      toast('Enter an email first.');
+      setHelperText('emailStatus', 'Add an email above to send snapshots.');
+      return;
+    }
+    S.playerEmail = value;
+    updateEmailUI();
+    setHelperText('emailStatus', 'Sending snapshot via Resend...');
+    try {
+      const body = {
+        email: value,
+        player: {
+          Name: S.playerName,
+          State: S.state,
+          'Net Worth': fmt(S.net),
+          Day: S.day,
+          Reputation: Math.round(S.reputation)
+        },
+        stats: buildSavePayload()
+      };
+      const res = await fetch('/api/email', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (data.ok){
+        toast('Email sent!');
+        S.flags.emailed = true;
+        setHelperText('emailStatus', `Snapshot sent to ${value}.`);
+        persistLocal();
+        updateAchievements();
+      } else {
+        toast('Email failed');
+        setHelperText('emailStatus', 'Email failed. Check your Resend API key.');
+      }
+    } catch(err){
+      console.error(err);
+      toast('Email failed');
+      setHelperText('emailStatus', 'Email failed. Check your Resend API key.');
+    }
+  });
+}
 $('#triggerEvent').addEventListener('click', ()=>{
   fireRandomEvent(true);
 });
@@ -317,6 +514,7 @@ function paintTop(){
   checkMilestones();
   paintMilestones();
   updateLifestyleUI();
+  updateEmailUI();
   persistLocal();
   checkGameOver();
 }
@@ -413,12 +611,16 @@ function recordMilestone(key, message){
 function checkMilestones(){
   if (S.net >= 10_000_000) recordMilestone('net10', '🎯 Net worth passed $10M!');
   if (S.highNet >= 50_000_000) recordMilestone('net50', '🥂 High-water mark above $50M.');
+  if (S.highNet >= 100_000_000) recordMilestone('net100', '🏦 Entered the $100M club.');
+  if (S.highNet >= 500_000_000) recordMilestone('net500', '🛡️ Half-billion fortress secured.');
   if (S.stats.charity >= 2_000_000) recordMilestone('charity2m', '❤️ Donated more than $2M to charity.');
   if (S.businesses.some(b=>b.ipo)) recordMilestone('ipo', '📈 Took a business public.');
   if (S.day >= 365) recordMilestone('year', '📆 Survived a full simulated year.');
   if (S.day >= 1000) recordMilestone('millennium', '🏅 Survived 1,000 days of high-roller life.');
   if (S.debt <= 0 && S.hadDebt) recordMilestone('debtZero', '💸 Debt completely paid off.');
   if ((S.lifestyle.burn + S.lifestyle.travel + S.lifestyle.staff) > 300000) recordMilestone('baller', '💃 Spending more than $300k per month on lifestyle.');
+  if (S.charities.length >= 3) recordMilestone('charityFleet', '🤝 Managing a portfolio of foundations.');
+  if (S.businesses.length >= 5) recordMilestone('bizEmpire', '🏭 Built a diversified business empire.');
 }
 
 function getAchievements(){
@@ -426,12 +628,21 @@ function getAchievements(){
     {id:'firstBuy', title:'First Purchase', desc:'Acquire your first asset.'},
     {id:'tenMillion', title:'Eight-Figure Club', desc:'Reach $10M net worth.'},
     {id:'fiftyMillion', title:'Fifty-Million Milestone', desc:'Hit $50M high-water mark.'},
+    {id:'hundredMillion', title:'Nine-Zero King', desc:'Reach $100M net worth.'},
+    {id:'halfBillion', title:'Half-Billion Hero', desc:'Push your high-water mark past $500M.'},
     {id:'philanthropist', title:'Philanthropy Star', desc:'Donate $1M+ to charity.'},
+    {id:'charityChampion', title:'Charity Champion', desc:'Run three charities and give $5M total.'},
     {id:'mediaDarling', title:'Media Darling', desc:'Reach 100 reputation.'},
     {id:'ipo', title:'Ring the Bell', desc:'Take a company public.'},
+    {id:'bizMogul', title:'Boardroom Legend', desc:'Own five businesses with at least one IPO.'},
     {id:'survivor', title:'1000-Day Survivor', desc:'Survive 1,000 days without going broke.'},
     {id:'debtFree', title:'Debt Crusher', desc:'Clear all debt after borrowing.'},
     {id:'wentBroke', title:'Hard Reset', desc:'Experience a game over and keep going.'},
+    {id:'garageCollector', title:'Garage Goals', desc:'Own five or more vehicles.'},
+    {id:'estateTycoon', title:'Estate Tycoon', desc:'Own five or more properties.'},
+    {id:'jetSetter', title:'Jet Setter', desc:'Maintain max travel lifestyle for 90+ days.'},
+    {id:'importHero', title:'Time Traveler', desc:'Import a previous save file.'},
+    {id:'emailPro', title:'Inbox Guardian', desc:'Email yourself a snapshot.'},
   ];
 }
 function updateAchievements(){
@@ -443,12 +654,21 @@ function updateAchievements(){
       case 'firstBuy': earned = (S.cars.length + S.houses.length + S.items.length + S.businesses.length)>0; break;
       case 'tenMillion': earned = S.net >= 10_000_000; break;
       case 'fiftyMillion': earned = S.highNet >= 50_000_000; break;
+      case 'hundredMillion': earned = S.highNet >= 100_000_000; break;
+      case 'halfBillion': earned = S.highNet >= 500_000_000; break;
       case 'philanthropist': earned = S.stats.charity >= 1_000_000; break;
+      case 'charityChampion': earned = S.charities.length >= 3 && S.stats.charity >= 5_000_000; break;
       case 'mediaDarling': earned = S.reputation >= 100; break;
       case 'ipo': earned = S.businesses.some(b=>b.ipo); break;
+      case 'bizMogul': earned = S.businesses.length >= 5 && S.businesses.some(b=>b.ipo); break;
       case 'survivor': earned = S.day >= 1000; break;
       case 'debtFree': earned = S.hadDebt && S.debt <= 0; break;
       case 'wentBroke': earned = S.gameOverShown; break;
+      case 'garageCollector': earned = S.cars.length >= 5; break;
+      case 'estateTycoon': earned = S.houses.length >= 5; break;
+      case 'jetSetter': earned = S.lifestyle.travel >= 90000 && S.day >= 90; break;
+      case 'importHero': earned = !!S.flags.imported; break;
+      case 'emailPro': earned = !!S.flags.emailed; break;
     }
     if (earned){
       S.achievements[a.id] = true;
@@ -544,24 +764,33 @@ window.buy = function(cat, safeName){
   if (!d) return;
   if (!purchaseOK(d.price)) return;
   S.wallet -= d.price;
+  let options = {tag:'lifestyle'};
+  if (cat==='cars'){
+    options.happinessDelta = 3;
+    options.repDelta = 1;
+  }
   if (cat==='cars'){
     S.cars.push({id:newId(),name:d.name,value:d.price,dep_rate_annual:d.dep_rate_annual,maint_monthly:d.maint_monthly});
     paintGarage();
   } else if (cat==='houses'){
     S.houses.push({id:newId(),name:d.name,value:d.price,app_rate_annual:d.app_rate_annual,rent_monthly:d.rent_monthly,prop_tax_rate_annual:d.prop_tax_rate_annual,upkeep_monthly:d.upkeep_monthly,rented:false});
     paintProps();
+    options.happinessDelta = (options.happinessDelta||0) + 2;
+    options.repDelta = (options.repDelta||0) + 2;
   } else if (cat==='biz'){
     S.businesses.push({id:newId(),name:d.name,employees:d.employees,salary_per_employee_annual:d.salary_per_employee_annual,weekly_revenue:d.weekly_revenue,gross_margin:d.gross_margin,fixed_weekly_costs:d.fixed_weekly_costs,growth_level:d.growth_level||1,ipo:false,shares:0,div_yield:0.02});
     paintCompanies();
+    options.repDelta = (options.repDelta||0) + 4;
   } else if (cat==='charity'){
     S.charities.push({id:newId(),name:d.name,monthly_drain:d.monthly_drain,reputation:d.reputation});
-    S.reputation += d.reputation;
     paintCharities();
+    options = {tag:'charity', repGain:d.reputation, happinessDelta:5};
   } else if (cat==='items'){
     S.items.push({id:newId(),name:d.name,value:d.price,rate_annual:d.rate_annual,upkeep_monthly:d.upkeep_monthly,volatility_monthly:d.volatility_monthly||0});
     paintItems();
+    options.happinessDelta = (options.happinessDelta||0) + 2;
   }
-  log(`Bought ${d.name} (${cat})`, -d.price, +d.price, {tag:'lifestyle'});
+  log(`Bought ${d.name} (${cat})`, -d.price, +d.price, options);
   updateAchievements();
 };
 
@@ -725,7 +954,10 @@ function applyBizWeek(){
 function applyCharityMonth(){
   let dW = 0;
   S.charities.forEach(c=> dW -= c.monthly_drain);
-  if (dW) logEvent('Charities: monthly programs', dW, 0, {tag:'charity', repGain:Math.sign(-dW)*2});
+  if (S.charities.length === 0){
+    S.reputation = Math.max(0, S.reputation - 0.5);
+  }
+  if (dW) logEvent('Charities: monthly programs', dW, 0, {tag:'charity', repGain:Math.max(1, S.charities.length * 1.5)});
 }
 function applyLifestyle(days){
   const monthly = S.lifestyle.burn + S.lifestyle.travel + S.lifestyle.security + S.lifestyle.staff;
@@ -760,7 +992,13 @@ const EVENT_POOL = [
   () => ({title:'Market scandal 😬', dW:-12000, dA:-sumAssets().biz*0.03, tag:'events', happinessDelta:-2}),
   () => ({title:'Security scare 🚨 prevented', dW: S.lifestyle.security? -S.lifestyle.security*0.5 : -15000, dA:0, tag:'events', happinessDelta: S.lifestyle.security? +1:-3}),
   () => ({title:'TV interview 📺', dW:0, dA:0, tag:'events', repDelta:+8, happinessDelta:+2}),
-  () => ({title:'Travel upgrade ✈️', dW:-12000-S.lifestyle.travel*0.05, dA:0, tag:'lifestyle', happinessDelta:+2})
+  () => ({title:'Travel upgrade ✈️', dW:-12000-S.lifestyle.travel*0.05, dA:0, tag:'lifestyle', happinessDelta:+2}),
+  () => ({title:'Charity gala 💃', dW:-75000, dA:0, tag:'charity', repDelta:+15, happinessDelta:+3}),
+  () => ({title:'Real estate rally 🏠', dW:0, dA:sumAssets().houses*0.06, tag:'events', happinessDelta:+2}),
+  () => ({title:'Social media backlash 📱', dW:-35000, dA:0, tag:'events', repDelta:-10, happinessDelta:-4}),
+  () => ({title:'Angel investment pop 💡', dW:+45000, dA:+sumAssets().items*0.03, tag:'biz', happinessDelta:+1}),
+  () => ({title:'Luxury burnout 😵', dW:0, dA:0, tag:'lifestyle', happinessDelta:-5, repDelta:-4}),
+  () => ({title:'Global award spotlight 🏆', dW:-10000, dA:0, tag:'events', repDelta:+20, happinessDelta:+4})
 ];
 function fireRandomEvent(forced=false){
   const event = EVENT_POOL[Math.floor(Math.random()*EVENT_POOL.length)]();
@@ -956,6 +1194,7 @@ function paintEverything(){
 }
 
 restoreLocal();
+updateEmailUI();
 Promise.all([
   loadCatalog('cars'),
   loadCatalog('houses'),

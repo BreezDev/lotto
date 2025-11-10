@@ -4,14 +4,22 @@
 <meta charset="utf-8">
 <title>🎰 LottoLife — Create Your Story</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1222" />
+<link rel="manifest" href="/static/manifest.json">
+<link rel="apple-touch-icon" href="/static/icons/lotto-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#050810;--panel:#0e1526;--line:#1b233a;--ink:#f4f7ff;--muted:#94a3c4;--brand:#0d6efd;--accent:#7c5cff;--good:#22c55e;
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:'Jost',sans-serif;background:radial-gradient(1100px 750px at 65% -20%,rgba(124,92,255,.35),rgba(5,8,16,.92)),#050810;color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-  main{max-width:960px;width:100%;background:rgba(13,22,44,0.9);border:1px solid rgba(124,92,255,0.35);border-radius:26px;padding:30px 34px;box-shadow:0 40px 120px rgba(2,6,16,0.6);backdrop-filter:blur(20px)}
+  body{margin:0;font-family:'Jost',sans-serif;background:radial-gradient(1100px 750px at 65% -20%,rgba(124,92,255,.35),rgba(5,8,16,.92)),#050810;color:var(--ink);min-height:100vh;display:flex;flex-direction:column;padding:0 24px 40px}
+  header{background:#0b1222;border-bottom:2px solid rgba(124,92,255,0.35);box-shadow:0 16px 44px rgba(5,8,16,0.6);position:sticky;top:0;z-index:30}
+  nav{max-width:1100px;margin:auto;padding:14px 18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+  nav .links{display:flex;gap:10px;flex-wrap:wrap}
+  nav a{color:#fff;text-decoration:none;padding:10px 16px;border-radius:12px;border:1px solid rgba(124,92,255,0.4);background:rgba(15,24,48,0.85);font-weight:600;transition:.25s}
+  nav a:hover,nav a.active{background:linear-gradient(135deg,var(--brand),var(--accent));border-color:transparent;box-shadow:0 18px 38px rgba(13,110,253,.35)}
+  main{max-width:960px;width:100%;background:rgba(13,22,44,0.9);border:1px solid rgba(124,92,255,0.35);border-radius:26px;padding:30px 34px;box-shadow:0 40px 120px rgba(2,6,16,0.6);backdrop-filter:blur(20px);margin:40px auto 0}
   h1{margin:0;font-size:2.2rem;font-weight:800}
   p.lead{margin:8px 0 24px;color:#bfc8e6}
   form{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
@@ -27,19 +35,34 @@
   .tile strong{font-size:20px}
   .tagline{font-size:12px;color:#7ea2ff;text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px}
   .grid-col2{grid-column:span 2}
-  @media(max-width:720px){main{padding:26px}textarea{grid-column:span 1}.actions{grid-column:span 1;flex-direction:column;align-items:stretch}}
+  @media(max-width:720px){nav{flex-direction:column;align-items:flex-start}main{padding:26px;margin-top:30px}textarea{grid-column:span 1}.actions{grid-column:span 1;flex-direction:column;align-items:stretch}}
 </style>
 </head>
 <body>
+<header>
+  <nav>
+    <div class="links">
+      <a href="/start" class="active">🎰 Start</a>
+      <a href="/game">🎮 Simulator</a>
+      <a href="/leaderboard">🏆 Leaderboard</a>
+      <a href="/guide">📘 Guide</a>
+    </div>
+    <a href="/guide" style="color:#9fb4ff;text-decoration:none;font-weight:600">How it works →</a>
+  </nav>
+</header>
 <main>
   <div class="tagline">BUILD YOUR LEGEND</div>
   <h1>Design your lotto life</h1>
-  <p class="lead">Tell us who you are, where you live, and how wild you want to spend. We’ll simulate the taxes, investments, lifestyle burn, and risky bets so you can see how long your fortune lasts.</p>
+  <p class="lead">Tell us who you are, where you live, and how wild you want to spend. We’ll simulate the taxes, investments, lifestyle burn, and risky bets so you can see how long your fortune lasts. Jackpot inputs are capped at $1,000,000,000 to keep the math realistic.</p>
   <form action="/startgame" method="POST" id="startForm">
     <label>🧑 Your name
       <input type="text" name="name" placeholder="Jordan Dreamer" required>
     </label>
-    <label>💵 Jackpot size
+    <label>📧 Backup email (optional)
+      <input type="email" name="email" id="email" placeholder="you@example.com">
+      <span style="font-size:12px;color:#7fa3ff">We’ll email your starting summary via Resend if configured.</span>
+    </label>
+    <label>💵 Jackpot size <span style="font-size:12px;color:#7ea2ff">(capped at $1,000,000,000)</span>
       <input type="number" name="amount" id="amount" placeholder="10000000" required>
     </label>
     <label>📍 Home state
@@ -90,7 +113,9 @@
 <script>
 const STATE_TAX = {{ STATE_TAX|tojson }};
 const FED_TAX = {{ FEDERAL_TAX }};
+const MAX_AMOUNT = 1000000000;
 const $ = s => document.querySelector(s);
+$('#amount').setAttribute('max', MAX_AMOUNT);
 function fmt(n){return Number(n||0).toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0});}
 function estLifestyle(net, profile, lifestyle){
   const base = net * 0.012; // base monthly burn ~1.2% of net
@@ -99,7 +124,11 @@ function estLifestyle(net, profile, lifestyle){
   return Math.min(net/6, base * (multipliers[lifestyle]||1) * (profileBoost[profile]||1));
 }
 function recalc(){
-  const amt = Number($('#amount').value.replace(/,/g,''))||0;
+  let amt = Number($('#amount').value.replace(/,/g,''))||0;
+  if(amt > MAX_AMOUNT){
+    amt = MAX_AMOUNT;
+    $('#amount').value = MAX_AMOUNT;
+  }
   const state = $('#state').value;
   const profile = $('#profile').value;
   const vibe = $('#lifestyle').value;
@@ -130,9 +159,12 @@ function recalc(){
 }
 ['#amount','#state','#profile','#lifestyle','#payout'].forEach(sel=>{
   const el = document.querySelector(sel);
-  if(el){el.addEventListener('input',recalc);el.addEventListener('change',recalc);}  
+  if(el){el.addEventListener('input',recalc);el.addEventListener('change',recalc);}
 });
 recalc();
+if ('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/static/js/sw.js').catch(()=>{});
+}
 </script>
 </body>
 </html>

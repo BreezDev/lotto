@@ -4,13 +4,17 @@
 <meta charset="utf-8">
 <title>🏆 LottoLife Leaderboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1222" />
+<link rel="manifest" href="/static/manifest.json">
+<link rel="apple-touch-icon" href="/static/icons/lotto-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root{--bg:#050810;--panel:#0f1730;--line:#1b233a;--brand:#0d6efd;--muted:#98a8ce;}
   *{box-sizing:border-box}
   body{font-family:'Jost',sans-serif;background:radial-gradient(1000px 680px at 65% -10%,rgba(13,110,253,.18),rgba(5,8,16,.98)),#050810;color:#f0f4ff;margin:0;min-height:100vh}
   header{background:#0b1222;border-bottom:2px solid rgba(13,110,253,.4);box-shadow:0 10px 40px rgba(5,8,16,.6);position:sticky;top:0;z-index:20}
-  nav{max-width:1100px;margin:auto;padding:14px 18px;display:flex;gap:10px;flex-wrap:wrap}
+  nav{max-width:1100px;margin:auto;padding:14px 18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+  nav .links{display:flex;gap:10px;flex-wrap:wrap}
   nav a{color:#fff;text-decoration:none;padding:10px 18px;border-radius:12px;border:1px solid rgba(13,110,253,.3);background:rgba(15,24,48,.85);font-weight:600;transition:.25s}
   nav a:hover{background:var(--brand);border-color:transparent}
   nav a.active{background:var(--brand);border-color:transparent;box-shadow:0 14px 36px rgba(13,110,253,.4)}
@@ -26,19 +30,24 @@
   .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:rgba(13,110,253,0.18);color:#9fb7ff;font-size:12px}
   .empty{padding:26px;text-align:center;color:#9fb4e8}
   footer{text-align:center;color:#8fa3d1;margin:40px 0}
+  @media(max-width:720px){nav{flex-direction:column;align-items:flex-start}nav .links{width:100%}}
 </style>
 </head>
 <body>
 <header>
   <nav>
-    <a href="/" >🎮 Back to Game</a>
-    <a href="/leaderboard" class="active">🏆 Leaderboard</a>
-    <a href="/guide">📘 Guide</a>
+    <div class="links">
+      <a href="/game">🎮 Simulator</a>
+      <a href="/leaderboard" class="active">🏆 Leaderboard</a>
+      <a href="/guide">📘 Guide</a>
+      <a href="/start">🎰 Start</a>
+    </div>
+    <a href="/guide" style="color:#9fb4ff;text-decoration:none;font-weight:600">Tips & strategies →</a>
   </nav>
 </header>
 <main>
   <h1>🏆 LottoLife Hall of Fame</h1>
-  <p class="lead">These players survived the whirlwind, kept (most of) their fortune, and left a mark. Update your run from inside the game to appear here.</p>
+  <p class="lead">These players survived the whirlwind, kept (most of) their fortune, and left a mark through business wins and philanthropy. Update your run from inside the game to appear here—charities and reputation are tracked now.</p>
   <div class="board">
     <table>
       <thead>
@@ -51,6 +60,7 @@
           <th>Day</th>
           <th>Reputation</th>
           <th>Happiness</th>
+          <th>Charity Impact</th>
           <th>Taxes Paid</th>
         </tr>
       </thead>
@@ -68,6 +78,10 @@
           <td>Day {{ p['day'] or 0 }}</td>
           <td>{{ '%.0f'|format(p['rep']) }}</td>
           <td>{{ '%.0f'|format(p['happiness'] or 0) }}%</td>
+          <td>
+            <div>${{ '%.0f'|format(p['charity_given'] or 0) }} total</div>
+            {% if p['top_charity'] %}<div class="pill">{{ p['top_charity'] }} • {{ p['charity_count'] }} orgs</div>{% else %}<div class="pill" style="background:rgba(239,68,68,0.18);color:#fca5a5">No foundations yet</div>{% endif %}
+          </td>
           <td>${{ '%.0f'|format(p['taxes_paid'] or 0) }}</td>
         </tr>
         {% else %}
@@ -78,5 +92,10 @@
   </div>
 </main>
 <footer>💼 Follow <a href="https://instagram.com/trackyoursheets" style="color:#cfe1ff" target="_blank">@trackyoursheets</a> for updates and challenges.</footer>
+<script>
+if ('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/static/js/sw.js').catch(()=>{});
+}
+</script>
 </body>
 </html>

@@ -94,5 +94,77 @@
     "upkeep_monthly": 1800,
     "volatility_monthly": 0.12,
     "desc": "Virtual world builds; trend-sensitive."
+  },
+  {
+    "name": "Private Chef Retainer",
+    "price": 180000,
+    "rate_annual": -0.15,
+    "upkeep_monthly": 14000,
+    "volatility_monthly": 0,
+    "desc": "Culinary team on call for every party and trip."
+  },
+  {
+    "name": "Rare Whiskey Collection",
+    "price": 220000,
+    "rate_annual": 0.045,
+    "upkeep_monthly": 250,
+    "volatility_monthly": 0.06,
+    "desc": "Limited casks aging gracefully in climate control."
+  },
+  {
+    "name": "Luxury Sneaker Vault",
+    "price": 75000,
+    "rate_annual": 0.035,
+    "upkeep_monthly": 120,
+    "volatility_monthly": 0.08,
+    "desc": "Numbered drops stored for appreciation and flex."
+  },
+  {
+    "name": "Helicopter Purchase",
+    "price": 2100000,
+    "rate_annual": -0.11,
+    "upkeep_monthly": 28000,
+    "volatility_monthly": 0.02,
+    "desc": "Twin-engine chopper plus hangar and pilot costs."
+  },
+  {
+    "name": "Angel Investment Fund",
+    "price": 1000000,
+    "rate_annual": 0.12,
+    "upkeep_monthly": 0,
+    "volatility_monthly": 0.2,
+    "desc": "Diversified stakes in 25 early-stage startups."
+  },
+  {
+    "name": "Space Exploration ETF",
+    "price": 300000,
+    "rate_annual": 0.09,
+    "upkeep_monthly": 0,
+    "volatility_monthly": 0.16,
+    "desc": "Public fund riding rocket launches and satellite demand."
+  },
+  {
+    "name": "Concert Residency Sponsorship",
+    "price": 450000,
+    "rate_annual": 0.02,
+    "upkeep_monthly": 5000,
+    "volatility_monthly": 0.04,
+    "desc": "Co-produce a Vegas residency and take merch revenue."
+  },
+  {
+    "name": "Esports Pro Team",
+    "price": 1250000,
+    "rate_annual": 0.07,
+    "upkeep_monthly": 18000,
+    "volatility_monthly": 0.15,
+    "desc": "Roster salaries, bootcamp house, and sponsorship upside."
+  },
+  {
+    "name": "Global Art Fair Tour",
+    "price": 280000,
+    "rate_annual": -0.4,
+    "upkeep_monthly": 0,
+    "volatility_monthly": 0,
+    "desc": "A whirlwind of VIP passes, shipping, and private previews."
   }
 ]

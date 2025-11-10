@@ -1,5 +1,7 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, session
 import sqlite3, os, random, json, datetime, secrets
+from urllib import request as urlrequest
+from urllib.error import URLError, HTTPError
 
 from typing import Dict, Any
 
@@ -8,6 +10,8 @@ app.secret_key = "lotto-life-secret"
 app.permanent_session_lifetime = datetime.timedelta(days=14)
 
 DB_PATH = "game.db"
+
+MAX_ENTRY_AMOUNT = 1_000_000_000
 
 # --- State & Federal Tax Rates ---
 STATE_TAX = {
@@ -66,6 +70,46 @@ def init_db():
     conn.close()
 init_db()
 
+
+def _format_currency(value: float) -> str:
+    try:
+        return f"${value:,.2f}"
+    except (TypeError, ValueError):
+        return "$0.00"
+
+
+def send_resend_email(to_email: str, subject: str, html: str) -> bool:
+    """Send an email via the Resend API. Returns True on success."""
+    api_key = os.getenv("RESEND_API_KEY")
+    if not api_key or not to_email:
+        app.logger.info("Resend email skipped – missing api key or email")
+        return False
+
+    payload = json.dumps({
+        "from": "LottoLife Simulator <lotto@resend.dev>",
+        "to": [to_email],
+        "subject": subject,
+        "html": html,
+    }).encode("utf-8")
+
+    req = urlrequest.Request(
+        "https://api.resend.com/emails",
+        data=payload,
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {api_key}",
+        },
+        method="POST",
+    )
+
+    try:
+        with urlrequest.urlopen(req, timeout=10) as resp:
+            resp.read()
+        return True
+    except (URLError, HTTPError) as exc:
+        app.logger.warning("Resend email failed: %s", exc)
+        return False
+
 # --- Pages ---
 @app.route("/")
 def home():
@@ -84,6 +128,8 @@ def startgame():
     try:
         raw_amount = request.form.get("amount", "0").replace(",", "")
         amt = max(0.0, float(raw_amount))
+        if amt > MAX_ENTRY_AMOUNT:
+            amt = MAX_ENTRY_AMOUNT
     except ValueError:
         amt = 0.0
 
@@ -93,6 +139,7 @@ def startgame():
     name = request.form.get("name", "Player").strip() or "Player"
     lifestyle = request.form.get("lifestyle", "smart")
     payout = request.form.get("payout", "lump")
+    email = request.form.get("email", "").strip()
 
     if payout == "annuity":
         # simplified annuity estimate: 30-year payout with 4% APY assumption
@@ -121,7 +168,26 @@ def startgame():
     session["starting_amount"] = amt
     session["tax_paid"] = fed_tax + state_tax
     session["day"] = 1
+    if email:
+        session["player_email"] = email
     session.modified = True
+
+    if email:
+        summary_html = f"""
+            <h2>Welcome to LottoLife, {name}!</h2>
+            <p>Here is the snapshot of your jackpot after taxes:</p>
+            <ul>
+                <li><strong>State:</strong> {st}</li>
+                <li><strong>Goal:</strong> {goal or 'Set inside the simulator'}</li>
+                <li><strong>Net after tax:</strong> {_format_currency(net)}</li>
+                <li><strong>Wallet:</strong> {_format_currency(wallet)}</li>
+                <li><strong>Savings:</strong> {_format_currency(savings)}</li>
+                <li><strong>Estimated taxes paid:</strong> {_format_currency(fed_tax + state_tax)}</li>
+            </ul>
+            <p>You can always export your save inside the simulator or request another copy of your stats from the Lifestyle tab.</p>
+            <p style='color:#7184ff'>Need to configure email sending? Set the <code>RESEND_API_KEY</code> environment variable on your host.</p>
+        """
+        send_resend_email(email, f"LottoLife setup for {name}", summary_html)
     return redirect(url_for("game"))
 
 @app.route("/game")
@@ -143,6 +209,7 @@ def game():
         "taxPaid": round(session.get("tax_paid", 0.0), 2),
         "startingAmount": round(session.get("starting_amount", 0.0), 2),
         "day": session.get("day", 1),
+        "playerEmail": session.get("player_email", ""),
     }
     return render_template("game.html", start_data=start_data)
 
@@ -154,7 +221,30 @@ def leaderboard():
         "SELECT * FROM players ORDER BY net DESC LIMIT 100"
     ).fetchall()
     conn.close()
-    return render_template("leaderboard.html", players=rows)
+    enriched = []
+    for row in rows:
+        top_charity = None
+        charity_count = 0
+        try:
+            if row["last_state"]:
+                last_state = json.loads(row["last_state"])
+                charities = (
+                    last_state.get("holdings", {}).get("charities")
+                    or last_state.get("charities")
+                    or []
+                )
+                charity_count = len(charities)
+                if charities:
+                    richest = max(charities, key=lambda c: c.get("monthly_drain", 0))
+                    top_charity = f"{richest.get('name')} (${richest.get('monthly_drain', 0):,.0f}/mo)"
+        except json.JSONDecodeError:
+            top_charity = None
+        enriched.append({
+            **dict(row),
+            "charity_count": charity_count,
+            "top_charity": top_charity,
+        })
+    return render_template("leaderboard.html", players=enriched)
 
 @app.route("/guide")
 def guide():
@@ -237,6 +327,33 @@ def api_update():
     return jsonify({"ok": True, "id": pid})
 
 
+@app.route("/api/email", methods=["POST"])
+def api_email():
+    data = request.get_json() or {}
+    email = data.get("email") or session.get("player_email")
+    if email:
+        session["player_email"] = email
+    if not email:
+        return jsonify({"ok": False, "error": "missing email"}), 400
+    player = data.get("player") or {}
+    stats = data.get("stats") or {}
+    html = """
+        <h2>Your LottoLife snapshot</h2>
+        <p>Here is the latest state exported from the simulator:</p>
+    """
+    if player:
+        html += "<ul>"
+        for key, value in player.items():
+            html += f"<li><strong>{key}:</strong> {value}</li>"
+        html += "</ul>"
+    if stats:
+        html += "<pre style='background:#0b1222;color:#eef3ff;padding:12px;border-radius:12px;'>"
+        html += json.dumps(stats, indent=2)
+        html += "</pre>"
+    sent = send_resend_email(email, "Your LottoLife snapshot", html)
+    return jsonify({"ok": sent})
+
+
 @app.route("/api/session")
 def api_session():
     return jsonify({k: session.get(k) for k in [
@@ -249,6 +366,7 @@ def api_session():
         "net",
         "tax_paid",
         "day",
+        "player_email",
     ]})
 
 

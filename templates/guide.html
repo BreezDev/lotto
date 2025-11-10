@@ -4,13 +4,17 @@
 <meta charset="utf-8">
 <title>📘 LottoLife Guide</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1222" />
+<link rel="manifest" href="/static/manifest.json">
+<link rel="apple-touch-icon" href="/static/icons/lotto-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root{--bg:#050810;--panel:#0f1730;--line:#1b233a;--brand:#0d6efd;--accent:#7c5cff;}
   *{box-sizing:border-box}
   body{font-family:'Jost',sans-serif;background:radial-gradient(900px 620px at 60% -10%,rgba(124,92,255,.25),rgba(5,8,16,.95)),#050810;color:#eef3ff;margin:0;min-height:100vh}
   header{background:#0b1222;border-bottom:2px solid rgba(13,110,253,.4);box-shadow:0 10px 30px rgba(5,8,16,.7)}
-  nav{max-width:960px;margin:auto;padding:14px 18px;display:flex;gap:12px;flex-wrap:wrap}
+  nav{max-width:1100px;margin:auto;padding:14px 18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+  nav .links{display:flex;gap:12px;flex-wrap:wrap}
   nav a{color:#fff;text-decoration:none;padding:10px 18px;border-radius:12px;border:1px solid rgba(124,92,255,.3);background:rgba(15,24,48,.85);font-weight:600;transition:.25s}
   nav a:hover,nav a.active{background:linear-gradient(135deg,var(--brand),var(--accent));border-color:transparent;box-shadow:0 18px 36px rgba(13,110,253,.4)}
   main{max-width:960px;margin:50px auto;padding:0 24px 60px;display:grid;gap:26px}
@@ -22,14 +26,19 @@
   li{margin-bottom:10px}
   code{background:rgba(15,24,48,.8);padding:2px 6px;border-radius:6px;color:#9fc0ff}
   footer{text-align:center;color:#8fa5d1;margin:30px 0 60px;font-size:14px}
+  @media(max-width:720px){nav{flex-direction:column;align-items:flex-start}nav .links{width:100%}}
 </style>
 </head>
 <body>
 <header>
   <nav>
-    <a href="/">🎮 Game</a>
-    <a href="/leaderboard">🏆 Leaderboard</a>
-    <a href="/guide" class="active">📘 Guide</a>
+    <div class="links">
+      <a href="/game">🎮 Simulator</a>
+      <a href="/leaderboard">🏆 Leaderboard</a>
+      <a href="/start">🎰 Start</a>
+      <a href="/guide" class="active">📘 Guide</a>
+    </div>
+    <a href="/start" style="color:#9fb4ff;text-decoration:none;font-weight:600">Start a new run →</a>
   </nav>
 </header>
 <main>
@@ -41,9 +50,9 @@
   <section>
     <h2>🎯 Getting started</h2>
     <ul>
-      <li><strong>Start screen:</strong> enter your jackpot, pick your state for accurate tax withholding, choose your payout, profile, and initial lifestyle vibe. We preview after-tax cash instantly.</li>
-      <li><strong>Session magic:</strong> your wallet, savings, state, and preferences follow you into the game via secure Flask sessions so no more “amount lost on /game” bugs.</li>
-      <li><strong>Autosave:</strong> the game stores your progress in browser storage and lets you export a JSON snapshot. Restart anytime via <code>/reset</code>.</li>
+      <li><strong>Start screen:</strong> enter your jackpot (capped at $1,000,000,000 to keep the sim grounded), pick your state for accurate taxes, choose payout, profile, and lifestyle vibe. We preview after-tax cash instantly.</li>
+      <li><strong>Email backup:</strong> drop in an email to receive your starting summary via Resend. Configure the <code>RESEND_API_KEY</code> environment variable on the server and we’ll email snapshots on demand.</li>
+      <li><strong>Session magic & autosave:</strong> wallet, savings, state, email, and preferences persist via Flask sessions. The game also autosaves locally and supports manual JSON exports/imports.</li>
     </ul>
   </section>
 
@@ -54,6 +63,7 @@
       <li>Use quick actions to move cash to savings, withdraw, take loans, or pay down debt. Interest accrues automatically.</li>
       <li>Simulate time in bursts (day/week/month/year) or enable the <strong>auto-play loop</strong> from the top navigation. Choose how many days each tick advances.</li>
       <li>The ledger records every transaction and the timeline panel highlights the biggest swings.</li>
+      <li><strong>Backups:</strong> export or import save files, and trigger Resend emails of your snapshot from the Lifestyle tab.</li>
     </ul>
   </section>
 
@@ -62,15 +72,16 @@
     <ul>
       <li>Fine-tune monthly burn, travel style, security detail, and staff payroll. These sliders affect happiness, random event odds, and monthly expenses.</li>
       <li>Preset buttons snap you to modest, balanced, or extravagant living.</li>
-      <li>Trigger a random event, review autosave status, or export your run for safe keeping.</li>
+      <li>Trigger a random event, review autosave status, import/export your save, or email the latest snapshot. Keeping staff paid and travel high boosts reputation.</li>
     </ul>
   </section>
 
   <section>
     <h2>🏠 Assets & 🎁 Charities</h2>
     <ul>
-      <li><strong>Cars, Houses, Businesses, Investments:</strong> browse curated catalogs, buy assets, manage upkeep, hire/fire, IPO companies, and toggle rentals.</li>
-      <li><strong>Charities:</strong> start preset programs or roll your own foundation. Donations raise reputation but burn cash monthly.</li>
+      <li><strong>Cars, Houses, Businesses, Investments:</strong> dozens of curated options now mimic a life-sim catalogue—everything from budget EVs to hypercars, smart homes to mega estates, coffee shops to space tourism firms, blue-chip ETFs to metaverse studios.</li>
+      <li>Each asset carries appreciation/ depreciation, upkeep, rent, payroll, and volatility. You can IPO businesses, collect dividends, and flip properties as the market mood shifts.</li>
+      <li><strong>Charities & foundations:</strong> fund ready-made causes or build custom charities. Monthly spend increases reputation; shutting one down reduces it.</li>
     </ul>
   </section>
 
@@ -78,7 +89,7 @@
     <h2>📆 Timeline & ⭐ Achievements</h2>
     <ul>
       <li>The timeline shows the latest 60 key events with net worth and high-water stats for quick storytelling.</li>
-      <li>Achievements reward milestones such as ten-million net worth, first IPO, mega philanthropy, or surviving 1,000 days without going broke.</li>
+      <li>Achievements now span more than a dozen milestones: hit $10M, $100M, or $500M net worth, own five properties, collect a fleet of cars, run multiple IPOs, build a charity empire, import an old save, or survive 1,000 days without going broke.</li>
       <li>When net worth drops below zero with no assets left, the <strong>Game Over</strong> screen appears—proof it’s possible to lose it all.</li>
     </ul>
   </section>
@@ -87,10 +98,34 @@
     <h2>🏆 Leaderboard tips</h2>
     <ul>
       <li>Press <strong>Update Leaderboard</strong> to sync your stats. We capture day count, peak net worth, happiness, lifestyle spend, and more.</li>
-      <li>The leaderboard view is now fully styled with player goals, peak net, taxes paid, and day count so your run tells a story.</li>
+      <li>The leaderboard view is now fully styled with player goals, peak net, taxes paid, charity impact, and day count so your run tells a story.</li>
+      <li>Charity stats pull from your active foundations—keep them funded to climb the reputation column.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>💌 Email & backups</h2>
+    <ul>
+      <li><strong>Resend integration:</strong> set <code>RESEND_API_KEY</code> on your server, enter an email on the start screen, and we’ll send summaries when you launch or press “Email Latest Snapshot.”</li>
+      <li><strong>Import/Export:</strong> every save exports as JSON. Use the Import buttons (Portfolio quick actions or Lifestyle card) to restore progress on any browser or device.</li>
+      <li>Local autosave can be cleared with one click if you want to start fresh without wiping the leaderboard entry.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>📱 Progressive Web App</h2>
+    <ul>
+      <li>The simulator ships with a manifest, icons, and a light service worker so you can “Install” it from mobile or desktop browsers.</li>
+      <li>Static assets, templates, and JSON catalogs are cached for quick reloads even with spotty connectivity.</li>
+      <li>Because saves live in both the browser and export files, you can safely play offline and sync later.</li>
     </ul>
   </section>
 </main>
 <footer>💼 Questions or ideas? DM <a href="https://instagram.com/trackyoursheets" style="color:#cfe1ff" target="_blank">@trackyoursheets</a>.</footer>
+<script>
+if ('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/static/js/sw.js').catch(()=>{});
+}
+</script>
 </body>
 </html>

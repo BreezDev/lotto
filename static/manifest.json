@@ -1,0 +1,21 @@
+{
+  "name": "LottoLife Simulator",
+  "short_name": "LottoLife",
+  "start_url": "/game",
+  "display": "standalone",
+  "background_color": "#050810",
+  "theme_color": "#0b1222",
+  "description": "Live out the ultimate lottery win with cars, houses, businesses, charities, and real-life financial decisions.",
+  "icons": [
+    {
+      "src": "/static/icons/lotto-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/icons/lotto-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

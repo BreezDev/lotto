@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <title>🎮 LottoLife Simulator</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#0b1222" />
+<link rel="manifest" href="/static/manifest.json">
+<link rel="apple-touch-icon" href="/static/icons/lotto-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -16,7 +19,9 @@
   header{position:sticky;top:0;z-index:30;background:#0b1222;border-bottom:2px solid var(--brand);box-shadow:0 10px 40px rgba(8,12,25,0.45);}
   nav{max-width:1250px;margin:auto;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
   nav .left,nav .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  nav a{color:#fff;text-decoration:none;padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:#101833;font-weight:600;transition:all .25s ease}
+  nav .left{overflow:auto;max-width:100%;padding-bottom:4px}
+  nav .left::-webkit-scrollbar{display:none}
+  nav a{color:#fff;text-decoration:none;padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:#101833;font-weight:600;transition:all .25s ease;white-space:nowrap}
   nav a.active,nav a:hover{background:var(--brand);border-color:transparent;transform:translateY(-1px)}
   nav button,nav select{background:#101833;color:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 14px;font-weight:600;cursor:pointer;transition:all .25s ease}
   nav button:hover{background:var(--brand);border-color:transparent;transform:translateY(-1px)}
@@ -83,8 +88,9 @@
   .life-card strong{display:block;font-size:16px;margin-bottom:6px}
   .life-card p{margin:6px 0 0;font-size:13px;color:#b7c6e6}
   .life-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:20px}
-  .life-actions .card{background:#0a1120;border:1px solid var(--line);border-radius:16px;padding:16px}
-  .life-actions .card button{width:100%;margin-top:8px}
+  .life-actions .card{background:#0a1120;border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px}
+  .life-actions .card button{width:100%;margin-top:2px}
+  .life-actions .card input{width:100%}
   .tagline{font-size:12px;color:#7da7ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
   .stat-block{background:#0a1120;border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:16px}
   .stat-block h3{margin:0 0 10px}
@@ -96,7 +102,19 @@
   .timeline-list tbody tr:nth-child(even){background:rgba(255,255,255,0.02)}
   .timeline-list td{font-size:13px}
   .empty{color:#7c8dae;font-style:italic}
-  @media(max-width:980px){.span-8,.span-6,.span-5,.span-4,.span-3{grid-column:span 12}.topline{flex-direction:column;align-items:flex-start}.identity{flex-direction:row}.avatar{width:60px;height:60px;font-size:28px}}
+  @media(max-width:980px){
+    .span-8,.span-6,.span-5,.span-4,.span-3{grid-column:span 12}
+    .topline{flex-direction:column;align-items:flex-start}
+    .identity{flex-direction:row}
+    .avatar{width:60px;height:60px;font-size:28px}
+    nav{flex-direction:column;align-items:flex-start}
+    nav .right{width:100%;justify-content:flex-start;overflow:auto}
+  }
+  @media(max-width:640px){
+    header{position:static}
+    nav .right button,nav .right select{flex:1}
+    .top-actions{flex-direction:column;align-items:flex-start}
+  }
 </style>
 </head>
 <body>
@@ -214,10 +232,26 @@ window.GAME_START = {{ start_data|tojson }};
           <button id="payDebt" class="ghost" style="flex:1">Pay Debt</button>
         </div>
         <p class="mini" id="loanHint">Loans accrue monthly interest automatically.</p>
+        <label>Backup & Share</label>
+        <div class="row" style="align-items:center">
+          <button id="importBtn" class="ghost" style="flex:1">📥 Import Save</button>
+          <button id="exportState" class="primary" style="flex:1">📤 Export Save</button>
+        </div>
+        <input id="importFile" type="file" accept="application/json" style="display:none">
+        <p class="mini" id="importStatus">Keep JSON files safe to restore progress on any device.</p>
         <label>Savings APY</label>
         <input id="apy" type="number" value="4.5" step="0.1" min="0" max="25">
         <label>Inflation</label>
         <input id="infl" type="number" value="2.5" step="0.1" min="0" max="15">
+        <details class="mini" style="margin-top:8px;color:#9fb3ff">
+          <summary>How to earn reputation?</summary>
+          <ul style="margin:6px 0 0 18px">
+            <li>Fund charities generously and keep them running.</li>
+            <li>Host community events from random event prompts.</li>
+            <li>Maintain high staff payroll without layoffs.</li>
+            <li>IPO a company and keep investors happy.</li>
+          </ul>
+        </details>
       </div>
     </div>
 
@@ -290,16 +324,26 @@ window.GAME_START = {{ start_data|tojson }};
         <button id="lifePresetExtravagant" class="primary">Extravagant</button>
       </div>
       <div class="card">
-        <div class="tagline">AUTOSAVE</div>
-        <p>We autosave to your browser every major action. Want a clean slate?</p>
+        <div class="tagline">AUTOSAVE & RESTORE</div>
+        <p>We autosave every major move. Import a JSON backup to pick up on another device.</p>
         <button id="clearLocal" class="ghost">Clear Local Save</button>
-        <button id="exportState" class="primary">Export State JSON</button>
+        <button id="importFromCard" class="ghost">Restore from File</button>
+        <button id="exportFromCard" class="primary">Download Backup</button>
+        <p class="mini" style="margin-top:4px">Backups include your ledger, holdings, and stats.</p>
       </div>
       <div class="card">
         <div class="tagline">MARKET MOOD</div>
         <p>Current market climate: <strong id="marketMood">Calm</strong></p>
         <p>Events and investments react to market swings. Keep an eye on volatility.</p>
         <button id="triggerEvent" class="ghost">Trigger Random Event</button>
+      </div>
+      <div class="card">
+        <div class="tagline">EMAIL BACKUPS</div>
+        <label style="margin:0">Send saves via Resend</label>
+        <input id="emailInput" type="email" placeholder="you@example.com">
+        <button id="saveEmail" class="ghost">Save Email</button>
+        <button id="sendEmailBtn" class="primary">Email Latest Snapshot</button>
+        <p class="mini" id="emailStatus">We keep your email local and send via the Resend API when configured.</p>
       </div>
     </div>
   </section>
@@ -390,6 +434,11 @@ window.GAME_START = {{ start_data|tojson }};
   💼 Follow <a href="https://instagram.com/trackyoursheets" target="_blank">@trackyoursheets</a> for more finance sims, tips, and updates!
 </footer>
 
-<script src="/static/js/game.js?v=20"></script>
+<script>
+if ('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/static/js/sw.js').catch(()=>{});
+}
+</script>
+<script src="/static/js/game.js?v=30"></script>
 </body>
 </html>

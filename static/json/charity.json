@@ -61,5 +61,61 @@
     "monthly_drain": 28000,
     "reputation": 22,
     "desc": "Inspires students with space exploration grants."
+  },
+  {
+    "name": "Disaster Response Corps",
+    "price": 450000,
+    "monthly_drain": 26000,
+    "reputation": 21,
+    "desc": "Deploy rapid relief teams when hurricanes or wildfires hit."
+  },
+  {
+    "name": "Global Water Network",
+    "price": 380000,
+    "monthly_drain": 22000,
+    "reputation": 19,
+    "desc": "Build sustainable wells and filtration systems."
+  },
+  {
+    "name": "Arts & Culture Endowment",
+    "price": 275000,
+    "monthly_drain": 16000,
+    "reputation": 16,
+    "desc": "Keep museums and youth arts programs thriving."
+  },
+  {
+    "name": "Veterans Housing Trust",
+    "price": 520000,
+    "monthly_drain": 24000,
+    "reputation": 20,
+    "desc": "Permanent supportive housing for veterans and their families."
+  },
+  {
+    "name": "Digital Literacy Bus",
+    "price": 220000,
+    "monthly_drain": 12000,
+    "reputation": 14,
+    "desc": "Mobile labs teaching tech skills in underserved communities."
+  },
+  {
+    "name": "Women’s Health Initiative",
+    "price": 410000,
+    "monthly_drain": 21000,
+    "reputation": 18,
+    "desc": "Maternal care, research grants, and accessible clinics."
+  },
+  {
+    "name": "Indigenous Land Trust",
+    "price": 670000,
+    "monthly_drain": 30000,
+    "reputation": 24,
+    "desc": "Support sovereignty, conservation, and cultural preservation."
+  },
+  {
+    "name": "Emergency Scholarship Fund",
+    "price": 150000,
+    "monthly_drain": 9000,
+    "reputation": 12,
+    "desc": "Keeps first-generation students enrolled during financial shocks."
   }
 ]

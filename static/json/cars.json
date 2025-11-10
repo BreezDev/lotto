@@ -86,5 +86,93 @@
     "maint_monthly": 210,
     "class": "adventure",
     "desc": "Electric expedition van for coast-to-coast road trips."
+  },
+  {
+    "name": "Ferrari SF90 Stradale",
+    "price": 520000,
+    "dep_rate_annual": 0.19,
+    "maint_monthly": 2200,
+    "class": "supercar",
+    "desc": "Hybrid hypercar that screams on the track."
+  },
+  {
+    "name": "Porsche 911 GT3 RS",
+    "price": 245000,
+    "dep_rate_annual": 0.14,
+    "maint_monthly": 420,
+    "class": "performance",
+    "desc": "Track weapon with street manners."
+  },
+  {
+    "name": "Bentley Bentayga EWB",
+    "price": 310000,
+    "dep_rate_annual": 0.16,
+    "maint_monthly": 650,
+    "class": "ultra-luxury",
+    "desc": "Extended wheelbase luxury SUV for VIP travel."
+  },
+  {
+    "name": "GMC Hummer EV",
+    "price": 112000,
+    "dep_rate_annual": 0.15,
+    "maint_monthly": 260,
+    "class": "ev",
+    "desc": "Electric beast with crab-walk party tricks."
+  },
+  {
+    "name": "Tesla Cybertruck",
+    "price": 89000,
+    "dep_rate_annual": 0.12,
+    "maint_monthly": 140,
+    "class": "ev",
+    "desc": "Futuristic stainless-steel utility truck."
+  },
+  {
+    "name": "Rolls-Royce Spectre",
+    "price": 420000,
+    "dep_rate_annual": 0.15,
+    "maint_monthly": 950,
+    "class": "ultra-luxury",
+    "desc": "Electric grand tourer with silent opulence."
+  },
+  {
+    "name": "Pagani Huayra Roadster",
+    "price": 3400000,
+    "dep_rate_annual": 0.18,
+    "maint_monthly": 9000,
+    "class": "hypercar",
+    "desc": "Automotive art with a handcrafted V12."
+  },
+  {
+    "name": "Aston Martin Valkyrie",
+    "price": 3200000,
+    "dep_rate_annual": 0.2,
+    "maint_monthly": 8500,
+    "class": "hypercar",
+    "desc": "Street-legal F1 technology for the bold."
+  },
+  {
+    "name": "Classic Mustang Restomod",
+    "price": 180000,
+    "dep_rate_annual": 0.08,
+    "maint_monthly": 380,
+    "class": "collector",
+    "desc": "1967 fastback rebuilt with modern tech."
+  },
+  {
+    "name": "Mercedes Sprinter Executive Coach",
+    "price": 165000,
+    "dep_rate_annual": 0.13,
+    "maint_monthly": 400,
+    "class": "limo",
+    "desc": "Mobile boardroom with lounge seating."
+  },
+  {
+    "name": "McLaren 765LT",
+    "price": 382000,
+    "dep_rate_annual": 0.18,
+    "maint_monthly": 1700,
+    "class": "supercar",
+    "desc": "Limited-run lightweight rocket built for the circuit."
   }
 ]
