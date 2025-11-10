@@ -227,19 +227,26 @@ def game():
 
 @app.route("/leaderboard")
 def leaderboard():
+    players = fetch_leaderboard()
+    return render_template("leaderboard.html", players=players)
+
+
+def fetch_leaderboard(limit: int = 100):
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     rows = conn.execute(
-        "SELECT * FROM players ORDER BY net DESC LIMIT 100"
+        "SELECT * FROM players ORDER BY net DESC LIMIT ?",
+        (limit,),
     ).fetchall()
     conn.close()
     enriched = []
     for row in rows:
+        base = dict(row)
         top_charity = None
         charity_count = 0
         try:
-            if row["last_state"]:
-                last_state = json.loads(row["last_state"])
+            if base.get("last_state"):
+                last_state = json.loads(base["last_state"])
                 charities = (
                     last_state.get("holdings", {}).get("charities")
                     or last_state.get("charities")
@@ -251,12 +258,18 @@ def leaderboard():
                     top_charity = f"{richest.get('name')} (${richest.get('monthly_drain', 0):,.0f}/mo)"
         except json.JSONDecodeError:
             top_charity = None
+        base.pop("last_state", None)
         enriched.append({
-            **dict(row),
+            **base,
             "charity_count": charity_count,
             "top_charity": top_charity,
         })
-    return render_template("leaderboard.html", players=enriched)
+    return enriched
+
+
+@app.route("/api/leaderboard")
+def leaderboard_api():
+    return jsonify(fetch_leaderboard())
 
 @app.route("/guide")
 def guide():
