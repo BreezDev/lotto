@@ -42,7 +42,7 @@ const S = {
   loans: [],
   ledger: [],
   timeline: [],
-  stats: {biz:0,lifestyle:0,charity:0,events:0,interest:0,debt:0,tax:0},
+  stats: {biz:0,lifestyle:0,charity:0,events:0,interest:0,debt:0,tax:0,family:0},
   milestones: {},
   milestoneLog: [],
   achievements: {},
@@ -51,6 +51,9 @@ const S = {
   hadDebt: false,
   gameOverShown: false,
   flags: {imported:false, emailed:false},
+  character: {name: start.playerName || 'Player', age: 28, ageProgress: 0, pronouns: 'They/Them', avatar: '💰', career: 'Newly wealthy', bio: ''},
+  family: {members: []},
+  primaryHouseId: null,
 };
 
 /* ================== Helpers ================== */
@@ -71,6 +74,34 @@ function sumAssets(){
 }
 function sumLoans(){
   return S.loans.reduce((a,l)=>a + (l.principal||0),0);
+}
+
+function sanitizeAvatar(value){
+  if (!value) return '💰';
+  const trimmed = value.trim();
+  if (!trimmed) return '💰';
+  const grapheme = Array.from(trimmed)[0];
+  return grapheme || '💰';
+}
+
+function familyMonthlyImpact(){
+  if (!S.family || !Array.isArray(S.family.members)) return 0;
+  return S.family.members.reduce((total, member)=>{
+    return total + Number(member.impactMonthly || 0);
+  }, 0);
+}
+
+function ensurePrimaryResidence(){
+  if (!S.houses.length){
+    S.primaryHouseId = null;
+    return;
+  }
+  if (S.primaryHouseId && S.houses.some(h=>h.id===S.primaryHouseId)) return;
+  const candidate = S.houses.find(h=>!h.rented) || S.houses[0];
+  if (candidate){
+    candidate.rented = false;
+    S.primaryHouseId = candidate.id;
+  }
 }
 function ensureLiquidity(){
   if (S.wallet >= 0) return;
@@ -106,6 +137,17 @@ function moodLabel(){
   if (h >= 40) return 'Uneasy';
   if (h >= 20) return 'Stressed';
   return 'Burnout';
+}
+
+function toNumber(value, fallback=0){
+  const num = Number(value);
+  return Number.isFinite(num) ? num : fallback;
+}
+
+function toPercent(value, fallback=0, min=-100, max=100){
+  const num = Number(value);
+  const pct = Number.isFinite(num) ? num : fallback;
+  return clamp(pct, min, max) / 100;
 }
 
 /* ================== Persistence ================== */
@@ -148,6 +190,9 @@ function buildSavePayload(){
     milestones: S.milestones,
     achievements: S.achievements,
     flags: S.flags,
+    character: S.character,
+    family: S.family,
+    primaryHouseId: S.primaryHouseId,
   };
 }
 function persistLocal(){
@@ -189,9 +234,34 @@ function restoreLocal(){
       milestoneLog: Array.isArray(data.milestoneLog) ? data.milestoneLog : S.milestoneLog,
       achievements: data.achievements ?? {},
       milestones: {...S.milestones, ...(data.milestones||{})},
+      playerName: data.playerName || S.playerName,
+      goal: data.goal ?? S.goal,
+      state: data.state ?? S.state,
+      profile: data.profile || S.profile,
+      payout: data.payout || S.payout,
       playerEmail: data.playerEmail ?? S.playerEmail,
       flags: {...S.flags, ...(data.flags||{})},
     });
+    if (data.character){
+      S.character = {...S.character, ...data.character};
+      if (typeof S.character.age !== 'number' || Number.isNaN(S.character.age)) S.character.age = 28;
+      if (typeof S.character.ageProgress !== 'number' || Number.isNaN(S.character.ageProgress)) S.character.ageProgress = 0;
+      S.character.avatar = sanitizeAvatar(S.character.avatar);
+      S.character.name = S.playerName || S.character.name;
+    }
+    if (data.family){
+      const members = Array.isArray(data.family.members) ? data.family.members.map(m=>({...m})) : (S.family.members||[]);
+      S.family = {...S.family, ...data.family, members};
+    }
+    if (!Array.isArray(S.family.members)) S.family.members = [];
+    S.primaryHouseId = data.primaryHouseId ?? S.primaryHouseId;
+    S.businesses = (S.businesses || []).map(b=>({
+      ...b,
+      boardMembers: Array.isArray(b.boardMembers) ? b.boardMembers : [],
+      boardSeats: b.boardSeats ?? (b.growth_level>=3 ? 3 : 0),
+      ceo: b.ceo || S.playerName
+    }));
+    ensurePrimaryResidence();
     $('#evt').checked = S.showEvents;
   } catch(err){ console.warn('Restore error', err); }
 }
@@ -262,7 +332,11 @@ function updateLifestyleUI(){
   $('#travelLevel').value = String(S.lifestyle.travel||0);
   $('#staffLevel').value = String(S.lifestyle.staff||0);
   const monthly = S.lifestyle.burn + S.lifestyle.travel + S.lifestyle.security + S.lifestyle.staff;
-  const summary = `You currently spend ${fmt(monthly,{noCents:true})} / month on living the dream.`;
+  const familyImpact = familyMonthlyImpact();
+  let summary = `You currently spend ${fmt(monthly,{noCents:true})} / month on living the dream.`;
+  if (S.family.members && S.family.members.length){
+    summary += ` Household impact adds ${fmt(familyImpact,{noCents:true})}/mo.`;
+  }
   $('#lifestyleSummary').textContent = summary;
   S.eventBoost = (S.lifestyle.travel/120000) - (S.lifestyle.security/150000) + (S.lifestyle.burn/1000000);
   marketSentiment();
@@ -279,6 +353,79 @@ $('#clearLocal').addEventListener('click', ()=>{
   toast('Local save cleared.');
   setHelperText('importStatus', 'Local autosave cleared. Export files remain safe.');
 });
+const characterSaveBtn = $('#characterSave');
+if (characterSaveBtn){
+  characterSaveBtn.addEventListener('click', ()=>{
+    if (!S.character) S.character = {avatar:'💰', pronouns:'They/Them', age:28, ageProgress:0};
+    const nameInput = $('#characterName');
+    const ageInput = $('#characterAge');
+    const pronounInput = $('#characterPronouns');
+    const avatarInput = $('#characterAvatar');
+    const careerInput = $('#characterCareer');
+    const bioInput = $('#characterBio');
+    const name = (nameInput ? nameInput.value : S.playerName || 'Player').trim() || 'Player';
+    S.playerName = name;
+    S.character.name = name;
+    if (ageInput){
+      const ageVal = Number(ageInput.value);
+      if (Number.isFinite(ageVal) && ageVal > 0){
+        S.character.age = Math.min(120, Math.max(18, Math.round(ageVal)));
+        S.character.ageProgress = 0;
+      }
+    }
+    if (pronounInput){
+      const pron = pronounInput.value.trim();
+      S.character.pronouns = pron || (S.character.pronouns || 'They/Them');
+    }
+    if (avatarInput){
+      S.character.avatar = sanitizeAvatar(avatarInput.value);
+    }
+    if (careerInput){
+      S.character.career = careerInput.value.trim();
+    }
+    if (bioInput){
+      S.character.bio = bioInput.value.trim();
+    }
+    toast('Identity updated');
+    paintTop();
+  });
+}
+const addFamilyBtn = $('#addFamily');
+if (addFamilyBtn){
+  addFamilyBtn.addEventListener('click', ()=>{
+    const roleSel = $('#familyRole');
+    const nameInput = $('#familyName');
+    const ageInput = $('#familyAge');
+    const impactInput = $('#familyAllowance');
+    const livesSel = $('#familyLives');
+    const notesInput = $('#familyNotes');
+    const name = (nameInput ? nameInput.value : '').trim();
+    if (!name){ toast('Add a name for your family member.'); return; }
+    const role = roleSel ? roleSel.value : 'Relative';
+    const ageVal = Number(ageInput ? ageInput.value : 0);
+    const impact = Number(impactInput ? impactInput.value : 0);
+    const lives = livesSel ? (livesSel.value === 'yes') : true;
+    const notes = notesInput ? notesInput.value.trim() : '';
+    if (!S.family || !Array.isArray(S.family.members)) S.family = {members: []};
+    S.family.members.push({
+      id:newId(),
+      name,
+      role,
+      age: Number.isFinite(ageVal) && ageVal>0 ? Math.round(ageVal) : null,
+      impactMonthly: impact,
+      livesWithYou: lives,
+      notes
+    });
+    if (nameInput) nameInput.value = '';
+    if (ageInput) ageInput.value = '';
+    if (impactInput) impactInput.value = '';
+    if (notesInput) notesInput.value = '';
+    log(`Family: ${name} joined as ${role}`, 0, 0, {tag:'family', happinessDelta:2, repDelta: role==='Spouse'||role==='Partner'?2:1});
+    paintFamily();
+    paintTop();
+    updateAchievements();
+  });
+}
 function applySnapshot(data, label='Imported save applied.'){
   if (!data) return;
   try {
@@ -319,6 +466,26 @@ function applySnapshot(data, label='Imported save applied.'){
     S.profile = data.profile || S.profile;
     S.payout = data.payout || S.payout;
     S.lifestylePref = data.lifestylePref || S.lifestylePref;
+    if (data.character){
+      S.character = {...S.character, ...data.character};
+    }
+    S.character.avatar = sanitizeAvatar(S.character.avatar);
+    S.character.name = S.playerName || S.character.name;
+    if (typeof S.character.age !== 'number' || Number.isNaN(S.character.age)) S.character.age = 28;
+    if (typeof S.character.ageProgress !== 'number' || Number.isNaN(S.character.ageProgress)) S.character.ageProgress = 0;
+    if (data.family){
+      const members = Array.isArray(data.family.members) ? data.family.members.map(m=>({...m})) : (S.family.members||[]);
+      S.family = {...S.family, ...data.family, members};
+    }
+    if (!Array.isArray(S.family.members)) S.family.members = [];
+    S.primaryHouseId = data.primaryHouseId ?? S.primaryHouseId;
+    S.businesses = (S.businesses || []).map(b=>({
+      ...b,
+      boardMembers: Array.isArray(b.boardMembers) ? b.boardMembers : [],
+      boardSeats: b.boardSeats ?? (b.growth_level>=3 ? 3 : 0),
+      ceo: b.ceo || S.playerName
+    }));
+    ensurePrimaryResidence();
     paintEverything();
     persistLocal();
     toast('Save imported!');
@@ -461,10 +628,21 @@ function paintTop(){
   S.lastNetPoints.push(S.net);
   if (S.lastNetPoints.length>60) S.lastNetPoints.shift();
 
+  S.character = S.character || {avatar:'💰', pronouns:'They/Them'};
+  S.character.name = S.playerName || S.character.name;
+  $('#avatarBadge').textContent = sanitizeAvatar(S.character.avatar || '💰');
   $('#playerName').textContent = S.playerName;
   $('#playerState').textContent = S.state || 'Unknown';
   $('#playerProfile').textContent = S.profile.replace(/\b\w/g,c=>c.toUpperCase());
+  $('#playerPronouns').textContent = S.character.pronouns || 'They/Them';
+  $('#playerAge').textContent = S.character.age ? `Age ${Math.floor(S.character.age)}` : 'Age --';
+  $('#playerCareerLine').textContent = S.character.career ? `Career: ${S.character.career}` : 'Career: Newly wealthy';
   $('#playerGoal').textContent = S.goal || 'Set a dream in the start screen';
+  $('#playerBio').textContent = S.character.bio ? `Bio: ${S.character.bio}` : 'Bio: Share your story inside Lifestyle';
+  const famCount = (S.family && Array.isArray(S.family.members)) ? S.family.members.length : 0;
+  const famImpact = familyMonthlyImpact();
+  $('#familySummary').textContent = famCount ? `Household: ${famCount} member${famCount===1?'':'s'} • ${fmt(famImpact,{noCents:true})}/mo impact` : 'Household: Solo player';
+  refreshIdentityEditor();
   $('#taxPaid').textContent = fmt(S.taxPaid,{noCents:true});
   $('#startAmt').textContent = fmt(S.startingAmount,{noCents:true});
   $('#moodLabel').textContent = moodLabel();
@@ -507,7 +685,10 @@ function paintTop(){
   $('#statEvents').textContent = fmt(S.stats.events);
   $('#statInterest').textContent = fmt(S.stats.interest);
   $('#statDebt').textContent = fmt(S.stats.debt);
+  const famStat = $('#statFamily');
+  if (famStat) famStat.textContent = fmt(S.stats.family);
 
+  paintFamily();
   paintLedger();
   paintTimeline();
   paintAchievements();
@@ -589,6 +770,7 @@ function log(title, dWallet=0, dAssets=0, options={}){
     case 'biz': S.stats.biz += dWallet; break;
     case 'lifestyle': S.stats.lifestyle += Math.abs(dWallet); break;
     case 'charity': S.stats.charity += Math.abs(dWallet); S.reputation += options.repGain||0; break;
+    case 'family': S.stats.family += dWallet; break;
     case 'events': S.stats.events += dWallet; break;
     case 'interest': S.stats.interest += dAssets || Math.max(0,dWallet); break;
     case 'debt': S.stats.debt += Math.abs(dWallet); break;
@@ -640,6 +822,10 @@ function getAchievements(){
     {id:'wentBroke', title:'Hard Reset', desc:'Experience a game over and keep going.'},
     {id:'garageCollector', title:'Garage Goals', desc:'Own five or more vehicles.'},
     {id:'estateTycoon', title:'Estate Tycoon', desc:'Own five or more properties.'},
+    {id:'familyFounder', title:'Family Founder', desc:'Add your first family member.'},
+    {id:'familyDynasty', title:'Dynasty Architect', desc:'Support a household of five or more people.'},
+    {id:'primaryHome', title:'Home Base', desc:'Designate a primary residence.'},
+    {id:'boardMaster', title:'Board Mastermind', desc:'Fill every board seat at one of your companies.'},
     {id:'jetSetter', title:'Jet Setter', desc:'Maintain max travel lifestyle for 90+ days.'},
     {id:'importHero', title:'Time Traveler', desc:'Import a previous save file.'},
     {id:'emailPro', title:'Inbox Guardian', desc:'Email yourself a snapshot.'},
@@ -666,6 +852,10 @@ function updateAchievements(){
       case 'wentBroke': earned = S.gameOverShown; break;
       case 'garageCollector': earned = S.cars.length >= 5; break;
       case 'estateTycoon': earned = S.houses.length >= 5; break;
+      case 'familyFounder': earned = S.family && Array.isArray(S.family.members) && S.family.members.length >= 1; break;
+      case 'familyDynasty': earned = S.family && Array.isArray(S.family.members) && S.family.members.length >= 5; break;
+      case 'primaryHome': earned = !!S.primaryHouseId; break;
+      case 'boardMaster': earned = S.businesses.some(b=> (b.boardSeats||0)>0 && Array.isArray(b.boardMembers) && b.boardMembers.length >= b.boardSeats); break;
       case 'jetSetter': earned = S.lifestyle.travel >= 90000 && S.day >= 90; break;
       case 'importHero': earned = !!S.flags.imported; break;
       case 'emailPro': earned = !!S.flags.emailed; break;
@@ -693,9 +883,13 @@ function paintGarage(){
 function paintProps(){
   const tb = $('#props tbody'); if(!tb) return;
   tb.innerHTML='';
+  ensurePrimaryResidence();
   S.houses.forEach(h=>{
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${esc(h.name)}</td><td class="right">${fmt(h.value)}</td><td class="right">${fmt(h.rent_monthly)}</td><td class="right">${(h.prop_tax_rate_annual*100).toFixed(2)}%</td><td class="right">${fmt(h.upkeep_monthly)}</td><td>${h.rented?'For Rent 🏷️':'Personal 🏡'}</td><td>${rowActionBtn(h.rented?'Set Personal':'Set For Rent',`toggleRent('${h.id}')`)} ${rowActionBtn('Sell',`sellHouse('${h.id}')`,'btn-danger')}</td>`;
+    const status = h.id === S.primaryHouseId ? 'Primary Residence 🏡' : (h.rented ? 'For Rent 🏷️' : 'Personal Use');
+    const primaryBtn = h.id === S.primaryHouseId ? '<span class="badge">Home</span>' : rowActionBtn('Set Primary',`setPrimaryResidence('${h.id}')`,'ghost');
+    const rentBtn = h.id === S.primaryHouseId ? '' : rowActionBtn(h.rented?'Stop Renting':'Rent Out',`toggleRent('${h.id}')`);
+    tr.innerHTML = `<td>${esc(h.name)}</td><td class="right">${fmt(h.value)}</td><td class="right">${fmt(h.rent_monthly)}</td><td class="right">${(h.prop_tax_rate_annual*100).toFixed(2)}%</td><td class="right">${fmt(h.upkeep_monthly)}</td><td>${status}</td><td>${primaryBtn} ${rentBtn} ${rowActionBtn('Sell',`sellHouse('${h.id}')`,'btn-danger')}</td>`;
     tb.appendChild(tr);
   });
   if (!S.houses.length){ tb.innerHTML = '<tr><td colspan="7" class="empty">No property portfolio yet.</td></tr>'; }
@@ -707,10 +901,15 @@ function paintCompanies(){
     const payrollWeek = (b.employees * b.salary_per_employee_annual)/52;
     const tr = document.createElement('tr');
     const lvl = b.ipo ? 'IPO' : (b.growth_level>=3?'Board':'Growth');
-    tr.innerHTML = `<td>${esc(b.name)}</td><td class="right">${b.employees}</td><td class="right">${fmt(payrollWeek)}</td><td class="right">${fmt(b.weekly_revenue)}</td><td class="right">${(b.gross_margin*100).toFixed(0)}%</td><td>${lvl}</td><td>${rowActionBtn('+ Hire',`hire('${b.id}')`,'btn-good')} ${rowActionBtn('− Fire',`fire('${b.id}')`)} ${b.ipo?'':rowActionBtn('Go IPO',`ipo('${b.id}')`,'primary')}</td>`;
+    const boardSeats = b.boardSeats || 0;
+    const boardCount = (b.boardMembers && b.boardMembers.length) || 0;
+    const boardLabel = boardSeats ? `${boardCount}/${boardSeats}` : '—';
+    const boardBtn = (b.growth_level>=3) ? rowActionBtn('+ Board',`addBoard('${b.id}')`) : '';
+    const ceoBtn = (b.growth_level>=2) ? rowActionBtn('Set CEO',`setCeo('${b.id}')`,'ghost') : '';
+    tr.innerHTML = `<td>${esc(b.name)}</td><td class="right">${b.employees}</td><td class="right">${fmt(payrollWeek)}</td><td class="right">${fmt(b.weekly_revenue)}</td><td class="right">${(b.gross_margin*100).toFixed(0)}%</td><td>${lvl}</td><td class="right">${boardLabel}</td><td>${rowActionBtn('+ Hire',`hire('${b.id}')`,'btn-good')} ${rowActionBtn('− Fire',`fire('${b.id}')`)} ${ceoBtn} ${boardBtn} ${b.ipo?'':rowActionBtn('Go IPO',`ipo('${b.id}')`,'primary')}</td>`;
     tb.appendChild(tr);
   });
-  if (!S.businesses.length){ tb.innerHTML = '<tr><td colspan="7" class="empty">No companies yet.</td></tr>'; }
+  if (!S.businesses.length){ tb.innerHTML = '<tr><td colspan="8" class="empty">No companies yet.</td></tr>'; }
 }
 function paintCharities(){
   const tb = $('#charTable tbody'); if(!tb) return;
@@ -731,6 +930,42 @@ function paintItems(){
     tb.appendChild(tr);
   });
   if (!S.items.length){ tb.innerHTML = '<tr><td colspan="4" class="empty">No alternative investments yet.</td></tr>'; }
+}
+
+function paintFamily(){
+  const tb = $('#familyTable tbody'); if(!tb) return;
+  const members = (S.family && Array.isArray(S.family.members)) ? S.family.members : [];
+  tb.innerHTML = '';
+  members.forEach(member=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${esc(member.name)}</td><td>${esc(member.role)}</td><td class="right">${member.age ? member.age : '—'}</td><td class="right">${fmt(member.impactMonthly || 0)}</td><td>${member.livesWithYou ? 'Yes' : 'No'}</td><td>${esc(member.notes || '')}</td><td>${rowActionBtn('Remove',`removeFamily('${member.id}')`,'btn-danger')}</td>`;
+    tb.appendChild(tr);
+  });
+  if (!members.length){
+    tb.innerHTML = '<tr><td colspan="7" class="empty">No family added yet. Build your dynasty!</td></tr>';
+  }
+  const impactLine = $('#familyImpactLine');
+  if (impactLine){
+    impactLine.textContent = `Household obligations: ${fmt(familyMonthlyImpact(),{noCents:true})}/mo`;
+  }
+}
+
+function refreshIdentityEditor(){
+  const char = S.character || {};
+  const map = [
+    ['#characterName', S.playerName || char.name || ''],
+    ['#characterPronouns', char.pronouns || ''],
+    ['#characterAvatar', char.avatar || ''],
+    ['#characterCareer', char.career || '']
+  ];
+  map.forEach(([selector, value])=>{
+    const el = document.querySelector(selector);
+    if (el && document.activeElement !== el){ el.value = value; }
+  });
+  const ageInput = $('#characterAge');
+  if (ageInput && document.activeElement !== ageInput){ ageInput.value = char.age ? Math.round(char.age) : ''; }
+  const bioInput = $('#characterBio');
+  if (bioInput && document.activeElement !== bioInput){ bioInput.value = char.bio || ''; }
 }
 
 /* ================== Store Catalogs ================== */
@@ -774,11 +1009,28 @@ window.buy = function(cat, safeName){
     paintGarage();
   } else if (cat==='houses'){
     S.houses.push({id:newId(),name:d.name,value:d.price,app_rate_annual:d.app_rate_annual,rent_monthly:d.rent_monthly,prop_tax_rate_annual:d.prop_tax_rate_annual,upkeep_monthly:d.upkeep_monthly,rented:false});
+    ensurePrimaryResidence();
     paintProps();
     options.happinessDelta = (options.happinessDelta||0) + 2;
     options.repDelta = (options.repDelta||0) + 2;
   } else if (cat==='biz'){
-    S.businesses.push({id:newId(),name:d.name,employees:d.employees,salary_per_employee_annual:d.salary_per_employee_annual,weekly_revenue:d.weekly_revenue,gross_margin:d.gross_margin,fixed_weekly_costs:d.fixed_weekly_costs,growth_level:d.growth_level||1,ipo:false,shares:0,div_yield:0.02});
+    S.businesses.push({
+      id:newId(),
+      name:d.name,
+      employees:d.employees,
+      salary_per_employee_annual:d.salary_per_employee_annual,
+      weekly_revenue:d.weekly_revenue,
+      gross_margin:d.gross_margin,
+      fixed_weekly_costs:d.fixed_weekly_costs,
+      growth_level:d.growth_level||1,
+      ipo:false,
+      shares:0,
+      div_yield:0.02,
+      boardMembers: [],
+      boardSeats: (d.growth_level||1) >= 3 ? 3 : 0,
+      ceo: S.playerName,
+      culture: d.desc || 'Founder-led venture'
+    });
     paintCompanies();
     options.repDelta = (options.repDelta||0) + 4;
   } else if (cat==='charity'){
@@ -796,9 +1048,29 @@ window.buy = function(cat, safeName){
 
 window.toggleRent = function(id){
   const h = S.houses.find(x=>x.id===id); if(!h) return;
+  if (h.id === S.primaryHouseId){ toast('You need a different primary home before renting this out.'); return; }
   h.rented = !h.rented;
   log(`${h.name}: set ${h.rented?'For Rent':'Personal Use'}`,0,0,{timeline:false});
   paintProps(); paintTop();
+};
+window.setPrimaryResidence = function(id){
+  const h = S.houses.find(x=>x.id===id); if(!h) return;
+  S.primaryHouseId = id;
+  h.rented = false;
+  ensurePrimaryResidence();
+  log(`${h.name}: established as your primary home`,0,0,{tag:'lifestyle', happinessDelta:3, repDelta:1});
+  paintProps(); paintTop();
+  updateAchievements();
+};
+window.removeFamily = function(id){
+  if (!S.family || !Array.isArray(S.family.members)) return;
+  const idx = S.family.members.findIndex(m=>m.id===id);
+  if (idx<0) return;
+  const member = S.family.members[idx];
+  S.family.members.splice(idx,1);
+  log(`Family: ${member.name} charted their own path`, 0, 0, {tag:'family', happinessDelta:-2});
+  paintFamily();
+  paintTop();
 };
 window.sellCar = function(id){
   const idx = S.cars.findIndex(x=>x.id===id); if(idx<0) return;
@@ -815,8 +1087,12 @@ window.sellHouse = function(id){
   const market = 0.85 + Math.random()*0.25;
   const price = house.value * market;
   S.houses.splice(idx,1);
+  if (house.id === S.primaryHouseId){
+    S.primaryHouseId = null;
+    ensurePrimaryResidence();
+  }
   log(`Sold ${house.name}`, +price, -house.value);
-  paintProps();
+  paintProps(); paintTop();
 };
 window.sellItem = function(id){
   const idx = S.items.findIndex(x=>x.id===id); if(idx<0) return;
@@ -853,11 +1129,49 @@ window.ipo = function(id){
   paintCompanies();
   updateAchievements();
 };
+window.addBoard = function(id){
+  const b = S.businesses.find(x=>x.id===id); if(!b) return;
+  b.boardMembers = Array.isArray(b.boardMembers) ? b.boardMembers : [];
+  if (!b.boardSeats || b.boardSeats <= 0){ toast('Grow the company to Board level before adding directors.'); return; }
+  if (b.boardMembers.length >= b.boardSeats){ toast('All board seats are already filled.'); return; }
+  const name = (typeof prompt !== 'undefined') ? prompt(`New board member for ${b.name}?`, 'Director Name') : null;
+  if (!name){ return; }
+  const expertise = (typeof prompt !== 'undefined') ? prompt('What expertise do they bring? (optional)', 'Finance & Strategy') : '';
+  const compensationPrompt = (typeof prompt !== 'undefined') ? prompt('Annual board retainer (USD)', '150000') : '150000';
+  const compensation = Math.max(60000, Number(compensationPrompt||150000) || 150000);
+  b.boardMembers.push({id:newId(), name:name.trim(), expertise:expertise?expertise.trim():'', compensation});
+  log(`${b.name}: added board member ${name.trim()}`, -(compensation/4), 0, {tag:'biz', repDelta:2, happinessDelta:1});
+  toast(`Board seat filled at ${b.name}.`);
+  paintCompanies();
+  updateAchievements();
+};
+window.setCeo = function(id){
+  const b = S.businesses.find(x=>x.id===id); if(!b) return;
+  const defaultName = b.ceo || S.playerName || 'CEO';
+  const name = (typeof prompt !== 'undefined') ? prompt(`Who will lead ${b.name}?`, defaultName) : null;
+  if (!name){ return; }
+  const trimmed = name.trim();
+  b.ceo = trimmed || defaultName;
+  const severance = trimmed.toLowerCase() === (defaultName.toLowerCase()) ? 0 : 50000;
+  if (severance){
+    log(`${b.name}: appointed ${b.ceo} as CEO`, -severance, 0, {tag:'biz', repDelta:1});
+  } else {
+    log(`${b.name}: reaffirmed ${b.ceo} as CEO`, 0, 0, {tag:'biz', repDelta:1});
+  }
+  paintCompanies();
+};
 function checkBoard(b){
-  if (b.growth_level>=3) return;
+  if (!b) return;
+  b.boardMembers = Array.isArray(b.boardMembers) ? b.boardMembers : [];
   if (b.employees>=25 || b.weekly_revenue>=200000){
-    b.growth_level = 3;
-    toast(`${b.name}: advanced to Board level.`);
+    if (b.growth_level < 3){
+      b.growth_level = 3;
+      toast(`${b.name}: advanced to Board level.`);
+    }
+    b.boardSeats = Math.max(b.boardSeats||0, 3);
+  }
+  if (b.weekly_revenue>=500000 || b.employees>=60){
+    b.boardSeats = Math.max(b.boardSeats||0, 5);
   }
 }
 window.removeCharity = function(id){
@@ -880,6 +1194,121 @@ $('#chCreate').addEventListener('click', ()=>{
   paintCharities();
   log(`Created charity: ${name}`, -seed, 0, {tag:'charity', repGain:rep});
 });
+
+const customCarBtn = $('#customCarCreate');
+if (customCarBtn){
+  customCarBtn.addEventListener('click', ()=>{
+    const name = ($('#customCarName').value || '').trim() || 'Custom Car';
+    const price = Math.max(10000, toNumber($('#customCarPrice').value, 0));
+    if (!purchaseOK(price)) return;
+    const dep = Math.max(0, toPercent($('#customCarDep').value, 15, 0, 75));
+    const maint = Math.max(0, toNumber($('#customCarMaint').value, 0));
+    S.wallet -= price;
+    S.cars.push({
+      id:newId(),
+      name,
+      value:price,
+      dep_rate_annual:dep,
+      maint_monthly:maint,
+      bespoke:true
+    });
+    paintGarage();
+    log(`Commissioned ${name}`, -price, +price, {tag:'lifestyle', happinessDelta:4, repDelta:2});
+    updateAchievements();
+  });
+}
+
+const customHouseBtn = $('#customHouseCreate');
+if (customHouseBtn){
+  customHouseBtn.addEventListener('click', ()=>{
+    const name = ($('#customHouseName').value || '').trim() || 'Custom Estate';
+    const price = Math.max(50000, toNumber($('#customHousePrice').value, 0));
+    if (!purchaseOK(price)) return;
+    const appRate = toPercent($('#customHouseApp').value, 4.5, -10, 25);
+    const rent = Math.max(0, toNumber($('#customHouseRent').value, 0));
+    const tax = Math.max(0, toPercent($('#customHouseTax').value, 1.1, 0, 5));
+    const upkeep = Math.max(0, toNumber($('#customHouseUpkeep').value, 0));
+    S.wallet -= price;
+    S.houses.push({
+      id:newId(),
+      name,
+      value:price,
+      app_rate_annual:appRate,
+      rent_monthly:rent,
+      prop_tax_rate_annual:tax,
+      upkeep_monthly:upkeep,
+      rented:false,
+      bespoke:true
+    });
+    ensurePrimaryResidence();
+    paintProps();
+    log(`Developed ${name}`, -price, +price, {tag:'biz', happinessDelta:3, repDelta:3});
+    updateAchievements();
+  });
+}
+
+const customBizBtn = $('#customBizCreate');
+if (customBizBtn){
+  customBizBtn.addEventListener('click', ()=>{
+    const name = ($('#customBizName').value || '').trim() || 'Custom Venture';
+    const price = Math.max(100000, toNumber($('#customBizPrice').value, 0));
+    if (!purchaseOK(price)) return;
+    const employees = Math.max(1, Math.round(toNumber($('#customBizEmployees').value, 1)));
+    const salary = Math.max(20000, toNumber($('#customBizSalary').value, 0));
+    const revenue = Math.max(5000, toNumber($('#customBizRevenue').value, 0));
+    const margin = Math.max(0.05, toPercent($('#customBizMargin').value, 45, 5, 90));
+    const fixed = Math.max(0, toNumber($('#customBizFixed').value, 0));
+    const growth = clamp(Math.round(toNumber($('#customBizGrowth').value, 2)), 1, 4);
+    const cultureInput = $('#customBizCulture');
+    const culture = cultureInput ? cultureInput.value.trim() : '';
+    S.wallet -= price;
+    S.businesses.push({
+      id:newId(),
+      name,
+      employees,
+      salary_per_employee_annual:salary,
+      weekly_revenue:revenue,
+      gross_margin:margin,
+      fixed_weekly_costs:fixed,
+      growth_level:growth,
+      ipo:false,
+      shares:0,
+      div_yield:0.02,
+      boardMembers:[],
+      boardSeats:growth>=3 ? (growth>=4?5:3) : 0,
+      ceo:S.playerName,
+      culture: culture || 'Founder-led bespoke venture'
+    });
+    paintCompanies();
+    log(`Launched ${name}`, -price, +price, {tag:'biz', happinessDelta:4, repDelta:4});
+    updateAchievements();
+  });
+}
+
+const customItemBtn = $('#customItemCreate');
+if (customItemBtn){
+  customItemBtn.addEventListener('click', ()=>{
+    const name = ($('#customItemName').value || '').trim() || 'Custom Fund';
+    const price = Math.max(10000, toNumber($('#customItemPrice').value, 0));
+    if (!purchaseOK(price)) return;
+    const rate = toPercent($('#customItemRate').value, 6, -20, 40);
+    const upkeep = Math.max(0, toNumber($('#customItemUpkeep').value, 0));
+    const vol = Math.max(0, toPercent($('#customItemVol').value, 5, 0, 40));
+    S.wallet -= price;
+    S.items.push({
+      id:newId(),
+      name,
+      value:price,
+      rate_annual:rate,
+      upkeep_monthly:upkeep,
+      volatility_monthly:vol,
+      bespoke:true
+    });
+    paintItems();
+    log(`Structured ${name}`, -price, +price, {tag:'events', happinessDelta:2});
+    updateAchievements();
+  });
+}
 
 /* ================== Simulation Engine ================== */
 function applySavings(days){
@@ -941,13 +1370,21 @@ function applyBizWeek(){
   S.businesses.forEach(b=>{
     const payroll = (b.employees * b.salary_per_employee_annual)/52;
     const grossProfit = b.weekly_revenue * b.gross_margin;
+    const board = Array.isArray(b.boardMembers) ? b.boardMembers : [];
     let net = grossProfit - payroll - b.fixed_weekly_costs;
+    const boardCost = board.reduce((sum, member)=> sum + (Number(member.compensation||150000)/52), 0);
+    net -= boardCost;
+    if (b.boardSeats && board.length < b.boardSeats){
+      net -= (b.boardSeats - board.length) * 2500; // search and retainers
+    }
     if (b.ipo && b.shares>0){
       const yearly = b.shares*10*b.div_yield;
       net += yearly/52;
     }
     dW += net;
-    b.weekly_revenue *= 1.0015;
+    const boardBoost = board.length ? Math.min(0.0045, 0.0015 + board.length*0.0008) : 0.0015;
+    b.weekly_revenue *= (1 + boardBoost);
+    checkBoard(b);
   });
   if (dW) logEvent('Businesses: weekly operations', dW, 0, {tag:'biz'});
 }
@@ -963,6 +1400,22 @@ function applyLifestyle(days){
   const monthly = S.lifestyle.burn + S.lifestyle.travel + S.lifestyle.security + S.lifestyle.staff;
   const spend = (monthly/30) * days;
   if (spend) logEvent(`Lifestyle spending (${days}d)`, -spend, 0, {tag:'lifestyle', happinessDelta: (monthly/150000 - S.debt/1000000) * (days/30)});
+}
+function applyFamilyEconomy(days){
+  if (!S.family || !Array.isArray(S.family.members) || !S.family.members.length) return;
+  let dW = 0;
+  S.family.members.forEach(member=>{
+    const impact = Number(member.impactMonthly || 0);
+    if (!impact) return;
+    dW += (impact/30) * days;
+  });
+  const memberCount = S.family.members.length;
+  const baseHappy = Math.min(5, memberCount * 0.5) * (days/30);
+  const stress = dW < 0 ? Math.min(4, Math.abs(dW)/(50000)) : 0;
+  const happinessDelta = clamp(baseHappy - stress, -6, 6);
+  if (Math.abs(dW) < 1 && Math.abs(happinessDelta) < 0.05) return;
+  const repDelta = memberCount >= 3 ? 1 : 0;
+  logEvent(`Family life (${days}d)`, dW, 0, {tag:'family', happinessDelta, repDelta});
 }
 function applyDebtInterest(days){
   if (!S.loans.length) return;
@@ -1032,7 +1485,18 @@ function applyLoansReduction(amount){
 function simulateDays(days){
   days = Math.max(1, Math.round(days));
   S.day += days;
+  if (!S.character) S.character = {age:28, ageProgress:0, avatar:'💰', pronouns:'They/Them'};
+  if (typeof S.character.age === 'number'){
+    S.character.ageProgress = (S.character.ageProgress || 0) + days;
+    while (S.character.ageProgress >= 365){
+      S.character.age += 1;
+      S.character.ageProgress -= 365;
+      toast(`🎉 ${S.playerName} turned ${Math.round(S.character.age)}!`);
+      S.happiness = clamp(S.happiness + 3, 0, 100);
+    }
+  }
   applyLifestyle(days);
+  applyFamilyEconomy(days);
   applyCars(days);
   applyHouses(days);
   applyItems(days);
@@ -1138,7 +1602,10 @@ function snapshotForServer(){
     loans:S.loans,
     holdings:{cars:S.cars,houses:S.houses,businesses:S.businesses,charities:S.charities,items:S.items},
     timeline:S.timeline.slice(0,30),
-    ledger:S.ledger.slice(0,30)
+    ledger:S.ledger.slice(0,30),
+    family:S.family,
+    character:S.character,
+    primaryHouseId:S.primaryHouseId
   };
 }
 $('#saveLeaderboard').addEventListener('click', async () => {
