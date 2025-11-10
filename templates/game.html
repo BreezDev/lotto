@@ -429,23 +429,8 @@ window.GAME_START = {{ start_data|tojson }};
     <h2>🏎 Cars — Showroom</h2>
     <div id="carList"></div>
     <div class="notice" style="margin-top:16px">
-      <h3 style="margin:0 0 10px">🛠️ Build a Custom Ride</h3>
-      <p class="mini">Design a bespoke vehicle when the catalog doesn't have what you crave.</p>
-      <div class="row">
-        <label>Name
-          <input id="customCarName" type="text" placeholder="Coachbuilt Supercar">
-        </label>
-        <label>Purchase Price ($)
-          <input id="customCarPrice" type="number" min="10000" step="1000" value="350000">
-        </label>
-        <label>Annual Depreciation (%)
-          <input id="customCarDep" type="number" min="0" max="75" step="0.5" value="15">
-        </label>
-        <label>Maintenance / mo ($)
-          <input id="customCarMaint" type="number" min="0" step="100" value="2500">
-        </label>
-        <div style="align-self:end"><button id="customCarCreate" class="primary">Add Custom Car</button></div>
-      </div>
+      <h3 style="margin:0 0 10px">🛒 Curated Fleet Only</h3>
+      <p class="mini">All vehicles are now limited-run exotics with pre-modeled depreciation and upkeep. Build your dream garage by unlocking the curated catalog.</p>
     </div>
     <h3>🚗 Garage</h3>
     <table id="garage">
@@ -458,29 +443,8 @@ window.GAME_START = {{ start_data|tojson }};
     <h2>🏠 Real Estate — Portfolio</h2>
     <div id="houseList"></div>
     <div class="notice" style="margin-top:16px">
-      <h3 style="margin:0 0 10px">🏗️ Develop a Custom Property</h3>
-      <p class="mini">Commission dream homes or income properties with bespoke economics.</p>
-      <div class="row">
-        <label>Name
-          <input id="customHouseName" type="text" placeholder="Clifftop Estate">
-        </label>
-        <label>Purchase Price ($)
-          <input id="customHousePrice" type="number" min="50000" step="5000" value="1250000">
-        </label>
-        <label>Annual Appreciation (%)
-          <input id="customHouseApp" type="number" min="-10" max="25" step="0.25" value="4.5">
-        </label>
-        <label>Rent Potential / mo ($)
-          <input id="customHouseRent" type="number" min="0" step="500" value="9500">
-        </label>
-        <label>Property Tax Rate (%)
-          <input id="customHouseTax" type="number" min="0" max="5" step="0.05" value="1.1">
-        </label>
-        <label>Upkeep / mo ($)
-          <input id="customHouseUpkeep" type="number" min="0" step="250" value="3200">
-        </label>
-        <div style="align-self:end"><button id="customHouseCreate" class="primary">Add Custom Property</button></div>
-      </div>
+      <h3 style="margin:0 0 10px">🏡 Exclusive Portfolio Only</h3>
+      <p class="mini">The property market is locked to pre-modeled estates complete with appreciation, rent potential, taxes, and upkeep. Expand by securing these curated deals.</p>
     </div>
     <h3>🏚 Owned Properties</h3>
     <table id="props">
@@ -493,38 +457,8 @@ window.GAME_START = {{ start_data|tojson }};
     <h2>💼 Businesses — Ventures</h2>
     <div id="bizList"></div>
     <div class="notice" style="margin-top:16px">
-      <h3 style="margin:0 0 10px">🚀 Launch a Bespoke Company</h3>
-      <p class="mini">Model a private venture with custom hiring, revenue, and board ambitions.</p>
-      <div class="row">
-        <label>Name
-          <input id="customBizName" type="text" placeholder="Avant Labs">
-        </label>
-        <label>Buy-In Price ($)
-          <input id="customBizPrice" type="number" min="100000" step="10000" value="2500000">
-        </label>
-        <label>Employees
-          <input id="customBizEmployees" type="number" min="1" max="500" value="18">
-        </label>
-        <label>Salary per Employee / yr ($)
-          <input id="customBizSalary" type="number" min="20000" step="1000" value="85000">
-        </label>
-        <label>Weekly Revenue ($)
-          <input id="customBizRevenue" type="number" min="5000" step="1000" value="145000">
-        </label>
-        <label>Gross Margin (%)
-          <input id="customBizMargin" type="number" min="5" max="90" step="0.5" value="48">
-        </label>
-        <label>Fixed Weekly Costs ($)
-          <input id="customBizFixed" type="number" min="0" step="1000" value="38000">
-        </label>
-        <label>Growth Stage (1-4)
-          <input id="customBizGrowth" type="number" min="1" max="4" value="2">
-        </label>
-        <label style="flex:1 1 240px">Culture &amp; Strategy
-          <input id="customBizCulture" type="text" placeholder="Sustainable tech with global reach">
-        </label>
-        <div style="align-self:end"><button id="customBizCreate" class="primary">Create Custom Business</button></div>
-      </div>
+      <h3 style="margin:0 0 10px">📈 Curated Ventures Only</h3>
+      <p class="mini">Every company opportunity now comes pre-built with payroll, revenue, and growth trajectories. Earn your way into these exclusive buy-ins.</p>
     </div>
     <h3>🏢 Owned Companies</h3>
     <table id="companies">
@@ -537,18 +471,12 @@ window.GAME_START = {{ start_data|tojson }};
     <h2>🎁 Charities — Give Back</h2>
     <div id="charityList"></div>
     <div class="notice" style="margin-top:14px">
-      <h3 style="margin:0 0 10px">➕ Create Custom Charity</h3>
-      <div class="row">
-        <div><label>Name</label><input id="chName" placeholder="My Foundation"></div>
-        <div><label>Initial Funding ($)</label><input id="chSeed" type="number" value="100000"></div>
-        <div><label>Monthly Program Spend ($)</label><input id="chDrain" type="number" value="8000"></div>
-        <div><label>Reputation</label><input id="chRep" type="number" value="12"></div>
-        <div style="align-self:end"><button id="chCreate" class="primary">Create</button></div>
-      </div>
+      <h3 style="margin:0 0 10px">🌍 Expanded Philanthropy Catalog</h3>
+      <p class="mini">Choose from fully staffed foundations with defined missions, geographies, and reputation gains. Each requires a significant commitment to launch.</p>
     </div>
     <h3>🏛 Your Charities</h3>
     <table id="charTable">
-      <thead><tr><th>Name</th><th class="right">Monthly Spend</th><th class="right">Reputation</th><th>Action</th></tr></thead>
+      <thead><tr><th>Name</th><th>Focus</th><th class="right">Monthly Spend</th><th class="right">Reputation</th><th>Action</th></tr></thead>
       <tbody></tbody>
     </table>
   </section>
@@ -557,30 +485,12 @@ window.GAME_START = {{ start_data|tojson }};
     <h2>💹 Alternative Investments</h2>
     <div id="itemList"></div>
     <div class="notice" style="margin-top:16px">
-      <h3 style="margin:0 0 10px">🧮 Engineer a Custom Alternative Asset</h3>
-      <p class="mini">Spin up hedge funds, art funds, or any niche play with tailored risk.</p>
-      <div class="row">
-        <label>Name
-          <input id="customItemName" type="text" placeholder="Horizon Hedge Fund">
-        </label>
-        <label>Commitment ($)
-          <input id="customItemPrice" type="number" min="10000" step="1000" value="600000">
-        </label>
-        <label>Annual Yield (%)
-          <input id="customItemRate" type="number" min="-20" max="40" step="0.25" value="8.5">
-        </label>
-        <label>Upkeep / mo ($)
-          <input id="customItemUpkeep" type="number" min="0" step="250" value="1200">
-        </label>
-        <label>Volatility / mo (%)
-          <input id="customItemVol" type="number" min="0" max="40" step="0.5" value="6">
-        </label>
-        <div style="align-self:end"><button id="customItemCreate" class="primary">Add Custom Investment</button></div>
-      </div>
+      <h3 style="margin:0 0 10px">📊 Curated Alternative Plays</h3>
+      <p class="mini">Deploy capital into pre-modeled luxury assets, private funds, and speculative bets with defined yields, upkeep, and volatility.</p>
     </div>
     <h3>🎒 Owned Investments</h3>
     <table id="inv">
-      <thead><tr><th>Asset</th><th class="right">Value</th><th class="right">Upkeep/mo</th><th>Action</th></tr></thead>
+      <thead><tr><th>Asset</th><th>Strategy</th><th class="right">Value</th><th class="right">Upkeep/mo</th><th>Action</th></tr></thead>
       <tbody></tbody>
     </table>
   </section>

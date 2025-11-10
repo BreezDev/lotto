@@ -1,155 +1,332 @@
 [
   {
-    "name": "Downtown Condo",
-    "price": 380000,
-    "app_rate_annual": 0.03,
-    "rent_monthly": 2000,
-    "prop_tax_rate_annual": 0.011,
-    "upkeep_monthly": 250,
-    "desc": "1-bed luxury condo downtown."
-  },
-  {
-    "name": "Suburban Family Home",
-    "price": 650000,
-    "app_rate_annual": 0.035,
-    "rent_monthly": 3200,
-    "prop_tax_rate_annual": 0.012,
-    "upkeep_monthly": 400,
-    "desc": "4-bed, 3-bath; family area."
-  },
-  {
-    "name": "Lakefront Villa",
-    "price": 1800000,
-    "app_rate_annual": 0.04,
-    "rent_monthly": 9000,
-    "prop_tax_rate_annual": 0.013,
-    "upkeep_monthly": 1500,
-    "desc": "Waterfront dream home."
-  },
-  {
-    "name": "Penthouse Apartment",
-    "price": 2750000,
-    "app_rate_annual": 0.05,
-    "rent_monthly": 15000,
+    "name": "Manhattan Sky Palace",
+    "price": 18500000,
+    "app_rate_annual": 0.048,
+    "rent_monthly": 125000,
     "prop_tax_rate_annual": 0.014,
-    "upkeep_monthly": 2500,
-    "desc": "Skyline views; world-class."
+    "upkeep_monthly": 22000,
+    "tier": "Icon",
+    "desc": "Tri-level Central Park penthouse with private observatory." 
   },
   {
-    "name": "Country Estate",
-    "price": 3800000,
-    "app_rate_annual": 0.03,
-    "rent_monthly": 12000,
-    "prop_tax_rate_annual": 0.012,
-    "upkeep_monthly": 3500,
-    "desc": "10-acre estate; high upkeep."
-  },
-  {
-    "name": "Mega Mansion (Beverly Hills)",
-    "price": 15000000,
-    "app_rate_annual": 0.05,
-    "rent_monthly": 75000,
-    "prop_tax_rate_annual": 0.015,
-    "upkeep_monthly": 15000,
-    "desc": "Iconic ultra-luxury residence."
-  },
-  {
-    "name": "Mediterranean Villa",
-    "price": 7200000,
-    "app_rate_annual": 0.045,
-    "rent_monthly": 32000,
+    "name": "Beverly Hills Terraced Estate",
+    "price": 14500000,
+    "app_rate_annual": 0.042,
+    "rent_monthly": 89000,
     "prop_tax_rate_annual": 0.013,
-    "upkeep_monthly": 7800,
-    "desc": "Cliffside escape with infinity pools and a helipad."
+    "upkeep_monthly": 18000,
+    "tier": "Icon",
+    "desc": "Indoor-outdoor megamansion with spa pavilion and staff wing." 
   },
   {
-    "name": "Ski Resort Chalet",
-    "price": 2900000,
-    "app_rate_annual": 0.038,
-    "rent_monthly": 21000,
-    "prop_tax_rate_annual": 0.011,
-    "upkeep_monthly": 6200,
-    "desc": "Luxury chalet with year-round rental demand."
-  },
-  {
-    "name": "Eco Smart Home",
-    "price": 950000,
-    "app_rate_annual": 0.03,
-    "rent_monthly": 6800,
+    "name": "Dubai Helipad Villa",
+    "price": 12500000,
+    "app_rate_annual": 0.05,
+    "rent_monthly": 96000,
     "prop_tax_rate_annual": 0.009,
-    "upkeep_monthly": 1400,
-    "desc": "Net-zero property with solar roof and battery backup."
+    "upkeep_monthly": 19500,
+    "tier": "Icon",
+    "desc": "Palm Jumeirah beachfront with rooftop helipad and marina." 
   },
   {
-    "name": "Urban Creative Loft",
-    "price": 850000,
-    "app_rate_annual": 0.032,
-    "rent_monthly": 7200,
-    "prop_tax_rate_annual": 0.010,
-    "upkeep_monthly": 1200,
-    "desc": "Downtown live/work loft with rooftop deck and studio space."
+    "name": "Singapore Skygarden Duplex",
+    "price": 9800000,
+    "app_rate_annual": 0.043,
+    "rent_monthly": 78000,
+    "prop_tax_rate_annual": 0.01,
+    "upkeep_monthly": 15500,
+    "tier": "Prestige",
+    "desc": "Hanging gardens overlooking Marina Bay Sands." 
   },
   {
-    "name": "Beachfront Compound",
-    "price": 5200000,
-    "app_rate_annual": 0.044,
-    "rent_monthly": 42000,
-    "prop_tax_rate_annual": 0.013,
-    "upkeep_monthly": 9800,
-    "desc": "Three-villa complex with private beach club."
-  },
-  {
-    "name": "Dubai Sky Penthouse",
+    "name": "Zurich Lake Glass House",
     "price": 8600000,
-    "app_rate_annual": 0.05,
-    "rent_monthly": 55000,
-    "prop_tax_rate_annual": 0.012,
-    "upkeep_monthly": 15000,
-    "desc": "Triple-level penthouse with infinity pool overlooking the Palm."
+    "app_rate_annual": 0.038,
+    "rent_monthly": 62000,
+    "prop_tax_rate_annual": 0.008,
+    "upkeep_monthly": 13200,
+    "tier": "Prestige",
+    "desc": "Modernist retreat with underground art vault." 
   },
   {
     "name": "Tokyo Micro Tower",
     "price": 2100000,
-    "app_rate_annual": 0.04,
+    "app_rate_annual": 0.041,
     "rent_monthly": 16000,
     "prop_tax_rate_annual": 0.009,
     "upkeep_monthly": 4200,
-    "desc": "Smart tower of micro apartments—perfect rental yield play."
+    "tier": "Prime",
+    "desc": "Stacked smart units with robotic parking and vending lobby." 
   },
   {
-    "name": "Private Island Retreat",
-    "price": 12500000,
-    "app_rate_annual": 0.052,
-    "rent_monthly": 95000,
-    "prop_tax_rate_annual": 0.014,
-    "upkeep_monthly": 22000,
-    "desc": "Own the whole island with dock, villas, and staff quarters."
+    "name": "London Knightsbridge Row",
+    "price": 11200000,
+    "app_rate_annual": 0.036,
+    "rent_monthly": 72000,
+    "prop_tax_rate_annual": 0.012,
+    "upkeep_monthly": 16800,
+    "tier": "Prestige",
+    "desc": "Five-story townhouse with subterranean lap pool." 
   },
   {
-    "name": "Safari Lodge Portfolio",
+    "name": "Sydney Harbour Bluff",
+    "price": 7200000,
+    "app_rate_annual": 0.039,
+    "rent_monthly": 54000,
+    "prop_tax_rate_annual": 0.010,
+    "upkeep_monthly": 11000,
+    "tier": "Prestige",
+    "desc": "Cantilevered villa with private cinema carved into the cliff." 
+  },
+  {
+    "name": "Swiss Alpine Chalet Compound",
+    "price": 6400000,
+    "app_rate_annual": 0.037,
+    "rent_monthly": 48000,
+    "prop_tax_rate_annual": 0.009,
+    "upkeep_monthly": 12400,
+    "tier": "Prestige",
+    "desc": "Ski-in micro village with spa, gondola, and chef quarters." 
+  },
+  {
+    "name": "Paris Haussmann Atelier",
     "price": 4800000,
+    "app_rate_annual": 0.034,
+    "rent_monthly": 36000,
+    "prop_tax_rate_annual": 0.012,
+    "upkeep_monthly": 9200,
+    "tier": "Prime",
+    "desc": "Grand boulevard pied-à-terre with artist loft and wine cave." 
+  },
+  {
+    "name": "Cabo Clifftop Sanctuary",
+    "price": 5200000,
+    "app_rate_annual": 0.04,
+    "rent_monthly": 38000,
+    "prop_tax_rate_annual": 0.011,
+    "upkeep_monthly": 9800,
+    "tier": "Prime",
+    "desc": "Infinity pools cascading into Sea of Cortez views." 
+  },
+  {
+    "name": "Monaco Seaside Penthouse",
+    "price": 18200000,
+    "app_rate_annual": 0.047,
+    "rent_monthly": 138000,
+    "prop_tax_rate_annual": 0.008,
+    "upkeep_monthly": 25000,
+    "tier": "Icon",
+    "desc": "Casino Square address with private glass lift to rooftop lounge." 
+  },
+  {
+    "name": "Malibu Carbon Beach Estate",
+    "price": 11200000,
+    "app_rate_annual": 0.041,
+    "rent_monthly": 82000,
+    "prop_tax_rate_annual": 0.013,
+    "upkeep_monthly": 17000,
+    "tier": "Prestige",
+    "desc": "Wave-break backyard with recording studio and wellness spa." 
+  },
+  {
+    "name": "Aspen Modern Lodge",
+    "price": 7800000,
+    "app_rate_annual": 0.035,
+    "rent_monthly": 56000,
+    "prop_tax_rate_annual": 0.011,
+    "upkeep_monthly": 13200,
+    "tier": "Prestige",
+    "desc": "Glass-and-steel ski home with après club and gear garage." 
+  },
+  {
+    "name": "Private Island Marina",
+    "price": 21500000,
+    "app_rate_annual": 0.05,
+    "rent_monthly": 165000,
+    "prop_tax_rate_annual": 0.012,
+    "upkeep_monthly": 32000,
+    "tier": "Signature",
+    "desc": "Caribbean island with runway, villas, and protected lagoon." 
+  },
+  {
+    "name": "Cape Town Wine Estate",
+    "price": 5200000,
+    "app_rate_annual": 0.033,
+    "rent_monthly": 34000,
+    "prop_tax_rate_annual": 0.009,
+    "upkeep_monthly": 9800,
+    "tier": "Prime",
+    "desc": "Working vineyard with tasting room and amphitheater." 
+  },
+  {
+    "name": "Hong Kong Victoria Peak Mansion",
+    "price": 19800000,
+    "app_rate_annual": 0.046,
+    "rent_monthly": 142000,
+    "prop_tax_rate_annual": 0.010,
+    "upkeep_monthly": 27000,
+    "tier": "Icon",
+    "desc": "Hilltop skyline estate with bulletproof garage lift." 
+  },
+  {
+    "name": "Seattle Smart Tower Lofts",
+    "price": 4200000,
+    "app_rate_annual": 0.032,
+    "rent_monthly": 28000,
+    "prop_tax_rate_annual": 0.012,
+    "upkeep_monthly": 7600,
+    "tier": "Prime",
+    "desc": "Five stacked lofts with robotics lab and rooftop greenhouse." 
+  },
+  {
+    "name": "Ibiza Cliff Soundstage",
+    "price": 6900000,
+    "app_rate_annual": 0.037,
+    "rent_monthly": 52000,
+    "prop_tax_rate_annual": 0.011,
+    "upkeep_monthly": 12500,
+    "tier": "Prestige",
+    "desc": "DJ stage, hidden club, and twelve guest suites for festival weeks." 
+  },
+  {
+    "name": "Doha Pearl Sky Tower",
+    "price": 8300000,
+    "app_rate_annual": 0.039,
+    "rent_monthly": 61000,
+    "prop_tax_rate_annual": 0.009,
+    "upkeep_monthly": 13800,
+    "tier": "Prestige",
+    "desc": "Skybridge duplex with concierge hammam and art vault." 
+  },
+  {
+    "name": "Miami Star Island Compound",
+    "price": 16800000,
+    "app_rate_annual": 0.044,
+    "rent_monthly": 118000,
+    "prop_tax_rate_annual": 0.014,
+    "upkeep_monthly": 24000,
+    "tier": "Icon",
+    "desc": "Dual mansions with yacht slips, recording studio, and panic room." 
+  },
+  {
+    "name": "Vancouver Rainforest Villa",
+    "price": 5400000,
+    "app_rate_annual": 0.034,
+    "rent_monthly": 36000,
+    "prop_tax_rate_annual": 0.010,
+    "upkeep_monthly": 10200,
+    "tier": "Prime",
+    "desc": "Glass atrium lodge with indoor waterfall and spa grotto." 
+  },
+  {
+    "name": "Florence Renaissance Palazzo",
+    "price": 6300000,
+    "app_rate_annual": 0.033,
+    "rent_monthly": 41000,
+    "prop_tax_rate_annual": 0.012,
+    "upkeep_monthly": 11800,
+    "tier": "Prestige",
+    "desc": "Frescoed halls converted into boutique hotel potential." 
+  },
+  {
+    "name": "Shanghai Bund Sky Suites",
+    "price": 8800000,
     "app_rate_annual": 0.042,
+    "rent_monthly": 68000,
+    "prop_tax_rate_annual": 0.010,
+    "upkeep_monthly": 15000,
+    "tier": "Prestige",
+    "desc": "Triplex apartments with smart glass facades and sky pool." 
+  },
+  {
+    "name": "Stockholm Archipelago Retreat",
+    "price": 4100000,
+    "app_rate_annual": 0.031,
+    "rent_monthly": 26000,
+    "prop_tax_rate_annual": 0.009,
+    "upkeep_monthly": 7200,
+    "tier": "Prime",
+    "desc": "Scandinavian minimalism with sauna dock and ice plunge." 
+  },
+  {
+    "name": "Santorini Cliff Mansion",
+    "price": 5200000,
+    "app_rate_annual": 0.038,
+    "rent_monthly": 40000,
+    "prop_tax_rate_annual": 0.010,
+    "upkeep_monthly": 9600,
+    "tier": "Prestige",
+    "desc": "Terraced infinity pools and sunset caves carved into the caldera." 
+  },
+  {
+    "name": "New Zealand Southern Alps Ranch",
+    "price": 4600000,
+    "app_rate_annual": 0.035,
+    "rent_monthly": 29000,
+    "prop_tax_rate_annual": 0.009,
+    "upkeep_monthly": 8800,
+    "tier": "Prime",
+    "desc": "Sheep stations upgraded with helipad and gourmet lodge." 
+  },
+  {
+    "name": "Lisbon Riverfront Palace",
+    "price": 4700000,
+    "app_rate_annual": 0.032,
+    "rent_monthly": 30000,
+    "prop_tax_rate_annual": 0.011,
+    "upkeep_monthly": 9000,
+    "tier": "Prime",
+    "desc": "Tile-clad manor with fado hall and chef's kitchen." 
+  },
+  {
+    "name": "Reykjavik Geothermal Haven",
+    "price": 3600000,
+    "app_rate_annual": 0.029,
+    "rent_monthly": 22000,
+    "prop_tax_rate_annual": 0.008,
+    "upkeep_monthly": 6800,
+    "tier": "Prime",
+    "desc": "Sustainable retreat with private lagoon and aurora observatory." 
+  },
+  {
+    "name": "Costa Rica Rainforest Eco-Lodge",
+    "price": 3900000,
+    "app_rate_annual": 0.033,
+    "rent_monthly": 25000,
+    "prop_tax_rate_annual": 0.009,
+    "upkeep_monthly": 7600,
+    "tier": "Prime",
+    "desc": "Canopy walkways, wellness spa, and carbon-negative operations." 
+  },
+  {
+    "name": "Athens Riviera Megayacht Slip",
+    "price": 5200000,
+    "app_rate_annual": 0.036,
     "rent_monthly": 36000,
     "prop_tax_rate_annual": 0.011,
-    "upkeep_monthly": 8700,
-    "desc": "Eco-lodges on a private reserve—high-end adventure rentals."
+    "upkeep_monthly": 9400,
+    "tier": "Prestige",
+    "desc": "Villa with yacht harbor berth and beach club membership." 
   },
   {
-    "name": "Mountain Ranch Retreat",
-    "price": 2750000,
-    "app_rate_annual": 0.036,
-    "rent_monthly": 18500,
-    "prop_tax_rate_annual": 0.010,
-    "upkeep_monthly": 5200,
-    "desc": "Horse stables, guest cabins, and helipad in the Rockies."
-  },
-  {
-    "name": "Tiny Home Village",
-    "price": 1650000,
-    "app_rate_annual": 0.034,
-    "rent_monthly": 12800,
+    "name": "Doha Desert Oasis Compound",
+    "price": 6900000,
+    "app_rate_annual": 0.037,
+    "rent_monthly": 52000,
     "prop_tax_rate_annual": 0.009,
-    "upkeep_monthly": 3100,
-    "desc": "Cluster of designer tiny homes perfect for short-term rentals."
+    "upkeep_monthly": 12200,
+    "tier": "Prestige",
+    "desc": "Walled courtyard estate with falconry mews and cooling gardens." 
+  },
+  {
+    "name": "Toronto Financial District Tower",
+    "price": 7800000,
+    "app_rate_annual": 0.035,
+    "rent_monthly": 54000,
+    "prop_tax_rate_annual": 0.012,
+    "upkeep_monthly": 13800,
+    "tier": "Prestige",
+    "desc": "Corporate sky suites with boardroom, lounge, and private lobby." 
   }
 ]
