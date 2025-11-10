@@ -1,121 +1,290 @@
 [
   {
-    "name": "Food for All Foundation",
-    "price": 50000,
-    "monthly_drain": 5000,
-    "reputation": 10,
-    "desc": "Meals to families in need."
+    "name": "Global Hunger Accelerator",
+    "price": 250000,
+    "monthly_drain": 32000,
+    "reputation": 18,
+    "focus": "Food Security",
+    "region": "Global",
+    "desc": "Satellite kitchens delivering shelf-stable meals to famine zones." 
   },
   {
-    "name": "Clean Oceans Project",
-    "price": 100000,
-    "monthly_drain": 8000,
-    "reputation": 12,
-    "desc": "Marine cleanup & research."
-  },
-  {
-    "name": "Animal Rescue Network",
-    "price": 75000,
-    "monthly_drain": 6500,
-    "reputation": 9,
-    "desc": "Shelter & rehab animals."
-  },
-  {
-    "name": "STEM Education Fund",
-    "price": 200000,
-    "monthly_drain": 15000,
-    "reputation": 15,
-    "desc": "Scholarships & coding camps."
-  },
-  {
-    "name": "Global Health Initiative",
-    "price": 500000,
-    "monthly_drain": 25000,
-    "reputation": 20,
-    "desc": "Vaccination & healthcare."
-  },
-  {
-    "name": "Build a School Program",
+    "name": "Coastal Resilience Trust",
     "price": 300000,
-    "monthly_drain": 20000,
-    "reputation": 18,
-    "desc": "Construct rural schools."
-  },
-  {
-    "name": "Mental Wellness Coalition",
-    "price": 150000,
-    "monthly_drain": 12000,
-    "reputation": 14,
-    "desc": "Counseling access and hotlines worldwide."
-  },
-  {
-    "name": "Green Cities Challenge",
-    "price": 400000,
-    "monthly_drain": 23000,
-    "reputation": 17,
-    "desc": "Urban tree planting and climate tech pilots."
-  },
-  {
-    "name": "Space STEM Lab",
-    "price": 600000,
     "monthly_drain": 28000,
-    "reputation": 22,
-    "desc": "Inspires students with space exploration grants."
+    "reputation": 17,
+    "focus": "Climate Adaptation",
+    "region": "Coastal US & Caribbean",
+    "desc": "Builds seawalls, mangrove nurseries, and evacuation networks." 
   },
   {
-    "name": "Disaster Response Corps",
-    "price": 450000,
-    "monthly_drain": 26000,
-    "reputation": 21,
-    "desc": "Deploy rapid relief teams when hurricanes or wildfires hit."
-  },
-  {
-    "name": "Global Water Network",
-    "price": 380000,
+    "name": "Future STEM Scholars",
+    "price": 200000,
     "monthly_drain": 22000,
-    "reputation": 19,
-    "desc": "Build sustainable wells and filtration systems."
+    "reputation": 15,
+    "focus": "Education",
+    "region": "North America",
+    "desc": "Endows robotics labs and provides mentorship for underrepresented youth." 
   },
   {
-    "name": "Arts & Culture Endowment",
-    "price": 275000,
-    "monthly_drain": 16000,
-    "reputation": 16,
-    "desc": "Keep museums and youth arts programs thriving."
-  },
-  {
-    "name": "Veterans Housing Trust",
-    "price": 520000,
-    "monthly_drain": 24000,
-    "reputation": 20,
-    "desc": "Permanent supportive housing for veterans and their families."
-  },
-  {
-    "name": "Digital Literacy Bus",
-    "price": 220000,
-    "monthly_drain": 12000,
-    "reputation": 14,
-    "desc": "Mobile labs teaching tech skills in underserved communities."
-  },
-  {
-    "name": "Women’s Health Initiative",
-    "price": 410000,
-    "monthly_drain": 21000,
-    "reputation": 18,
-    "desc": "Maternal care, research grants, and accessible clinics."
-  },
-  {
-    "name": "Indigenous Land Trust",
-    "price": 670000,
+    "name": "Clean Water Grid",
+    "price": 340000,
     "monthly_drain": 30000,
-    "reputation": 24,
-    "desc": "Support sovereignty, conservation, and cultural preservation."
+    "reputation": 19,
+    "focus": "Water Access",
+    "region": "Sub-Saharan Africa",
+    "desc": "Installs solar-powered purification hubs linked to mobile payments." 
   },
   {
-    "name": "Emergency Scholarship Fund",
-    "price": 150000,
-    "monthly_drain": 9000,
+    "name": "Wildlife Corridor Coalition",
+    "price": 280000,
+    "monthly_drain": 24000,
+    "reputation": 16,
+    "focus": "Conservation",
+    "region": "Central & South America",
+    "desc": "Secures land bridges that reconnect jaguar and tapir habitats." 
+  },
+  {
+    "name": "Mental Wellness Lifeline",
+    "price": 220000,
+    "monthly_drain": 21000,
+    "reputation": 15,
+    "focus": "Mental Health",
+    "region": "Global",
+    "desc": "24/7 multilingual crisis therapists and telehealth training." 
+  },
+  {
+    "name": "Indigenous Rights Fund",
+    "price": 360000,
+    "monthly_drain": 32000,
+    "reputation": 20,
+    "focus": "Cultural Preservation",
+    "region": "Global",
+    "desc": "Supports land claims, language revitalization, and guardian programs." 
+  },
+  {
+    "name": "Renewable Schools Initiative",
+    "price": 260000,
+    "monthly_drain": 25000,
+    "reputation": 16,
+    "focus": "Sustainability",
+    "region": "Southeast Asia",
+    "desc": "Retrofits rural campuses with solar microgrids and clean water." 
+  },
+  {
+    "name": "Urban Food Forest Alliance",
+    "price": 210000,
+    "monthly_drain": 19000,
+    "reputation": 14,
+    "focus": "Food Justice",
+    "region": "US Cities",
+    "desc": "Transforms vacant lots into community-owned farms and markets." 
+  },
+  {
+    "name": "Veterans Reintegration Network",
+    "price": 300000,
+    "monthly_drain": 26000,
+    "reputation": 18,
+    "focus": "Veteran Support",
+    "region": "United States",
+    "desc": "Housing, job placement, and trauma counseling for returning service members." 
+  },
+  {
+    "name": "Girls in Tech Accelerator",
+    "price": 180000,
+    "monthly_drain": 17000,
+    "reputation": 13,
+    "focus": "Education",
+    "region": "Global",
+    "desc": "STEM fellowships, hackathons, and founder bootcamps for girls." 
+  },
+  {
+    "name": "Arctic Ice Defense",
+    "price": 420000,
+    "monthly_drain": 36000,
+    "reputation": 21,
+    "focus": "Climate Science",
+    "region": "Arctic Circle",
+    "desc": "Deploys reflective geoengineering pilots and climate sensors." 
+  },
+  {
+    "name": "Humanitarian Airbridge",
+    "price": 380000,
+    "monthly_drain": 33000,
+    "reputation": 19,
+    "focus": "Disaster Response",
+    "region": "Global",
+    "desc": "Rapid-deploy cargo drones delivering medical kits in conflict zones." 
+  },
+  {
+    "name": "Accessible Arts Endowment",
+    "price": 240000,
+    "monthly_drain": 20000,
+    "reputation": 15,
+    "focus": "Arts & Culture",
+    "region": "Europe & North America",
+    "desc": "Funds inclusive museums, theater residencies, and community studios." 
+  },
+  {
+    "name": "Future Farmers Fellowship",
+    "price": 190000,
+    "monthly_drain": 16000,
     "reputation": 12,
-    "desc": "Keeps first-generation students enrolled during financial shocks."
+    "focus": "Agriculture",
+    "region": "United States",
+    "desc": "Provides land leases and regenerative farming apprenticeships." 
+  },
+  {
+    "name": "Refugee Innovation Lab",
+    "price": 320000,
+    "monthly_drain": 27000,
+    "reputation": 18,
+    "focus": "Human Rights",
+    "region": "Middle East & Africa",
+    "desc": "Tech hubs inside camps powering education and micro-businesses." 
+  },
+  {
+    "name": "Global Health Vaccine Fund",
+    "price": 400000,
+    "monthly_drain": 34000,
+    "reputation": 21,
+    "focus": "Healthcare",
+    "region": "Global South",
+    "desc": "Develops and deploys low-cost vaccines for emerging diseases." 
+  },
+  {
+    "name": "Ocean Plastics Cleanup",
+    "price": 270000,
+    "monthly_drain": 23000,
+    "reputation": 16,
+    "focus": "Environment",
+    "region": "Global Oceans",
+    "desc": "Deploys autonomous booms and upcycles plastics into housing." 
+  },
+  {
+    "name": "Justice Reform Coalition",
+    "price": 280000,
+    "monthly_drain": 24000,
+    "reputation": 16,
+    "focus": "Civic Reform",
+    "region": "United States",
+    "desc": "Legal clinics and data transparency to reduce incarceration." 
+  },
+  {
+    "name": "Solar Village Network",
+    "price": 260000,
+    "monthly_drain": 21000,
+    "reputation": 15,
+    "focus": "Energy Access",
+    "region": "East Africa",
+    "desc": "Off-grid solar co-ops run by local women entrepreneurs." 
+  },
+  {
+    "name": "Wildfire Recovery Brigade",
+    "price": 310000,
+    "monthly_drain": 26000,
+    "reputation": 17,
+    "focus": "Disaster Response",
+    "region": "Western US & Australia",
+    "desc": "Restores forests, rebuilds homes, and equips community fire teams." 
+  },
+  {
+    "name": "Digital Literacy Fleet",
+    "price": 200000,
+    "monthly_drain": 18000,
+    "reputation": 13,
+    "focus": "Education",
+    "region": "Global",
+    "desc": "Mobile labs teaching cybersecurity, coding, and AI ethics." 
+  },
+  {
+    "name": "Maternal Health Collaborative",
+    "price": 280000,
+    "monthly_drain": 25000,
+    "reputation": 17,
+    "focus": "Healthcare",
+    "region": "Global South",
+    "desc": "Deploys midwife drones, training, and prenatal telemedicine." 
+  },
+  {
+    "name": "Ocean Research Fellowship",
+    "price": 230000,
+    "monthly_drain": 20000,
+    "reputation": 14,
+    "focus": "Scientific Research",
+    "region": "Pacific & Indian Oceans",
+    "desc": "Funds deep-sea biodiversity expeditions and open data." 
+  },
+  {
+    "name": "Global Literacy League",
+    "price": 210000,
+    "monthly_drain": 19000,
+    "reputation": 14,
+    "focus": "Education",
+    "region": "Global",
+    "desc": "AI-translated reading programs distributing tablets worldwide." 
+  },
+  {
+    "name": "Accessible Housing Initiative",
+    "price": 330000,
+    "monthly_drain": 29000,
+    "reputation": 18,
+    "focus": "Housing",
+    "region": "North America & Europe",
+    "desc": "Builds modular homes for people with disabilities and seniors." 
+  },
+  {
+    "name": "Blue Carbon Conservancy",
+    "price": 350000,
+    "monthly_drain": 30000,
+    "reputation": 19,
+    "focus": "Climate",
+    "region": "Southeast Asia",
+    "desc": "Restores mangroves and seagrass to sequester carbon at scale." 
+  },
+  {
+    "name": "STEM for Space Program",
+    "price": 240000,
+    "monthly_drain": 21000,
+    "reputation": 15,
+    "focus": "Education",
+    "region": "Global",
+    "desc": "Sponsor rocket camps, microgravity experiments, and scholarships." 
+  },
+  {
+    "name": "Clean Cookstove Collective",
+    "price": 220000,
+    "monthly_drain": 20000,
+    "reputation": 14,
+    "focus": "Public Health",
+    "region": "South Asia",
+    "desc": "Replaces open-fire kitchens with efficient, low-smoke stoves." 
+  },
+  {
+    "name": "Global Microfinance Catalyst",
+    "price": 260000,
+    "monthly_drain": 24000,
+    "reputation": 16,
+    "focus": "Economic Empowerment",
+    "region": "Global",
+    "desc": "Backs women-led cooperatives with inclusive fintech tools." 
+  },
+  {
+    "name": "Youth Climate Leadership Lab",
+    "price": 210000,
+    "monthly_drain": 19000,
+    "reputation": 14,
+    "focus": "Leadership",
+    "region": "Global",
+    "desc": "Trains teen climate ambassadors with grants for local projects." 
+  },
+  {
+    "name": "Rewilding Europe Initiative",
+    "price": 310000,
+    "monthly_drain": 26000,
+    "reputation": 17,
+    "focus": "Conservation",
+    "region": "Europe",
+    "desc": "Reintroduces keystone species and funds ranger brigades." 
   }
 ]

@@ -195,6 +195,17 @@ def game():
     if "wallet" not in session:
         return redirect(url_for("start"))
 
+    def load_catalog_blob(cat: str):
+        path = os.path.join(app.root_path, "static", "json", f"{cat}.json")
+        try:
+            with open(path, "r", encoding="utf-8") as handle:
+                data = json.load(handle)
+            if isinstance(data, list):
+                return data
+        except (FileNotFoundError, json.JSONDecodeError):
+            pass
+        return []
+
     start_data: Dict[str, Any] = {
         "wallet": round(session.get("wallet", 0.0), 2),
         "savings": round(session.get("savings", 0.0), 2),
@@ -211,7 +222,8 @@ def game():
         "day": session.get("day", 1),
         "playerEmail": session.get("player_email", ""),
     }
-    return render_template("game.html", start_data=start_data)
+    catalogs = {cat: load_catalog_blob(cat) for cat in ("cars", "houses", "biz", "charity", "items")}
+    return render_template("game.html", start_data=start_data, catalog_data=catalogs)
 
 @app.route("/leaderboard")
 def leaderboard():

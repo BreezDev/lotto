@@ -2,6 +2,7 @@
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 const fmt = (n, opt={}) => Number(n||0).toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:opt.noCents?0:2});
+const pct = (n, digits=1) => `${(Number(n||0)*100).toFixed(digits)}%`;
 const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 const STORAGE_KEY = 'lotto-life-save-v2';
 
@@ -916,20 +917,22 @@ function paintCharities(){
   tb.innerHTML='';
   S.charities.forEach(c=>{
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${esc(c.name)}</td><td class="right">${fmt(c.monthly_drain)}</td><td class="right">${c.reputation}</td><td><button class="btn-danger" onclick="removeCharity('${c.id}')">Close</button></td>`;
+    const focus = c.focus || c.desc || '';
+    tr.innerHTML = `<td>${esc(c.name)}</td><td>${esc(focus)}</td><td class="right">${fmt(c.monthly_drain)}</td><td class="right">${c.reputation}</td><td><button class="btn-danger" onclick="removeCharity('${c.id}')">Close</button></td>`;
     tb.appendChild(tr);
   });
-  if (!S.charities.length){ tb.innerHTML = '<tr><td colspan="4" class="empty">No active charities.</td></tr>'; }
+  if (!S.charities.length){ tb.innerHTML = '<tr><td colspan="5" class="empty">No active charities.</td></tr>'; }
 }
 function paintItems(){
   const tb = $('#inv tbody'); if(!tb) return;
   tb.innerHTML='';
   S.items.forEach(i=>{
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${esc(i.name)}</td><td class="right">${fmt(i.value)}</td><td class="right">${fmt(i.upkeep_monthly)}</td><td>${rowActionBtn('Sell',`sellItem('${i.id}')`,'btn-danger')}</td>`;
+    const strat = i.strategy || '';
+    tr.innerHTML = `<td>${esc(i.name)}</td><td>${esc(strat)}</td><td class="right">${fmt(i.value)}</td><td class="right">${fmt(i.upkeep_monthly)}</td><td>${rowActionBtn('Sell',`sellItem('${i.id}')`,'btn-danger')}</td>`;
     tb.appendChild(tr);
   });
-  if (!S.items.length){ tb.innerHTML = '<tr><td colspan="4" class="empty">No alternative investments yet.</td></tr>'; }
+  if (!S.items.length){ tb.innerHTML = '<tr><td colspan="5" class="empty">No alternative investments yet.</td></tr>'; }
 }
 
 function paintFamily(){
@@ -970,23 +973,137 @@ function refreshIdentityEditor(){
 
 /* ================== Store Catalogs ================== */
 async function loadCatalog(cat){
-  const res = await fetch(`/api/catalog/${cat}`);
-  const data = await res.json();
-  S.catalogs[cat] = data;
-  const mount = {cars:'#carList', houses:'#houseList', biz:'#bizList', charity:'#charityList', items:'#itemList'}[cat];
+  const mountSel = {cars:'#carList', houses:'#houseList', biz:'#bizList', charity:'#charityList', items:'#itemList'}[cat];
+  const fallback = (window.CATALOG_FALLBACK && Array.isArray(window.CATALOG_FALLBACK[cat])) ? window.CATALOG_FALLBACK[cat] : [];
+  let payload = [];
+  try {
+    const res = await fetch(`/api/catalog/${cat}`);
+    if (!res.ok) throw new Error(`status ${res.status}`);
+    const data = await res.json();
+    if (Array.isArray(data)) payload = data;
+  } catch(err){
+    console.warn(`Catalog load failed for ${cat}`, err);
+  }
+  if (!payload.length) payload = fallback;
+  S.catalogs[cat] = payload;
+  if (!mountSel) return;
+  const mount = $(mountSel);
   if (!mount) return;
-  $(mount).innerHTML = data.map(d=>renderStoreCard(cat,d)).join('');
+  if (!payload.length){
+    mount.innerHTML = '<div class="notice empty">Catalog temporarily unavailable. Try again later.</div>';
+    return;
+  }
+  mount.innerHTML = payload.map(d=>renderStoreCard(cat,d)).join('');
 }
 function renderStoreCard(cat, d){
   const lines = {
-    cars:[`Dep ${(d.dep_rate_annual*100).toFixed(1)}%/yr`,`Maint ${fmt(d.maint_monthly)}/mo`],
-    houses:[`App ${(d.app_rate_annual*100).toFixed(1)}%/yr`,`Rent ${fmt(d.rent_monthly)}/mo`,`Tax ${(d.prop_tax_rate_annual*100).toFixed(2)}%/yr`,`Upkeep ${fmt(d.upkeep_monthly)}/mo`],
-    biz:[`Emp ${d.employees} @ ${fmt(d.salary_per_employee_annual)}/yr`,`Rev ${fmt(d.weekly_revenue)}/wk`,`Margin ${(d.gross_margin*100).toFixed(0)}%`,`Fixed ${fmt(d.fixed_weekly_costs)}/wk`],
-    charity:[`Monthly Spend ${fmt(d.monthly_drain)}`,`Reputation +${d.reputation}`],
-    items:[`Rate ${(d.rate_annual*100).toFixed(1)}%/yr`,`Upkeep ${fmt(d.upkeep_monthly)}/mo`,d.volatility_monthly?`Vol ${(d.volatility_monthly*100).toFixed(0)}%/mo`:'' ]
+    cars:[d.class?`Tier ${esc(d.class)}`:'',`Dep ${pct(d.dep_rate_annual,1)}/yr`,`Maint ${fmt(d.maint_monthly)}/mo`],
+    houses:[d.tier?`Tier ${esc(d.tier)}`:'',`App ${pct(d.app_rate_annual,1)}/yr`,`Rent ${fmt(d.rent_monthly)}/mo`,`Tax ${pct(d.prop_tax_rate_annual,2)}/yr`,`Upkeep ${fmt(d.upkeep_monthly)}/mo`],
+    biz:[d.industry?esc(d.industry):'',`Employees ${d.employees}`,`Payroll ${fmt((d.salary_per_employee_annual||0)/52)}/wk`,`Revenue ${fmt(d.weekly_revenue)}/wk`,`Margin ${pct(d.gross_margin,0)}`],
+    charity:[d.focus?`Focus ${esc(d.focus)}`:'',d.region?esc(d.region):'',`Monthly Spend ${fmt(d.monthly_drain)}`,`Reputation +${Number(d.reputation||0).toLocaleString()}`],
+    items:[d.strategy?esc(d.strategy):'',`Rate ${pct(d.rate_annual,1)}/yr`,`Upkeep ${fmt(d.upkeep_monthly)}/mo`,d.volatility_monthly?`Vol ${pct(d.volatility_monthly,0)}/mo`:'' ]
   }[cat].filter(Boolean).join(' • ');
-  return `<div class="storecard"><div class="flex" style="justify-content:space-between;align-items:flex-start"><div><div style="font-weight:800">${d.name}</div><div class="mini">${d.desc||''}</div><div class="mini" style="margin-top:6px;color:#b7c6e6">${lines}</div></div><div style="text-align:right"><div style="font-weight:800">${fmt(d.price)}</div><button class="primary" onclick="buy('${cat}','${encodeURIComponent(d.name)}')">Buy</button></div></div></div>`;
+  return `<div class="storecard"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start"><div><div style="font-weight:800">${esc(d.name)}</div><div class="mini">${esc(d.desc||'')}</div><div class="mini" style="margin-top:6px;color:#b7c6e6">${lines}</div></div><div style="text-align:right"><div style="font-weight:800">${fmt(d.price)}</div></div></div><div class="storecard-actions"><button class="secondary" onclick="viewCatalog('${cat}','${encodeURIComponent(d.name)}')">Details</button><button class="primary" onclick="buy('${cat}','${encodeURIComponent(d.name)}')">Buy</button></div></div>`;
 }
+
+function buildCatalogMeta(cat, d){
+  switch(cat){
+    case 'cars':
+      return [
+        ['Segment', d.class || 'Exclusive'],
+        ['Purchase', fmt(d.price)],
+        ['Depreciation', `${pct(d.dep_rate_annual,1)} per year`],
+        ['Maintenance', `${fmt(d.maint_monthly)}/month`]
+      ];
+    case 'houses':
+      return [
+        ['Tier', d.tier ? `Tier ${d.tier}` : 'Curated estate'],
+        ['Purchase', fmt(d.price)],
+        ['Appreciation', `${pct(d.app_rate_annual,2)} per year`],
+        ['Rent Potential', `${fmt(d.rent_monthly)}/month`],
+        ['Property Tax', `${pct(d.prop_tax_rate_annual,2)} per year`],
+        ['Upkeep', `${fmt(d.upkeep_monthly)}/month`]
+      ];
+    case 'biz':
+      return [
+        ['Industry', d.industry || 'Private venture'],
+        ['Buy-in', fmt(d.price)],
+        ['Employees', Number(d.employees||0).toLocaleString()],
+        ['Payroll', `${fmt((d.salary_per_employee_annual||0)/52)}/week each`],
+        ['Weekly Revenue', `${fmt(d.weekly_revenue)}`],
+        ['Gross Margin', pct(d.gross_margin,0)]
+      ];
+    case 'charity':
+      return [
+        ['Mission Focus', d.focus || 'Philanthropy'],
+        ['Region', d.region || 'Global'],
+        ['Monthly Spend', fmt(d.monthly_drain)],
+        ['Reputation Gain', `+${Number(d.reputation||0).toLocaleString()}`]
+      ];
+    case 'items':
+      return [
+        ['Strategy', d.strategy || 'Alternative play'],
+        ['Entry Cost', fmt(d.price)],
+        ['Yield', `${pct(d.rate_annual,1)} per year`],
+        ['Upkeep', `${fmt(d.upkeep_monthly)}/month`],
+        ['Volatility', d.volatility_monthly ? `${pct(d.volatility_monthly,0)} per month` : 'Managed risk']
+      ];
+  }
+  return [];
+}
+
+function formatCatalogMeta(cat, d){
+  return buildCatalogMeta(cat, d).map(([label, value])=>{
+    return `<div><span>${esc(String(label || ''))}</span><strong>${esc(String(value ?? ''))}</strong></div>`;
+  }).join('');
+}
+
+window.viewCatalog = function(cat, safeName){
+  const name = decodeURIComponent(safeName);
+  const entry = (S.catalogs[cat]||[]).find(x=>x.name===name);
+  if (!entry){ toast('Could not load details.'); return; }
+  const modal = $('#catalogModal');
+  if (!modal) return;
+  $('#catalogModalTitle').textContent = entry.name;
+  $('#catalogModalDesc').textContent = entry.desc || '';
+  $('#catalogModalMeta').innerHTML = formatCatalogMeta(cat, entry) || '<div><span>Price</span><strong>'+fmt(entry.price)+'</strong></div>';
+  $('#catalogModalTag').textContent = ({
+    cars:'Showroom Exotic',
+    houses:'Real Estate',
+    biz:'Private Venture',
+    charity:'Philanthropy',
+    items:'Alternative Asset'
+  }[cat] || 'Asset Detail');
+  const buyBtn = $('#catalogModalBuy');
+  buyBtn.dataset.cat = cat;
+  buyBtn.dataset.name = name;
+  modal.classList.add('show');
+};
+
+window.closeCatalogModal = function(){
+  const modal = $('#catalogModal');
+  if (modal) modal.classList.remove('show');
+};
+
+const modalBuy = document.getElementById('catalogModalBuy');
+if (modalBuy){
+  modalBuy.addEventListener('click', ()=>{
+    const cat = modalBuy.dataset.cat;
+    const name = modalBuy.dataset.name;
+    if (!cat || !name){ closeCatalogModal(); return; }
+    closeCatalogModal();
+    buy(cat, encodeURIComponent(name));
+  });
+}
+const modalShell = document.getElementById('catalogModal');
+if (modalShell){
+  modalShell.addEventListener('click', evt=>{
+    if (evt.target === modalShell) closeCatalogModal();
+  });
+}
+document.addEventListener('keydown', evt=>{
+  if (evt.key === 'Escape') closeCatalogModal();
+});
 
 function purchaseOK(price){
   if (S.wallet < price){ toast('Not enough wallet funds.'); return false; }
@@ -1034,11 +1151,11 @@ window.buy = function(cat, safeName){
     paintCompanies();
     options.repDelta = (options.repDelta||0) + 4;
   } else if (cat==='charity'){
-    S.charities.push({id:newId(),name:d.name,monthly_drain:d.monthly_drain,reputation:d.reputation});
+    S.charities.push({id:newId(),name:d.name,focus:d.focus||'',region:d.region||'',desc:d.desc||'',monthly_drain:d.monthly_drain,reputation:d.reputation});
     paintCharities();
     options = {tag:'charity', repGain:d.reputation, happinessDelta:5};
   } else if (cat==='items'){
-    S.items.push({id:newId(),name:d.name,value:d.price,rate_annual:d.rate_annual,upkeep_monthly:d.upkeep_monthly,volatility_monthly:d.volatility_monthly||0});
+    S.items.push({id:newId(),name:d.name,strategy:d.strategy||'',value:d.price,rate_annual:d.rate_annual,upkeep_monthly:d.upkeep_monthly,volatility_monthly:d.volatility_monthly||0});
     paintItems();
     options.happinessDelta = (options.happinessDelta||0) + 2;
   }
@@ -1182,134 +1299,6 @@ window.removeCharity = function(id){
   log(`Closed charity: ${c.name}`,0,0,{timeline:false});
   paintCharities();
 };
-$('#chCreate').addEventListener('click', ()=>{
-  const name = $('#chName').value.trim() || 'My Foundation';
-  const seed = Number($('#chSeed').value||0);
-  const drain = Number($('#chDrain').value||0);
-  const rep = Number($('#chRep').value||0);
-  if (!purchaseOK(seed)) return;
-  S.wallet -= seed;
-  S.charities.push({id:newId(),name,monthly_drain:drain,reputation:rep});
-  S.reputation += rep;
-  paintCharities();
-  log(`Created charity: ${name}`, -seed, 0, {tag:'charity', repGain:rep});
-});
-
-const customCarBtn = $('#customCarCreate');
-if (customCarBtn){
-  customCarBtn.addEventListener('click', ()=>{
-    const name = ($('#customCarName').value || '').trim() || 'Custom Car';
-    const price = Math.max(10000, toNumber($('#customCarPrice').value, 0));
-    if (!purchaseOK(price)) return;
-    const dep = Math.max(0, toPercent($('#customCarDep').value, 15, 0, 75));
-    const maint = Math.max(0, toNumber($('#customCarMaint').value, 0));
-    S.wallet -= price;
-    S.cars.push({
-      id:newId(),
-      name,
-      value:price,
-      dep_rate_annual:dep,
-      maint_monthly:maint,
-      bespoke:true
-    });
-    paintGarage();
-    log(`Commissioned ${name}`, -price, +price, {tag:'lifestyle', happinessDelta:4, repDelta:2});
-    updateAchievements();
-  });
-}
-
-const customHouseBtn = $('#customHouseCreate');
-if (customHouseBtn){
-  customHouseBtn.addEventListener('click', ()=>{
-    const name = ($('#customHouseName').value || '').trim() || 'Custom Estate';
-    const price = Math.max(50000, toNumber($('#customHousePrice').value, 0));
-    if (!purchaseOK(price)) return;
-    const appRate = toPercent($('#customHouseApp').value, 4.5, -10, 25);
-    const rent = Math.max(0, toNumber($('#customHouseRent').value, 0));
-    const tax = Math.max(0, toPercent($('#customHouseTax').value, 1.1, 0, 5));
-    const upkeep = Math.max(0, toNumber($('#customHouseUpkeep').value, 0));
-    S.wallet -= price;
-    S.houses.push({
-      id:newId(),
-      name,
-      value:price,
-      app_rate_annual:appRate,
-      rent_monthly:rent,
-      prop_tax_rate_annual:tax,
-      upkeep_monthly:upkeep,
-      rented:false,
-      bespoke:true
-    });
-    ensurePrimaryResidence();
-    paintProps();
-    log(`Developed ${name}`, -price, +price, {tag:'biz', happinessDelta:3, repDelta:3});
-    updateAchievements();
-  });
-}
-
-const customBizBtn = $('#customBizCreate');
-if (customBizBtn){
-  customBizBtn.addEventListener('click', ()=>{
-    const name = ($('#customBizName').value || '').trim() || 'Custom Venture';
-    const price = Math.max(100000, toNumber($('#customBizPrice').value, 0));
-    if (!purchaseOK(price)) return;
-    const employees = Math.max(1, Math.round(toNumber($('#customBizEmployees').value, 1)));
-    const salary = Math.max(20000, toNumber($('#customBizSalary').value, 0));
-    const revenue = Math.max(5000, toNumber($('#customBizRevenue').value, 0));
-    const margin = Math.max(0.05, toPercent($('#customBizMargin').value, 45, 5, 90));
-    const fixed = Math.max(0, toNumber($('#customBizFixed').value, 0));
-    const growth = clamp(Math.round(toNumber($('#customBizGrowth').value, 2)), 1, 4);
-    const cultureInput = $('#customBizCulture');
-    const culture = cultureInput ? cultureInput.value.trim() : '';
-    S.wallet -= price;
-    S.businesses.push({
-      id:newId(),
-      name,
-      employees,
-      salary_per_employee_annual:salary,
-      weekly_revenue:revenue,
-      gross_margin:margin,
-      fixed_weekly_costs:fixed,
-      growth_level:growth,
-      ipo:false,
-      shares:0,
-      div_yield:0.02,
-      boardMembers:[],
-      boardSeats:growth>=3 ? (growth>=4?5:3) : 0,
-      ceo:S.playerName,
-      culture: culture || 'Founder-led bespoke venture'
-    });
-    paintCompanies();
-    log(`Launched ${name}`, -price, +price, {tag:'biz', happinessDelta:4, repDelta:4});
-    updateAchievements();
-  });
-}
-
-const customItemBtn = $('#customItemCreate');
-if (customItemBtn){
-  customItemBtn.addEventListener('click', ()=>{
-    const name = ($('#customItemName').value || '').trim() || 'Custom Fund';
-    const price = Math.max(10000, toNumber($('#customItemPrice').value, 0));
-    if (!purchaseOK(price)) return;
-    const rate = toPercent($('#customItemRate').value, 6, -20, 40);
-    const upkeep = Math.max(0, toNumber($('#customItemUpkeep').value, 0));
-    const vol = Math.max(0, toPercent($('#customItemVol').value, 5, 0, 40));
-    S.wallet -= price;
-    S.items.push({
-      id:newId(),
-      name,
-      value:price,
-      rate_annual:rate,
-      upkeep_monthly:upkeep,
-      volatility_monthly:vol,
-      bespoke:true
-    });
-    paintItems();
-    log(`Structured ${name}`, -price, +price, {tag:'events', happinessDelta:2});
-    updateAchievements();
-  });
-}
-
 /* ================== Simulation Engine ================== */
 function applySavings(days){
   const dailyRate = (S.apy/100)/365;
@@ -1662,7 +1651,7 @@ function paintEverything(){
 
 restoreLocal();
 updateEmailUI();
-Promise.all([
+Promise.allSettled([
   loadCatalog('cars'),
   loadCatalog('houses'),
   loadCatalog('biz'),

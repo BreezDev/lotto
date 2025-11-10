@@ -1,178 +1,258 @@
 [
   {
-    "name": "Toyota Corolla",
-    "price": 24000,
-    "dep_rate_annual": 0.15,
-    "maint_monthly": 120,
-    "class": "regular",
-    "desc": "Reliable compact; low upkeep."
+    "name": "Ferrari Daytona SP3",
+    "price": 2650000,
+    "dep_rate_annual": 0.16,
+    "maint_monthly": 6200,
+    "class": "Legendary",
+    "desc": "Limited-run V12 homage with sculpted aero." 
   },
   {
-    "name": "Honda Accord",
-    "price": 29000,
-    "dep_rate_annual": 0.14,
-    "maint_monthly": 140,
-    "class": "regular",
-    "desc": "Solid midsize; balanced costs."
-  },
-  {
-    "name": "Tesla Model 3",
-    "price": 42000,
-    "dep_rate_annual": 0.10,
-    "maint_monthly": 60,
-    "class": "ev",
-    "desc": "Electric sedan; minimal maintenance."
-  },
-  {
-    "name": "BMW M4",
-    "price": 78000,
-    "dep_rate_annual": 0.17,
-    "maint_monthly": 350,
-    "class": "luxury",
-    "desc": "Performance coupe; pricey upkeep."
-  },
-  {
-    "name": "Lamborghini Aventador",
-    "price": 550000,
-    "dep_rate_annual": 0.20,
-    "maint_monthly": 1800,
-    "class": "exotic",
-    "desc": "Exotic supercar; big depreciation."
-  },
-  {
-    "name": "Rolls-Royce Phantom",
-    "price": 620000,
+    "name": "Lamborghini Revuelto",
+    "price": 598000,
     "dep_rate_annual": 0.18,
-    "maint_monthly": 2200,
-    "class": "ultra-luxury",
-    "desc": "Ultra-luxury; chauffeur optional."
+    "maint_monthly": 2600,
+    "class": "Hyper",
+    "desc": "Hybrid V12 flagship built for outrageous track sessions." 
   },
   {
-    "name": "Ford F-150 Raptor",
-    "price": 68000,
-    "dep_rate_annual": 0.15,
-    "maint_monthly": 220,
-    "class": "truck",
-    "desc": "Work & play; durable."
+    "name": "McLaren Speedtail",
+    "price": 2400000,
+    "dep_rate_annual": 0.17,
+    "maint_monthly": 5400,
+    "class": "Legendary",
+    "desc": "Jet-inspired three-seater capable of 250 mph cruises." 
   },
   {
-    "name": "Bugatti Chiron",
+    "name": "Koenigsegg Jesko Absolut",
     "price": 3200000,
-    "dep_rate_annual": 0.22,
-    "maint_monthly": 8000,
-    "class": "hypercar",
-    "desc": "Hypercar; extreme costs."
-  },
-  {
-    "name": "Lucid Air Sapphire",
-    "price": 250000,
-    "dep_rate_annual": 0.12,
-    "maint_monthly": 180,
-    "class": "ev",
-    "desc": "Flagship EV with breathtaking acceleration."
-  },
-  {
-    "name": "Mercedes-Maybach GLS",
-    "price": 190000,
-    "dep_rate_annual": 0.16,
-    "maint_monthly": 420,
-    "class": "luxury",
-    "desc": "SUV palace with champagne fridge and massaging seats."
-  },
-  {
-    "name": "Rivian Adventure Van",
-    "price": 98000,
-    "dep_rate_annual": 0.13,
-    "maint_monthly": 210,
-    "class": "adventure",
-    "desc": "Electric expedition van for coast-to-coast road trips."
-  },
-  {
-    "name": "Ferrari SF90 Stradale",
-    "price": 520000,
     "dep_rate_annual": 0.19,
-    "maint_monthly": 2200,
-    "class": "supercar",
-    "desc": "Hybrid hypercar that screams on the track."
+    "maint_monthly": 7600,
+    "class": "Ultimate",
+    "desc": "Near-400 mph development monster with bespoke servicing." 
   },
   {
-    "name": "Porsche 911 GT3 RS",
-    "price": 245000,
-    "dep_rate_annual": 0.14,
-    "maint_monthly": 420,
-    "class": "performance",
-    "desc": "Track weapon with street manners."
+    "name": "Pagani Huayra Codalunga",
+    "price": 7200000,
+    "dep_rate_annual": 0.18,
+    "maint_monthly": 9200,
+    "class": "Ultimate",
+    "desc": "Five-piece tailered roadster with hand-stitched interior art." 
   },
   {
-    "name": "Bentley Bentayga EWB",
-    "price": 310000,
-    "dep_rate_annual": 0.16,
-    "maint_monthly": 650,
-    "class": "ultra-luxury",
-    "desc": "Extended wheelbase luxury SUV for VIP travel."
+    "name": "Bugatti Mistral",
+    "price": 5000000,
+    "dep_rate_annual": 0.2,
+    "maint_monthly": 8800,
+    "class": "Ultimate",
+    "desc": "Final quad-turbo W16 in an open-top grand tourer." 
   },
   {
-    "name": "GMC Hummer EV",
-    "price": 112000,
+    "name": "Mercedes-AMG ONE",
+    "price": 2700000,
+    "dep_rate_annual": 0.17,
+    "maint_monthly": 4100,
+    "class": "Legendary",
+    "desc": "Street-legal Formula 1 hybrid technology." 
+  },
+  {
+    "name": "Rimac Nevera",
+    "price": 2400000,
     "dep_rate_annual": 0.15,
-    "maint_monthly": 260,
-    "class": "ev",
-    "desc": "Electric beast with crab-walk party tricks."
+    "maint_monthly": 3500,
+    "class": "Hyper",
+    "desc": "All-electric hypercar with four-motor torque vectoring." 
   },
   {
-    "name": "Tesla Cybertruck",
-    "price": 89000,
+    "name": "Hennessey Venom F5",
+    "price": 2300000,
+    "dep_rate_annual": 0.2,
+    "maint_monthly": 5200,
+    "class": "Hyper",
+    "desc": "American-made 1,800 hp land missile chasing 300 mph." 
+  },
+  {
+    "name": "Lotus Evija",
+    "price": 2200000,
+    "dep_rate_annual": 0.14,
+    "maint_monthly": 3100,
+    "class": "Hyper",
+    "desc": "Featherweight electric hypercar with active aero wizardry." 
+  },
+  {
+    "name": "Rolls-Royce Boat Tail",
+    "price": 28000000,
     "dep_rate_annual": 0.12,
-    "maint_monthly": 140,
-    "class": "ev",
-    "desc": "Futuristic stainless-steel utility truck."
+    "maint_monthly": 15000,
+    "class": "Bespoke",
+    "desc": "Coachbuilt yachting lounge with parasol deck." 
+  },
+  {
+    "name": "Bentley Mulliner Batur",
+    "price": 2100000,
+    "dep_rate_annual": 0.13,
+    "maint_monthly": 4200,
+    "class": "Grand",
+    "desc": "Limited grand tourer previewing Bentley's future design language." 
   },
   {
     "name": "Rolls-Royce Spectre",
     "price": 420000,
     "dep_rate_annual": 0.15,
-    "maint_monthly": 950,
-    "class": "ultra-luxury",
-    "desc": "Electric grand tourer with silent opulence."
+    "maint_monthly": 980,
+    "class": "Grand",
+    "desc": "All-electric ultra-luxury coupe with starlit doors." 
   },
   {
-    "name": "Pagani Huayra Roadster",
-    "price": 3400000,
+    "name": "Ferrari Purosangue",
+    "price": 420000,
+    "dep_rate_annual": 0.16,
+    "maint_monthly": 1400,
+    "class": "Elite",
+    "desc": "V12 four-door thoroughbred for alpine getaways." 
+  },
+  {
+    "name": "Aston Martin Valour",
+    "price": 1500000,
+    "dep_rate_annual": 0.14,
+    "maint_monthly": 2400,
+    "class": "Elite",
+    "desc": "Manual V12 muscle with retro cues and carbon craftsmanship." 
+  },
+  {
+    "name": "De Tomaso P72",
+    "price": 1500000,
+    "dep_rate_annual": 0.16,
+    "maint_monthly": 2600,
+    "class": "Elite",
+    "desc": "Coachbuilt Le Mans tribute with bubble canopy styling." 
+  },
+  {
+    "name": "Koenigsegg Gemera",
+    "price": 1750000,
     "dep_rate_annual": 0.18,
-    "maint_monthly": 9000,
-    "class": "hypercar",
-    "desc": "Automotive art with a handcrafted V12."
+    "maint_monthly": 3200,
+    "class": "Legendary",
+    "desc": "Mega-GT four seater with camless engine and hybrid boost." 
+  },
+  {
+    "name": "Ferrari Monza SP2",
+    "price": 1900000,
+    "dep_rate_annual": 0.17,
+    "maint_monthly": 3600,
+    "class": "Legendary",
+    "desc": "Open-cockpit icon built for concourse lawn showdowns." 
+  },
+  {
+    "name": "Pagani Utopia",
+    "price": 3400000,
+    "dep_rate_annual": 0.17,
+    "maint_monthly": 7200,
+    "class": "Ultimate",
+    "desc": "Manual V12 art piece with sculpted titanium exhausts." 
   },
   {
     "name": "Aston Martin Valkyrie",
     "price": 3200000,
-    "dep_rate_annual": 0.2,
-    "maint_monthly": 8500,
-    "class": "hypercar",
-    "desc": "Street-legal F1 technology for the bold."
+    "dep_rate_annual": 0.19,
+    "maint_monthly": 6800,
+    "class": "Ultimate",
+    "desc": "Street-legal F1 car with Cosworth V12 shriek." 
   },
   {
-    "name": "Classic Mustang Restomod",
-    "price": 180000,
-    "dep_rate_annual": 0.08,
-    "maint_monthly": 380,
-    "class": "collector",
-    "desc": "1967 fastback rebuilt with modern tech."
+    "name": "Porsche 911 GT3 RS",
+    "price": 245000,
+    "dep_rate_annual": 0.12,
+    "maint_monthly": 620,
+    "class": "Track",
+    "desc": "Winged weapon with adjustable aero and carbon diet." 
   },
   {
-    "name": "Mercedes Sprinter Executive Coach",
-    "price": 165000,
+    "name": "Porsche 911 Dakar",
+    "price": 265000,
     "dep_rate_annual": 0.13,
-    "maint_monthly": 400,
-    "class": "limo",
-    "desc": "Mobile boardroom with lounge seating."
+    "maint_monthly": 640,
+    "class": "Track",
+    "desc": "Lifted rally-ready 911 for desert adventures." 
   },
   {
-    "name": "McLaren 765LT",
-    "price": 382000,
-    "dep_rate_annual": 0.18,
-    "maint_monthly": 1700,
-    "class": "supercar",
-    "desc": "Limited-run lightweight rocket built for the circuit."
+    "name": "Maserati MC20 Cielo",
+    "price": 312000,
+    "dep_rate_annual": 0.15,
+    "maint_monthly": 880,
+    "class": "Elite",
+    "desc": "Butterfly-door spyder with Nettuno twin-turbo V6." 
+  },
+  {
+    "name": "Cadillac Celestiq",
+    "price": 340000,
+    "dep_rate_annual": 0.14,
+    "maint_monthly": 720,
+    "class": "Grand",
+    "desc": "Hand-built electric fastback with customizable crystal cabin." 
+  },
+  {
+    "name": "BMW XM Label Red",
+    "price": 185000,
+    "dep_rate_annual": 0.14,
+    "maint_monthly": 560,
+    "class": "Elite",
+    "desc": "Hybrid super-SUV with 738 hp and executive lounge." 
+  },
+  {
+    "name": "Aston Martin DBX707",
+    "price": 245000,
+    "dep_rate_annual": 0.15,
+    "maint_monthly": 620,
+    "class": "Elite",
+    "desc": "Ultra-luxury SUV tuned for grand touring pace." 
+  },
+  {
+    "name": "Lucid Air Sapphire",
+    "price": 250000,
+    "dep_rate_annual": 0.12,
+    "maint_monthly": 400,
+    "class": "Electric",
+    "desc": "Tri-motor executive EV launching to 60 in under two seconds." 
+  },
+  {
+    "name": "Porsche Taycan Turbo GT",
+    "price": 230000,
+    "dep_rate_annual": 0.11,
+    "maint_monthly": 360,
+    "class": "Electric",
+    "desc": "Track-focused EV sedan with race-derived chassis tuning." 
+  },
+  {
+    "name": "Tesla Roadster (Founders Series)",
+    "price": 250000,
+    "dep_rate_annual": 0.13,
+    "maint_monthly": 280,
+    "class": "Electric",
+    "desc": "Rocket thruster package optional for sub-two-second launches." 
+  },
+  {
+    "name": "Polestar 5 Prototype Build",
+    "price": 198000,
+    "dep_rate_annual": 0.14,
+    "maint_monthly": 420,
+    "class": "Electric",
+    "desc": "Hand-built grand tourer with bonded aluminum chassis." 
+  },
+  {
+    "name": "Audi R8 GT Final Edition",
+    "price": 251000,
+    "dep_rate_annual": 0.16,
+    "maint_monthly": 780,
+    "class": "Track",
+    "desc": "Farewell V10 with fixed rear wing and lightweight diet." 
+  },
+  {
+    "name": "Jaguar F-Type 75",
+    "price": 125000,
+    "dep_rate_annual": 0.15,
+    "maint_monthly": 480,
+    "class": "Grand",
+    "desc": "Last-of-the-line supercharged V8 coupe." 
   }
 ]
