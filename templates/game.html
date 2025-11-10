@@ -43,6 +43,7 @@
   .goal-line span{color:var(--gold);font-weight:600}
   .goal-progress{margin-top:6px;height:8px;background:#101933;border-radius:999px;overflow:hidden;position:relative}
   .goal-progress::after{content:"";display:block;height:100%;background:linear-gradient(90deg,#0d6efd,#7c5cff);width:var(--pct,0%);transition:width .4s ease}
+  .identity-extra{font-size:13px;color:#9db0d6;margin-top:6px;display:flex;gap:10px;flex-wrap:wrap}
   .top-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .pill{display:inline-flex;gap:6px;align-items:center;padding:6px 11px;border:1px solid var(--line);border-radius:999px;background:#0b1222;color:var(--muted);font-size:12px}
   .pill strong{color:#fff}
@@ -98,6 +99,10 @@
   .stat-item{background:#101833;border-radius:14px;padding:12px}
   .stat-item span{display:block;color:#9db0d6;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
   .stat-item strong{display:block;margin-top:4px;font-size:18px}
+  .identity-grid,.family-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px}
+  .identity-grid label,.family-grid label{margin:0}
+  .identity-grid textarea,.family-grid textarea{min-height:100px}
+  .family-grid textarea{grid-column:span 2}
   .timeline-list table{width:100%;}
   .timeline-list tbody tr:nth-child(even){background:rgba(255,255,255,0.02)}
   .timeline-list td{font-size:13px}
@@ -171,15 +176,18 @@ window.GAME_START = {{ start_data|tojson }};
 <div class="wrap">
   <section id="panel-portfolio" class="panel active">
     <div class="topline">
-      <div class="identity">
-        <div class="avatar" id="avatarBadge">💰</div>
-        <div class="identity-info">
-          <div class="name" id="playerName">Player</div>
-          <div class="meta"><span id="playerState">State</span> • <span id="playerProfile">Profile</span> • <span id="timeBadge">Day 1</span></div>
-          <div class="goal-line">Goal: <span id="playerGoal">Set in start screen</span></div>
-          <div class="goal-progress" id="goalProgress" style="--pct:0%"></div>
+        <div class="identity">
+          <div class="avatar" id="avatarBadge">💰</div>
+          <div class="identity-info">
+            <div class="name" id="playerName">Player</div>
+            <div class="meta"><span id="playerState">State</span> • <span id="playerProfile">Profile</span> • <span id="playerPronouns">They/Them</span> • <span id="playerAge">Age --</span> • <span id="timeBadge">Day 1</span></div>
+            <div class="identity-extra" id="playerCareerLine">Career: Newly wealthy</div>
+            <div class="goal-line">Goal: <span id="playerGoal">Set in start screen</span></div>
+            <div class="goal-line" id="playerBio">Bio: Share your story inside Lifestyle</div>
+            <div class="goal-line" id="familySummary">Household: Solo player</div>
+            <div class="goal-progress" id="goalProgress" style="--pct:0%"></div>
+          </div>
         </div>
-      </div>
       <div class="top-actions">
         <div class="pill">Tax Paid <strong id="taxPaid">$0</strong></div>
         <div class="pill">Starting Prize <strong id="startAmt">$0</strong></div>
@@ -271,7 +279,8 @@ window.GAME_START = {{ start_data|tojson }};
           <div class="stat-item"><span>Charity Given</span><strong id="statCharity">$0</strong></div>
           <div class="stat-item"><span>Event Impact</span><strong id="statEvents">$0</strong></div>
           <div class="stat-item"><span>Interest Earned</span><strong id="statInterest">$0</strong></div>
-          <div class="stat-item"><span>Debt Interest</span><strong id="statDebt">$0</strong></div>
+          <div class="stat-item"><span>Debt Serviced</span><strong id="statDebt">$0</strong></div>
+          <div class="stat-item"><span>Family Life</span><strong id="statFamily">$0</strong></div>
         </div>
       </div>
     </div>
@@ -346,11 +355,98 @@ window.GAME_START = {{ start_data|tojson }};
         <p class="mini" id="emailStatus">We keep your email local and send via the Resend API when configured.</p>
       </div>
     </div>
+
+    <div class="stat-block">
+      <h3>🎭 Character Builder</h3>
+      <p class="mini">Craft the persona behind your winnings. This updates what appears in your dashboard and on the leaderboard.</p>
+      <div class="identity-grid">
+        <label>Display Name
+          <input id="characterName" type="text" placeholder="Jordan Dreamer">
+        </label>
+        <label>Age
+          <input id="characterAge" type="number" min="18" max="120" placeholder="32">
+        </label>
+        <label>Pronouns
+          <input id="characterPronouns" type="text" placeholder="she/her">
+        </label>
+        <label>Signature Emoji
+          <input id="characterAvatar" type="text" maxlength="4" placeholder="💼">
+        </label>
+        <label>Career / Focus
+          <input id="characterCareer" type="text" placeholder="Angel investor & philanthropist">
+        </label>
+      </div>
+      <label style="margin-top:14px">Life Story / Bio
+        <textarea id="characterBio"></textarea>
+      </label>
+      <button id="characterSave" class="primary" style="margin-top:12px">Save Identity</button>
+    </div>
+
+    <div class="stat-block">
+      <h3>👨‍👩‍👧‍👦 Family & Household</h3>
+      <p class="mini">Build a realistic entourage. Positive monthly impact means they bring in income, while negative values represent allowances, tuition, or support.</p>
+      <div class="family-grid">
+        <label>Role
+          <select id="familyRole">
+            <option>Spouse</option>
+            <option>Partner</option>
+            <option>Child</option>
+            <option>Parent</option>
+            <option>Sibling</option>
+            <option>Relative</option>
+            <option>Friend</option>
+          </select>
+        </label>
+        <label>Name
+          <input id="familyName" type="text" placeholder="Taylor">
+        </label>
+        <label>Age
+          <input id="familyAge" type="number" min="0" max="110" placeholder="12">
+        </label>
+        <label>Monthly Impact ($)
+          <input id="familyAllowance" type="number" placeholder="-1500">
+        </label>
+        <label>Lives With You?
+          <select id="familyLives">
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </label>
+        <label style="grid-column:span 2">Personality & Notes
+          <textarea id="familyNotes" placeholder="Soccer prodigy with private school tuition"></textarea>
+        </label>
+      </div>
+      <button id="addFamily" class="primary" style="margin-top:12px">Add Family Member</button>
+      <div class="mini" id="familyImpactLine" style="margin-top:12px">Household obligations: $0/mo</div>
+      <table id="familyTable" style="margin-top:12px">
+        <thead><tr><th>Name</th><th>Role</th><th class="right">Age</th><th class="right">Monthly Impact</th><th>Lives With You</th><th>Notes</th><th>Action</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </section>
 
   <section id="panel-cars" class="panel">
     <h2>🏎 Cars — Showroom</h2>
     <div id="carList"></div>
+    <div class="notice" style="margin-top:16px">
+      <h3 style="margin:0 0 10px">🛠️ Build a Custom Ride</h3>
+      <p class="mini">Design a bespoke vehicle when the catalog doesn't have what you crave.</p>
+      <div class="row">
+        <label>Name
+          <input id="customCarName" type="text" placeholder="Coachbuilt Supercar">
+        </label>
+        <label>Purchase Price ($)
+          <input id="customCarPrice" type="number" min="10000" step="1000" value="350000">
+        </label>
+        <label>Annual Depreciation (%)
+          <input id="customCarDep" type="number" min="0" max="75" step="0.5" value="15">
+        </label>
+        <label>Maintenance / mo ($)
+          <input id="customCarMaint" type="number" min="0" step="100" value="2500">
+        </label>
+        <div style="align-self:end"><button id="customCarCreate" class="primary">Add Custom Car</button></div>
+      </div>
+    </div>
     <h3>🚗 Garage</h3>
     <table id="garage">
       <thead><tr><th>Model</th><th class="right">Value</th><th class="right">Maint/mo</th><th>Action</th></tr></thead>
@@ -361,6 +457,31 @@ window.GAME_START = {{ start_data|tojson }};
   <section id="panel-houses" class="panel">
     <h2>🏠 Real Estate — Portfolio</h2>
     <div id="houseList"></div>
+    <div class="notice" style="margin-top:16px">
+      <h3 style="margin:0 0 10px">🏗️ Develop a Custom Property</h3>
+      <p class="mini">Commission dream homes or income properties with bespoke economics.</p>
+      <div class="row">
+        <label>Name
+          <input id="customHouseName" type="text" placeholder="Clifftop Estate">
+        </label>
+        <label>Purchase Price ($)
+          <input id="customHousePrice" type="number" min="50000" step="5000" value="1250000">
+        </label>
+        <label>Annual Appreciation (%)
+          <input id="customHouseApp" type="number" min="-10" max="25" step="0.25" value="4.5">
+        </label>
+        <label>Rent Potential / mo ($)
+          <input id="customHouseRent" type="number" min="0" step="500" value="9500">
+        </label>
+        <label>Property Tax Rate (%)
+          <input id="customHouseTax" type="number" min="0" max="5" step="0.05" value="1.1">
+        </label>
+        <label>Upkeep / mo ($)
+          <input id="customHouseUpkeep" type="number" min="0" step="250" value="3200">
+        </label>
+        <div style="align-self:end"><button id="customHouseCreate" class="primary">Add Custom Property</button></div>
+      </div>
+    </div>
     <h3>🏚 Owned Properties</h3>
     <table id="props">
       <thead><tr><th>Property</th><th class="right">Value</th><th class="right">Rent/mo</th><th class="right">Tax/yr</th><th class="right">Upkeep/mo</th><th>Status</th><th>Action</th></tr></thead>
@@ -371,9 +492,43 @@ window.GAME_START = {{ start_data|tojson }};
   <section id="panel-biz" class="panel">
     <h2>💼 Businesses — Ventures</h2>
     <div id="bizList"></div>
+    <div class="notice" style="margin-top:16px">
+      <h3 style="margin:0 0 10px">🚀 Launch a Bespoke Company</h3>
+      <p class="mini">Model a private venture with custom hiring, revenue, and board ambitions.</p>
+      <div class="row">
+        <label>Name
+          <input id="customBizName" type="text" placeholder="Avant Labs">
+        </label>
+        <label>Buy-In Price ($)
+          <input id="customBizPrice" type="number" min="100000" step="10000" value="2500000">
+        </label>
+        <label>Employees
+          <input id="customBizEmployees" type="number" min="1" max="500" value="18">
+        </label>
+        <label>Salary per Employee / yr ($)
+          <input id="customBizSalary" type="number" min="20000" step="1000" value="85000">
+        </label>
+        <label>Weekly Revenue ($)
+          <input id="customBizRevenue" type="number" min="5000" step="1000" value="145000">
+        </label>
+        <label>Gross Margin (%)
+          <input id="customBizMargin" type="number" min="5" max="90" step="0.5" value="48">
+        </label>
+        <label>Fixed Weekly Costs ($)
+          <input id="customBizFixed" type="number" min="0" step="1000" value="38000">
+        </label>
+        <label>Growth Stage (1-4)
+          <input id="customBizGrowth" type="number" min="1" max="4" value="2">
+        </label>
+        <label style="flex:1 1 240px">Culture &amp; Strategy
+          <input id="customBizCulture" type="text" placeholder="Sustainable tech with global reach">
+        </label>
+        <div style="align-self:end"><button id="customBizCreate" class="primary">Create Custom Business</button></div>
+      </div>
+    </div>
     <h3>🏢 Owned Companies</h3>
     <table id="companies">
-      <thead><tr><th>Company</th><th class="right">Employees</th><th class="right">Payroll/wk</th><th class="right">Revenue/wk</th><th class="right">Margin</th><th>Level</th><th>Actions</th></tr></thead>
+      <thead><tr><th>Company</th><th class="right">Employees</th><th class="right">Payroll/wk</th><th class="right">Revenue/wk</th><th class="right">Margin</th><th>Level</th><th class="right">Board</th><th>Actions</th></tr></thead>
       <tbody></tbody>
     </table>
   </section>
@@ -401,6 +556,28 @@ window.GAME_START = {{ start_data|tojson }};
   <section id="panel-items" class="panel">
     <h2>💹 Alternative Investments</h2>
     <div id="itemList"></div>
+    <div class="notice" style="margin-top:16px">
+      <h3 style="margin:0 0 10px">🧮 Engineer a Custom Alternative Asset</h3>
+      <p class="mini">Spin up hedge funds, art funds, or any niche play with tailored risk.</p>
+      <div class="row">
+        <label>Name
+          <input id="customItemName" type="text" placeholder="Horizon Hedge Fund">
+        </label>
+        <label>Commitment ($)
+          <input id="customItemPrice" type="number" min="10000" step="1000" value="600000">
+        </label>
+        <label>Annual Yield (%)
+          <input id="customItemRate" type="number" min="-20" max="40" step="0.25" value="8.5">
+        </label>
+        <label>Upkeep / mo ($)
+          <input id="customItemUpkeep" type="number" min="0" step="250" value="1200">
+        </label>
+        <label>Volatility / mo (%)
+          <input id="customItemVol" type="number" min="0" max="40" step="0.5" value="6">
+        </label>
+        <div style="align-self:end"><button id="customItemCreate" class="primary">Add Custom Investment</button></div>
+      </div>
+    </div>
     <h3>🎒 Owned Investments</h3>
     <table id="inv">
       <thead><tr><th>Asset</th><th class="right">Value</th><th class="right">Upkeep/mo</th><th>Action</th></tr></thead>
