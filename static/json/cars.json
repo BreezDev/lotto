@@ -62,5 +62,29 @@
     "maint_monthly": 8000,
     "class": "hypercar",
     "desc": "Hypercar; extreme costs."
+  },
+  {
+    "name": "Lucid Air Sapphire",
+    "price": 250000,
+    "dep_rate_annual": 0.12,
+    "maint_monthly": 180,
+    "class": "ev",
+    "desc": "Flagship EV with breathtaking acceleration."
+  },
+  {
+    "name": "Mercedes-Maybach GLS",
+    "price": 190000,
+    "dep_rate_annual": 0.16,
+    "maint_monthly": 420,
+    "class": "luxury",
+    "desc": "SUV palace with champagne fridge and massaging seats."
+  },
+  {
+    "name": "Rivian Adventure Van",
+    "price": 98000,
+    "dep_rate_annual": 0.13,
+    "maint_monthly": 210,
+    "class": "adventure",
+    "desc": "Electric expedition van for coast-to-coast road trips."
   }
 ]

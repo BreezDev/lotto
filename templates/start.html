@@ -2,49 +2,137 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>🎰 LottoLife — Start</title>
+<title>🎰 LottoLife — Create Your Story</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-body{margin:0;font-family:'Jost',sans-serif;background:radial-gradient(900px 600px at 60% -10%,#13213a,#050810);color:#fff;text-align:center;padding:30px}
-h1{font-size:2rem;margin-bottom:10px}
-form{max-width:500px;margin:auto;background:#0f1730;border-radius:14px;padding:20px;border:1px solid #1b233a}
-input,select,button,textarea{width:100%;padding:10px;border-radius:8px;margin:8px 0;border:none;font-family:inherit}
-input,select,textarea{background:#0b1222;color:#fff}
-button{background:#0d6efd;color:#fff;font-weight:700;cursor:pointer}
-button:hover{background:#135cf7}
-small{color:#b4bcd3}
+  :root{
+    --bg:#050810;--panel:#0e1526;--line:#1b233a;--ink:#f4f7ff;--muted:#94a3c4;--brand:#0d6efd;--accent:#7c5cff;--good:#22c55e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Jost',sans-serif;background:radial-gradient(1100px 750px at 65% -20%,rgba(124,92,255,.35),rgba(5,8,16,.92)),#050810;color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  main{max-width:960px;width:100%;background:rgba(13,22,44,0.9);border:1px solid rgba(124,92,255,0.35);border-radius:26px;padding:30px 34px;box-shadow:0 40px 120px rgba(2,6,16,0.6);backdrop-filter:blur(20px)}
+  h1{margin:0;font-size:2.2rem;font-weight:800}
+  p.lead{margin:8px 0 24px;color:#bfc8e6}
+  form{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+  label{display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted);font-weight:500}
+  input,select,textarea{padding:12px 14px;border-radius:12px;border:1px solid rgba(124,92,255,0.45);background:rgba(8,12,25,0.9);color:var(--ink);font-family:inherit;font-size:16px}
+  textarea{min-height:120px;grid-column:span 2}
+  .actions{grid-column:span 2;display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:10px}
+  button{background:linear-gradient(135deg,var(--brand),var(--accent));border:none;color:#fff;font-weight:700;padding:14px 24px;border-radius:16px;cursor:pointer;font-size:16px;box-shadow:0 16px 45px rgba(13,110,253,0.35);transition:transform .2s ease}
+  button:hover{transform:translateY(-1px)}
+  .preview{margin-top:28px;background:#0b1428;border-radius:22px;border:1px solid rgba(124,92,255,0.35);padding:20px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+  .tile{background:rgba(16,27,52,0.9);border-radius:18px;padding:16px;border:1px solid rgba(124,92,255,0.2)}
+  .tile span{display:block;font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#9fb0d6;margin-bottom:6px}
+  .tile strong{font-size:20px}
+  .tagline{font-size:12px;color:#7ea2ff;text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px}
+  .grid-col2{grid-column:span 2}
+  @media(max-width:720px){main{padding:26px}textarea{grid-column:span 1}.actions{grid-column:span 1;flex-direction:column;align-items:stretch}}
 </style>
 </head>
 <body>
+<main>
+  <div class="tagline">BUILD YOUR LEGEND</div>
+  <h1>Design your lotto life</h1>
+  <p class="lead">Tell us who you are, where you live, and how wild you want to spend. We’ll simulate the taxes, investments, lifestyle burn, and risky bets so you can see how long your fortune lasts.</p>
+  <form action="/startgame" method="POST" id="startForm">
+    <label>🧑 Your name
+      <input type="text" name="name" placeholder="Jordan Dreamer" required>
+    </label>
+    <label>💵 Jackpot size
+      <input type="number" name="amount" id="amount" placeholder="10000000" required>
+    </label>
+    <label>📍 Home state
+      <select name="state" id="state" required>
+        {% for abbr, rate in STATE_TAX.items()|sort %}
+        <option value="{{ abbr }}">{{ abbr }} ({{ (rate*100)|round(2) }}%)</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>🏦 Payout style
+      <select name="payout" id="payout">
+        <option value="lump">Lump sum (cash today)</option>
+        <option value="annuity">Annuity (30-year stream)</option>
+      </select>
+    </label>
+    <label>🧠 Money personality
+      <select name="profile" id="profile">
+        <option value="conservative">Conservative planner</option>
+        <option value="balanced" selected>Balanced investor</option>
+        <option value="yolo">High-roller YOLO</option>
+      </select>
+    </label>
+    <label>🎭 Lifestyle vibe
+      <select name="lifestyle" id="lifestyle">
+        <option value="modest">Modest reset</option>
+        <option value="smart" selected>Smart flex</option>
+        <option value="lavish">Lavish legend</option>
+      </select>
+    </label>
+    <label class="grid-col2">📝 Dream headline
+      <textarea name="goal" id="goal" placeholder="Example: Retire my parents, start a studio, and fund STEM scholarships."></textarea>
+    </label>
+    <div class="actions">
+      <button type="submit">Launch Simulation →</button>
+      <div style="color:#8ea2d8;font-size:14px">You can change everything inside the game. We autosave progress.</div>
+    </div>
+  </form>
 
-<h1>🎉 Welcome to LottoLife</h1>
-<p>See how your winnings could grow (or disappear!) after taxes and smart money choices.</p>
-
-<form action="/startgame" method="POST">
-  <label>💵 How much did you win?</label>
-  <input type="number" name="amount" placeholder="Example: 10000000" required>
-
-  <label>📍 Select your state (for tax rate)</label>
-  <select name="state" required>
-    <option value="MI">Michigan (4.25%)</option>
-    <option value="CA">California (13.3%)</option>
-    <option value="TX">Texas (0%)</option>
-    <option value="FL">Florida (0%)</option>
-    <option value="NY">New York (10.9%)</option>
-    <option value="IL">Illinois (4.95%)</option>
-    <option value="PA">Pennsylvania (3.07%)</option>
-    <option value="OH">Ohio (4%)</option>
-    <option value="NJ">New Jersey (10.75%)</option>
-    <option value="GA">Georgia (5.75%)</option>
-  </select>
-
-  <label>📝 What would you do first?</label>
-  <textarea name="goal" rows="3" placeholder="Example: Buy a house for my parents and start a café."></textarea>
-
-  <button type="submit">Start Simulation →</button>
-  <small>After-tax amount will be automatically calculated for your state.</small>
-</form>
-
+  <div class="preview" id="preview">
+    <div class="tile"><span>After Federal Tax</span><strong id="prevFed">$0</strong></div>
+    <div class="tile"><span>After State Tax</span><strong id="prevState">$0</strong></div>
+    <div class="tile"><span>Take-home Net</span><strong id="prevNet">$0</strong></div>
+    <div class="tile"><span>Starting Wallet</span><strong id="prevWallet">$0</strong><div style="font-size:12px;color:#7fa3ff">80% of net in cash</div></div>
+    <div class="tile"><span>Initial Savings</span><strong id="prevSavings">$0</strong><div style="font-size:12px;color:#7fa3ff">20% tucked away</div></div>
+    <div class="tile"><span>Monthly Lifestyle Burn (est.)</span><strong id="prevLifestyle">$0</strong><div style="font-size:12px;color:#7fa3ff">Based on vibe + profile</div></div>
+  </div>
+</main>
+<script>
+const STATE_TAX = {{ STATE_TAX|tojson }};
+const FED_TAX = {{ FEDERAL_TAX }};
+const $ = s => document.querySelector(s);
+function fmt(n){return Number(n||0).toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0});}
+function estLifestyle(net, profile, lifestyle){
+  const base = net * 0.012; // base monthly burn ~1.2% of net
+  const multipliers = {modest:0.6, smart:1.0, lavish:1.8};
+  const profileBoost = {conservative:0.8, balanced:1, yolo:1.3};
+  return Math.min(net/6, base * (multipliers[lifestyle]||1) * (profileBoost[profile]||1));
+}
+function recalc(){
+  const amt = Number($('#amount').value.replace(/,/g,''))||0;
+  const state = $('#state').value;
+  const profile = $('#profile').value;
+  const vibe = $('#lifestyle').value;
+  const payout = $('#payout').value;
+  let working = amt;
+  let fed = 0;
+  let stateTax = 0;
+  if(payout === 'annuity'){
+    const years = 30;
+    const rate = 0.04;
+    const annuity = amt ? (amt * rate) / (1 - Math.pow(1+rate,-years)) : 0;
+    working = annuity * years * 0.55; // approx tax withheld over time
+  }
+  fed = working * FED_TAX;
+  stateTax = working * (STATE_TAX[state] || 0);
+  const afterFederal = working - fed;
+  const afterState = working - stateTax;
+  const net = Math.max(0, working - fed - stateTax);
+  const savings = net * 0.20;
+  const wallet = net - savings;
+  const lifestyle = estLifestyle(net, profile, vibe);
+  $('#prevFed').textContent = fmt(afterFederal);
+  $('#prevState').textContent = fmt(afterState);
+  $('#prevNet').textContent = fmt(net);
+  $('#prevWallet').textContent = fmt(wallet);
+  $('#prevSavings').textContent = fmt(savings);
+  $('#prevLifestyle').textContent = fmt(lifestyle);
+}
+['#amount','#state','#profile','#lifestyle','#payout'].forEach(sel=>{
+  const el = document.querySelector(sel);
+  if(el){el.addEventListener('input',recalc);el.addEventListener('change',recalc);}  
+});
+recalc();
+</script>
 </body>
 </html>

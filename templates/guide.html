@@ -6,31 +6,91 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-body{font-family:'Jost',sans-serif;background:#050810;color:#fff;margin:0;padding:0}
-nav{background:#0b1222;padding:10px 20px;display:flex;gap:10px;align-items:center}
-nav a{color:#fff;text-decoration:none;padding:8px 12px;border-radius:8px;border:1px solid #1b233a;background:#0f1730}
-nav a:hover{background:#0d6efd;border-color:transparent}
-main{max-width:800px;margin:40px auto;padding:20px;background:#0f1730;border-radius:14px;border:1px solid #1b233a}
-h1{margin-top:0;color:#cfe1ff}
+  :root{--bg:#050810;--panel:#0f1730;--line:#1b233a;--brand:#0d6efd;--accent:#7c5cff;}
+  *{box-sizing:border-box}
+  body{font-family:'Jost',sans-serif;background:radial-gradient(900px 620px at 60% -10%,rgba(124,92,255,.25),rgba(5,8,16,.95)),#050810;color:#eef3ff;margin:0;min-height:100vh}
+  header{background:#0b1222;border-bottom:2px solid rgba(13,110,253,.4);box-shadow:0 10px 30px rgba(5,8,16,.7)}
+  nav{max-width:960px;margin:auto;padding:14px 18px;display:flex;gap:12px;flex-wrap:wrap}
+  nav a{color:#fff;text-decoration:none;padding:10px 18px;border-radius:12px;border:1px solid rgba(124,92,255,.3);background:rgba(15,24,48,.85);font-weight:600;transition:.25s}
+  nav a:hover,nav a.active{background:linear-gradient(135deg,var(--brand),var(--accent));border-color:transparent;box-shadow:0 18px 36px rgba(13,110,253,.4)}
+  main{max-width:960px;margin:50px auto;padding:0 24px 60px;display:grid;gap:26px}
+  section{background:var(--panel);border-radius:26px;border:1px solid rgba(124,92,255,.25);padding:26px;box-shadow:0 24px 60px rgba(5,8,18,.6)}
+  h1{margin:0 0 10px;font-size:2.4rem;font-weight:800}
+  h2{margin:0 0 12px;font-size:1.4rem;color:#d9e3ff}
+  p{margin:0 0 12px;color:#a7b8e6;font-size:15px;line-height:1.6}
+  ul{margin:0 0 12px 20px;color:#a7b8e6}
+  li{margin-bottom:10px}
+  code{background:rgba(15,24,48,.8);padding:2px 6px;border-radius:6px;color:#9fc0ff}
+  footer{text-align:center;color:#8fa5d1;margin:30px 0 60px;font-size:14px}
 </style>
 </head>
 <body>
-
-<nav>
-  <a href="/">🎮 Game</a>
-  <a href="/leaderboard">🏆 Leaderboard</a>
-  <a href="/guide" style="background:#0d6efd">📘 Guide</a>
-</nav>
-
+<header>
+  <nav>
+    <a href="/">🎮 Game</a>
+    <a href="/leaderboard">🏆 Leaderboard</a>
+    <a href="/guide" class="active">📘 Guide</a>
+  </nav>
+</header>
 <main>
-  <h1>📘 How to Play LottoLife</h1>
-  <p><b>Step 1:</b> Enter how much you won and pick your state to factor in taxes.</p>
-  <p><b>Step 2:</b> Once inside, use the tabs to buy cars, houses, businesses, charities, or items.</p>
-  <p><b>Step 3:</b> Use the “1 Day / 1 Week / 1 Month” buttons to simulate time and watch your finances evolve.</p>
-  <p>💰 Savings earn interest. Houses can be rented out. Businesses generate revenue. Charities cost money but earn reputation!</p>
-  <p>🎲 Random events (storms, booms, dips) can occur if you toggle “Events On.”</p>
-  <p>🏆 Update your leaderboard score anytime from the portfolio tab!</p>
-</main>
+  <section>
+    <h1>📘 Master the LottoLife Simulator</h1>
+    <p>Welcome to your post-jackpot sandbox! This guide covers every screen so you can grow (or blow) your fortune on purpose. The simulator is tuned for PythonAnywhere and autosaves locally.</p>
+  </section>
 
+  <section>
+    <h2>🎯 Getting started</h2>
+    <ul>
+      <li><strong>Start screen:</strong> enter your jackpot, pick your state for accurate tax withholding, choose your payout, profile, and initial lifestyle vibe. We preview after-tax cash instantly.</li>
+      <li><strong>Session magic:</strong> your wallet, savings, state, and preferences follow you into the game via secure Flask sessions so no more “amount lost on /game” bugs.</li>
+      <li><strong>Autosave:</strong> the game stores your progress in browser storage and lets you export a JSON snapshot. Restart anytime via <code>/reset</code>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>📊 Portfolio tab</h2>
+    <ul>
+      <li>Track <strong>wallet, savings, assets, debt, happiness, reputation, and high-water mark</strong> at a glance.</li>
+      <li>Use quick actions to move cash to savings, withdraw, take loans, or pay down debt. Interest accrues automatically.</li>
+      <li>Simulate time in bursts (day/week/month/year) or enable the <strong>auto-play loop</strong> from the top navigation. Choose how many days each tick advances.</li>
+      <li>The ledger records every transaction and the timeline panel highlights the biggest swings.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>🧑‍🤝‍🧑 Lifestyle tab</h2>
+    <ul>
+      <li>Fine-tune monthly burn, travel style, security detail, and staff payroll. These sliders affect happiness, random event odds, and monthly expenses.</li>
+      <li>Preset buttons snap you to modest, balanced, or extravagant living.</li>
+      <li>Trigger a random event, review autosave status, or export your run for safe keeping.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>🏠 Assets & 🎁 Charities</h2>
+    <ul>
+      <li><strong>Cars, Houses, Businesses, Investments:</strong> browse curated catalogs, buy assets, manage upkeep, hire/fire, IPO companies, and toggle rentals.</li>
+      <li><strong>Charities:</strong> start preset programs or roll your own foundation. Donations raise reputation but burn cash monthly.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>📆 Timeline & ⭐ Achievements</h2>
+    <ul>
+      <li>The timeline shows the latest 60 key events with net worth and high-water stats for quick storytelling.</li>
+      <li>Achievements reward milestones such as ten-million net worth, first IPO, mega philanthropy, or surviving 1,000 days without going broke.</li>
+      <li>When net worth drops below zero with no assets left, the <strong>Game Over</strong> screen appears—proof it’s possible to lose it all.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>🏆 Leaderboard tips</h2>
+    <ul>
+      <li>Press <strong>Update Leaderboard</strong> to sync your stats. We capture day count, peak net worth, happiness, lifestyle spend, and more.</li>
+      <li>The leaderboard view is now fully styled with player goals, peak net, taxes paid, and day count so your run tells a story.</li>
+    </ul>
+  </section>
+</main>
+<footer>💼 Questions or ideas? DM <a href="https://instagram.com/trackyoursheets" style="color:#cfe1ff" target="_blank">@trackyoursheets</a>.</footer>
 </body>
 </html>

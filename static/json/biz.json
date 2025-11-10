@@ -86,5 +86,38 @@
     "fixed_weekly_costs": 180000,
     "growth_level": 4,
     "desc": "High risk, high reward, IPO likely."
+  },
+  {
+    "name": "Streaming Platform",
+    "price": 9500000,
+    "employees": 45,
+    "salary_per_employee_annual": 125000,
+    "weekly_revenue": 420000,
+    "gross_margin": 0.52,
+    "fixed_weekly_costs": 130000,
+    "growth_level": 3,
+    "desc": "Subscription media app with global audience."
+  },
+  {
+    "name": "Space Tourism Startup",
+    "price": 18500000,
+    "employees": 60,
+    "salary_per_employee_annual": 175000,
+    "weekly_revenue": 680000,
+    "gross_margin": 0.3,
+    "fixed_weekly_costs": 240000,
+    "growth_level": 4,
+    "desc": "Send thrill-seekers to the edge of orbit."
+  },
+  {
+    "name": "Esports Arena Network",
+    "price": 3200000,
+    "employees": 18,
+    "salary_per_employee_annual": 80000,
+    "weekly_revenue": 95000,
+    "gross_margin": 0.48,
+    "fixed_weekly_costs": 28000,
+    "growth_level": 2,
+    "desc": "Hosts tournaments and brand activations worldwide."
   }
 ]

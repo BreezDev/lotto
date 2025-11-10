@@ -2,132 +2,310 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>🎮 LottoLife 2.0</title>
+<title>🎮 LottoLife Simulator</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#050810;--panel:#0e1526;--line:#1b233a;--ink:#eef3ff;--muted:#9db0d6;
     --brand:#0d6efd;--good:#22c55e;--bad:#ef4444;--gold:#facc15;--vio:#7c5cff;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:radial-gradient(1200px 700px at 70% -10%, #13213a 0%, #050810 60%);color:var(--ink);font-family:'Jost',system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-  header{position:sticky;top:0;z-index:20;background:#0b1222;border-bottom:2px solid var(--brand)}
-  nav{max-width:1200px;margin:auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  body{margin:0;background:radial-gradient(1200px 700px at 70% -10%, #13213a 0%, #050810 60%);color:var(--ink);font-family:'Jost',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh;}
+  header{position:sticky;top:0;z-index:30;background:#0b1222;border-bottom:2px solid var(--brand);box-shadow:0 10px 40px rgba(8,12,25,0.45);}
+  nav{max-width:1250px;margin:auto;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
   nav .left,nav .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  nav a{color:#fff;text-decoration:none;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:#0f1730}
-  nav a.active,nav a:hover{background:var(--brand);border-color:transparent}
-  nav button{background:#1b233a;color:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-weight:700;cursor:pointer}
-  nav button:hover{background:var(--brand);border-color:transparent}
-  .wrap{max-width:1200px;margin:auto;padding:18px}
-  .grid{display:grid;gap:14px;grid-template-columns:repeat(12,1fr)}
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;display:none}
+  nav a{color:#fff;text-decoration:none;padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:#101833;font-weight:600;transition:all .25s ease}
+  nav a.active,nav a:hover{background:var(--brand);border-color:transparent;transform:translateY(-1px)}
+  nav button,nav select{background:#101833;color:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 14px;font-weight:600;cursor:pointer;transition:all .25s ease}
+  nav button:hover{background:var(--brand);border-color:transparent;transform:translateY(-1px)}
+  nav select{padding:9px 12px}
+  .wrap{max-width:1250px;margin:auto;padding:22px}
+  .grid{display:grid;gap:18px;grid-template-columns:repeat(12,1fr)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px;display:none;box-shadow:0 18px 45px rgba(5,8,16,0.65)}
   .panel.active{display:block}
-  .span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-6{grid-column:span 6}.span-4{grid-column:span 4}
-  h2{margin:0 0 8px 0;color:#cfe1ff}
-  h3{margin:10px 0}
-  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-  .kpi{background:#0a1120;border:1px solid var(--line);border-radius:12px;padding:12px}
-  .kpi .t{color:var(--muted);font-size:12px}
-  .kpi .v{font-weight:800;font-size:18px}
-  label{display:block;color:var(--muted);font-size:13px;margin-top:6px}
-  input,select,button{padding:10px 12px;border-radius:10px;border:1px solid #1c2744;background:#0b1222;color:var(--ink)}
+  .span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-6{grid-column:span 6}.span-5{grid-column:span 5}.span-4{grid-column:span 4}.span-3{grid-column:span 3}
+  h1,h2,h3{margin:0 0 10px;font-weight:700;color:#d9e5ff}
+  h2 small{display:block;font-weight:500;font-size:14px;color:var(--muted)}
+  .topline{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+  .identity{display:flex;gap:16px;align-items:center}
+  .avatar{width:70px;height:70px;border-radius:16px;background:linear-gradient(135deg,#5c7cfa,#23a6d5);display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:800}
+  .identity-info{min-width:220px}
+  .identity-info .name{font-size:22px;font-weight:800}
+  .identity-info .meta{color:var(--muted);font-size:13px}
+  .goal-line{margin-top:8px;font-size:14px;color:#c9dcff}
+  .goal-line span{color:var(--gold);font-weight:600}
+  .goal-progress{margin-top:6px;height:8px;background:#101933;border-radius:999px;overflow:hidden;position:relative}
+  .goal-progress::after{content:"";display:block;height:100%;background:linear-gradient(90deg,#0d6efd,#7c5cff);width:var(--pct,0%);transition:width .4s ease}
+  .top-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .pill{display:inline-flex;gap:6px;align-items:center;padding:6px 11px;border:1px solid var(--line);border-radius:999px;background:#0b1222;color:var(--muted);font-size:12px}
+  .pill strong{color:#fff}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+  .kpi{background:#0a1120;border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:6px;min-height:110px;position:relative;overflow:hidden}
+  .kpi .t{color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.06em}
+  .kpi .v{font-weight:800;font-size:22px}
+  .kpi .tag{font-size:12px;color:#7da7ff}
+  label{display:block;color:var(--muted);font-size:13px;margin-top:8px}
+  input,select,button,textarea{padding:12px 14px;border-radius:12px;border:1px solid #1c2744;background:#0b1222;color:var(--ink);font-family:inherit;font-size:15px}
+  input[type=range]{width:100%;padding:0;background:transparent}
   button.primary{background:var(--brand);border-color:transparent;font-weight:800}
+  button.ghost{background:transparent;color:#9ab7ff;border:1px dashed var(--line)}
   table{width:100%;border-collapse:collapse}
-  th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left}
-  th{color:#b9c7e0}
+  th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
+  th{color:#b9c7e0;text-transform:uppercase;letter-spacing:.04em;font-size:12px}
   td.right{text-align:right}
   .row{display:flex;gap:10px;flex-wrap:wrap}
-  .pill{display:inline-flex;gap:6px;align-items:center;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:#0b1222;color:var(--muted);font-size:12px}
-  .notice{background:#0a1120;border:1px dashed var(--line);padding:10px;border-radius:12px}
   .mini{font-size:12px;color:var(--muted)}
-  .btn-danger{background:var(--bad);border-color:#c33}
-  .btn-good{background:var(--good);color:#04160c;border-color:#1a6f3a}
-  .storecard{border:1px solid var(--line);border-radius:12px;padding:12px;margin:8px 0;background:#0f1730}
-  .flex{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .toast{position:fixed;right:16px;bottom:16px;background:#0e1526;border:1px solid var(--line);padding:12px 14px;border-radius:12px;box-shadow:0 6px 28px rgba(0,0,0,.35);z-index:50;display:none}
+  .notice{background:#0a1120;border:1px dashed var(--line);padding:14px;border-radius:16px}
+  .storecard{border:1px solid var(--line);border-radius:16px;padding:16px;margin:10px 0;background:#101a33;box-shadow:0 12px 40px rgba(5,8,18,0.45)}
+  .flex{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .toast{position:fixed;right:20px;bottom:20px;background:#0e1526;border:1px solid var(--line);padding:14px 16px;border-radius:14px;box-shadow:0 12px 38px rgba(0,0,0,.4);z-index:200;display:none;font-weight:600}
   .toast.show{display:block;animation:rise .5s ease}
-  @keyframes rise{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
-  canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:40}
-  footer{text-align:center;color:#9bb0d0;margin:28px 0}
+  @keyframes rise{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
+  canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:150}
+  footer{text-align:center;color:#9bb0d0;margin:34px 0}
   footer a{color:#cfe1ff}
-  @media (max-width:980px){.span-8,.span-6,.span-4{grid-column:span 12}.kpis{grid-template-columns:repeat(2,1fr)}}
+  .timeline-list{max-height:420px;overflow:auto}
+  .achievement-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .achievement{background:#101a33;border:1px solid var(--line);border-radius:16px;padding:16px;position:relative}
+  .achievement.complete{border-color:#22c55e;box-shadow:0 10px 26px rgba(34,197,94,0.25)}
+  .achievement.complete::after{content:"✔";position:absolute;top:10px;right:14px;color:#22c55e;font-weight:700}
+  #gameOver{position:fixed;inset:0;background:rgba(5,8,16,0.92);display:none;align-items:center;justify-content:center;z-index:300;padding:24px}
+  #gameOver.active{display:flex}
+  #gameOver .box{max-width:420px;background:#0f1730;border-radius:22px;padding:28px;border:1px solid var(--brand);text-align:center;box-shadow:0 18px 46px rgba(0,0,0,.55)}
+  #gameOver h2{margin-bottom:6px}
+  #gameOver p{color:#cdd9ff;font-size:15px}
+  #gameOver .stats{margin-top:16px;background:#101a33;border-radius:16px;padding:16px;text-align:left}
+  .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(13,110,253,0.12);color:#9cbafe;padding:6px 10px;border-radius:999px;font-size:12px}
+  .life-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:14px}
+  .life-card{background:#101a33;border:1px solid var(--line);border-radius:16px;padding:16px}
+  .life-card strong{display:block;font-size:16px;margin-bottom:6px}
+  .life-card p{margin:6px 0 0;font-size:13px;color:#b7c6e6}
+  .life-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:20px}
+  .life-actions .card{background:#0a1120;border:1px solid var(--line);border-radius:16px;padding:16px}
+  .life-actions .card button{width:100%;margin-top:8px}
+  .tagline{font-size:12px;color:#7da7ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+  .stat-block{background:#0a1120;border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:16px}
+  .stat-block h3{margin:0 0 10px}
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+  .stat-item{background:#101833;border-radius:14px;padding:12px}
+  .stat-item span{display:block;color:#9db0d6;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+  .stat-item strong{display:block;margin-top:4px;font-size:18px}
+  .timeline-list table{width:100%;}
+  .timeline-list tbody tr:nth-child(even){background:rgba(255,255,255,0.02)}
+  .timeline-list td{font-size:13px}
+  .empty{color:#7c8dae;font-style:italic}
+  @media(max-width:980px){.span-8,.span-6,.span-5,.span-4,.span-3{grid-column:span 12}.topline{flex-direction:column;align-items:flex-start}.identity{flex-direction:row}.avatar{width:60px;height:60px;font-size:28px}}
 </style>
 </head>
 <body>
 <script>
-window.GAME_START = {{ {
-  "wallet": session.get("wallet", 0),
-  "savings": session.get("savings", 0),
-  "state": session.get("state", ""),
-  "goal": session.get("goal", ""),
-  "net": session.get("net", 0)
-} | tojson }};
+window.GAME_START = {{ start_data|tojson }};
 </script>
-
-
 <header>
   <nav>
     <div class="left">
       <a href="#" data-tab="portfolio" class="active">📊 Portfolio</a>
+      <a href="#" data-tab="life">🧑‍🤝‍🧑 Lifestyle</a>
       <a href="#" data-tab="cars">🏎 Cars</a>
       <a href="#" data-tab="houses">🏠 Houses</a>
       <a href="#" data-tab="biz">💼 Businesses</a>
       <a href="#" data-tab="charity">🎁 Charities</a>
-      <a href="#" data-tab="items">🛍 Items</a>
+      <a href="#" data-tab="items">💹 Investments</a>
+      <a href="#" data-tab="timeline">📆 Timeline</a>
+      <a href="#" data-tab="achievements">⭐ Achievements</a>
       <a href="/leaderboard">🏆 Leaderboard</a>
       <a href="/guide">📘 Guide</a>
     </div>
     <div class="right">
-      <span class="pill">Inflation <input id="infl" type="number" value="2.5" step="0.1" style="width:80px">%</span>
-      <button id="day">▶️ 1 Day</button>
-      <button id="week">⏩ 1 Week</button>
-      <button id="month">⏭️ 1 Month</button>
+      <span class="pill">Events <input id="evt" type="checkbox"></span>
+      <select id="autoSpeed">
+        <option value="1">Auto • 1 Day</option>
+        <option value="7" selected>Auto • 1 Week</option>
+        <option value="30">Auto • 1 Month</option>
+        <option value="90">Auto • 1 Quarter</option>
+      </select>
+      <button id="autoPlay">▶️ Auto</button>
+      <button id="autoStop" class="ghost">⏹ Stop</button>
     </div>
   </nav>
 </header>
 
 <canvas id="confetti"></canvas>
 <div id="toast" class="toast">Saved!</div>
+<div id="gameOver">
+  <div class="box">
+    <h2>💥 Game Over</h2>
+    <p id="gameOverMsg">Your fortune has run dry.</p>
+    <div class="stats">
+      <div class="row" style="justify-content:space-between"><span>Final Net Worth</span><strong id="gameOverNet">$0</strong></div>
+      <div class="row" style="justify-content:space-between"><span>High Water Mark</span><strong id="gameOverHigh">$0</strong></div>
+      <div class="row" style="justify-content:space-between"><span>Days Survived</span><strong id="gameOverDays">0</strong></div>
+    </div>
+    <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+      <a class="primary" href="/reset" style="text-decoration:none;padding:12px 22px;border-radius:12px">Start Over</a>
+      <button id="closeGameOver" class="ghost">Keep Exploring</button>
+    </div>
+  </div>
+</div>
 
 <div class="wrap">
-  <!-- PORTFOLIO -->
   <section id="panel-portfolio" class="panel active">
-    <h2>📊 Portfolio</h2>
-    <div class="kpis">
-      <div class="kpi"><div class="t">Wallet</div><div class="v" id="kWallet">$0</div></div>
-      <div class="kpi"><div class="t">Savings</div><div class="v" id="kSavings">$0</div></div>
-      <div class="kpi"><div class="t">Total Assets</div><div class="v" id="kAssets">$0</div></div>
-      <div class="kpi"><div class="t">Net Worth</div><div class="v" id="kNet">$0</div></div>
-    </div>
-    <div class="row" style="margin-top:10px">
-      <div class="pill">Reputation: <b id="kRep">0</b></div>
-      <div class="pill">APY <input id="apy" type="number" value="4.5" step="0.1" style="width:80px">%</div>
-      <div class="pill">Events <input id="evt" type="checkbox"></div>
-      <button id="saveLeaderboard" class="primary">⬆️ Update Leaderboard</button>
-    </div>
-    <div class="grid" style="margin-top:12px">
-      <div class="span-6 notice">
-        <h3 style="margin:0 0 6px">Assets Breakdown</h3>
-        <div id="breakdown" class="mini">No assets yet. Buy something from the tabs!</div>
+    <div class="topline">
+      <div class="identity">
+        <div class="avatar" id="avatarBadge">💰</div>
+        <div class="identity-info">
+          <div class="name" id="playerName">Player</div>
+          <div class="meta"><span id="playerState">State</span> • <span id="playerProfile">Profile</span> • <span id="timeBadge">Day 1</span></div>
+          <div class="goal-line">Goal: <span id="playerGoal">Set in start screen</span></div>
+          <div class="goal-progress" id="goalProgress" style="--pct:0%"></div>
+        </div>
       </div>
-      <div class="span-6 notice">
-        <h3 style="margin:0 0 6px">Net Worth (last 30 ops)</h3>
-        <canvas id="spark" height="120"></canvas>
+      <div class="top-actions">
+        <div class="pill">Tax Paid <strong id="taxPaid">$0</strong></div>
+        <div class="pill">Starting Prize <strong id="startAmt">$0</strong></div>
+        <div class="pill">Mood <strong id="moodLabel">Balanced</strong></div>
+        <button id="day" class="ghost">▶️ Day</button>
+        <button id="week" class="ghost">⏩ Week</button>
+        <button id="month" class="ghost">⏭️ Month</button>
+        <button id="year" class="ghost">⏮️ Year</button>
+        <button id="saveLeaderboard" class="primary">⬆️ Update Leaderboard</button>
+        <a href="/reset" class="ghost" style="text-decoration:none;padding:10px 16px;border-radius:12px">🔄 Restart</a>
       </div>
     </div>
 
-    <h3 style="margin-top:14px">📜 Ledger</h3>
-    <table id="ledger">
-      <thead><tr><th>#</th><th>Event</th><th class="right">Δ Wallet</th><th class="right">Δ Assets</th><th class="right">Net</th></tr></thead>
-      <tbody></tbody>
-    </table>
+    <div class="kpis">
+      <div class="kpi"><div class="t">Wallet</div><div class="v" id="kWallet">$0</div><div class="tag">Liquid cash</div></div>
+      <div class="kpi"><div class="t">Savings</div><div class="v" id="kSavings">$0</div><div class="tag">Earns interest</div></div>
+      <div class="kpi"><div class="t">Invested Assets</div><div class="v" id="kAssets">$0</div><div class="tag" id="assetBreakdownTag">No assets</div></div>
+      <div class="kpi"><div class="t">Net Worth</div><div class="v" id="kNet">$0</div><div class="tag">Target <span id="goalTarget">--</span></div></div>
+      <div class="kpi"><div class="t">Debt</div><div class="v" id="kDebt">$0</div><div class="tag">Loans & credit</div></div>
+      <div class="kpi"><div class="t">High Water Mark</div><div class="v" id="kHigh">$0</div><div class="tag">Best net so far</div></div>
+      <div class="kpi"><div class="t">Happiness</div><div class="v" id="kHappy">50%</div><div class="tag">Lifestyle impact</div></div>
+      <div class="kpi"><div class="t">Reputation</div><div class="v" id="kRep">0</div><div class="tag">Community love</div></div>
+    </div>
+
+    <div class="grid">
+      <div class="span-8 notice">
+        <h3 style="margin:0 0 10px">Portfolio Pulse</h3>
+        <div class="mini" id="breakdown">No assets yet. Buy something from the tabs!</div>
+        <canvas id="spark" height="130" style="margin-top:14px;width:100%"></canvas>
+      </div>
+      <div class="span-4 notice">
+        <h3 style="margin:0 0 10px">Quick Actions</h3>
+        <label>Transfer to Savings ($)</label>
+        <div class="row" style="align-items:center">
+          <input id="depositInput" type="number" value="50000" style="flex:1" min="0">
+          <button id="depositBtn" class="primary">Deposit</button>
+        </div>
+        <label>Withdraw from Savings ($)</label>
+        <div class="row" style="align-items:center">
+          <input id="withdrawInput" type="number" value="50000" style="flex:1" min="0">
+          <button id="withdrawBtn" class="ghost">Withdraw</button>
+        </div>
+        <label>Loan Builder</label>
+        <div class="row" style="align-items:center">
+          <input id="loanAmount" type="number" value="250000" style="flex:1" min="0">
+          <input id="loanRate" type="number" value="6" min="0" max="25" step="0.5" style="width:90px">%
+        </div>
+        <div class="row" style="margin-top:6px">
+          <button id="takeLoan" class="primary" style="flex:1">Take Loan</button>
+          <button id="payDebt" class="ghost" style="flex:1">Pay Debt</button>
+        </div>
+        <p class="mini" id="loanHint">Loans accrue monthly interest automatically.</p>
+        <label>Savings APY</label>
+        <input id="apy" type="number" value="4.5" step="0.1" min="0" max="25">
+        <label>Inflation</label>
+        <input id="infl" type="number" value="2.5" step="0.1" min="0" max="15">
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:18px">
+      <div class="span-7 notice">
+        <h3 style="margin:0 0 10px">📜 Ledger</h3>
+        <table id="ledger">
+          <thead><tr><th>#</th><th>Day</th><th>Event</th><th class="right">Δ Wallet</th><th class="right">Δ Assets</th><th class="right">Net</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="span-5 notice">
+        <h3 style="margin:0 0 10px">Stats</h3>
+        <div class="stat-grid">
+          <div class="stat-item"><span>Business Income</span><strong id="statBiz">$0</strong></div>
+          <div class="stat-item"><span>Lifestyle Burn</span><strong id="statLifestyle">$0</strong></div>
+          <div class="stat-item"><span>Charity Given</span><strong id="statCharity">$0</strong></div>
+          <div class="stat-item"><span>Event Impact</span><strong id="statEvents">$0</strong></div>
+          <div class="stat-item"><span>Interest Earned</span><strong id="statInterest">$0</strong></div>
+          <div class="stat-item"><span>Debt Interest</span><strong id="statDebt">$0</strong></div>
+        </div>
+      </div>
+    </div>
   </section>
 
-  <!-- CARS -->
+  <section id="panel-life" class="panel">
+    <h2>🧑‍🤝‍🧑 Lifestyle Planner <small>Tune how wild your spending gets and how it affects happiness.</small></h2>
+    <div class="life-cards">
+      <div class="life-card">
+        <strong>Monthly Lifestyle Burn</strong>
+        <input id="lifestyleBurn" type="range" min="10000" max="1500000" step="10000">
+        <div class="mini">Currently: <span id="lifestyleBurnVal">$0</span> / month</div>
+        <p>Fund mansions, chefs, parties, and impulse buys. High burn increases happiness but can cause debt.</p>
+      </div>
+      <div class="life-card">
+        <strong>Security Detail</strong>
+        <select id="securityLevel">
+          <option value="0">Minimal ($0/mo)</option>
+          <option value="15000">Standard ($15k/mo)</option>
+          <option value="50000">Elite ($50k/mo)</option>
+        </select>
+        <p>Better protection reduces negative events but increases costs.</p>
+      </div>
+      <div class="life-card">
+        <strong>Travel Lifestyle</strong>
+        <select id="travelLevel">
+          <option value="5000">Coach wanderer ($5k/mo)</option>
+          <option value="25000" selected>Business globe trotter ($25k/mo)</option>
+          <option value="90000">Private jet set ($90k/mo)</option>
+        </select>
+        <p>Travel boosts happiness but drains cash. High tier unlocks rare positive events.</p>
+      </div>
+      <div class="life-card">
+        <strong>Staff & Payroll</strong>
+        <select id="staffLevel">
+          <option value="8000">Lean crew ($8k/mo)</option>
+          <option value="30000">Comfort crew ($30k/mo)</option>
+          <option value="120000">Royal entourage ($120k/mo)</option>
+        </select>
+        <p>Personal staff keep life smooth and reputation high but come with a paycheck.</p>
+      </div>
+    </div>
+
+    <div class="life-actions">
+      <div class="card">
+        <div class="tagline">HAPPINESS & RISK</div>
+        <p id="lifestyleSummary">Adjust the sliders to balance joy and sustainability.</p>
+        <button id="lifePresetModest" class="ghost">Modest Living</button>
+        <button id="lifePresetBalanced" class="ghost">Balanced</button>
+        <button id="lifePresetExtravagant" class="primary">Extravagant</button>
+      </div>
+      <div class="card">
+        <div class="tagline">AUTOSAVE</div>
+        <p>We autosave to your browser every major action. Want a clean slate?</p>
+        <button id="clearLocal" class="ghost">Clear Local Save</button>
+        <button id="exportState" class="primary">Export State JSON</button>
+      </div>
+      <div class="card">
+        <div class="tagline">MARKET MOOD</div>
+        <p>Current market climate: <strong id="marketMood">Calm</strong></p>
+        <p>Events and investments react to market swings. Keep an eye on volatility.</p>
+        <button id="triggerEvent" class="ghost">Trigger Random Event</button>
+      </div>
+    </div>
+  </section>
+
   <section id="panel-cars" class="panel">
-    <h2>🏎 Cars — Store</h2>
+    <h2>🏎 Cars — Showroom</h2>
     <div id="carList"></div>
     <h3>🚗 Garage</h3>
     <table id="garage">
@@ -136,9 +314,8 @@ window.GAME_START = {{ {
     </table>
   </section>
 
-  <!-- HOUSES -->
   <section id="panel-houses" class="panel">
-    <h2>🏠 Real Estate — Store</h2>
+    <h2>🏠 Real Estate — Portfolio</h2>
     <div id="houseList"></div>
     <h3>🏚 Owned Properties</h3>
     <table id="props">
@@ -147,9 +324,8 @@ window.GAME_START = {{ {
     </table>
   </section>
 
-  <!-- BUSINESSES -->
   <section id="panel-biz" class="panel">
-    <h2>💼 Businesses — Store</h2>
+    <h2>💼 Businesses — Ventures</h2>
     <div id="bizList"></div>
     <h3>🏢 Owned Companies</h3>
     <table id="companies">
@@ -158,12 +334,11 @@ window.GAME_START = {{ {
     </table>
   </section>
 
-  <!-- CHARITIES -->
   <section id="panel-charity" class="panel">
-    <h2>🎁 Charities — Start or Create</h2>
+    <h2>🎁 Charities — Give Back</h2>
     <div id="charityList"></div>
-    <div class="notice" style="margin-top:10px">
-      <h3 style="margin:0 0 6px">➕ Create Custom Charity</h3>
+    <div class="notice" style="margin-top:14px">
+      <h3 style="margin:0 0 10px">➕ Create Custom Charity</h3>
       <div class="row">
         <div><label>Name</label><input id="chName" placeholder="My Foundation"></div>
         <div><label>Initial Funding ($)</label><input id="chSeed" type="number" value="100000"></div>
@@ -179,15 +354,35 @@ window.GAME_START = {{ {
     </table>
   </section>
 
-  <!-- ITEMS -->
   <section id="panel-items" class="panel">
-    <h2>🛍 Items — Store</h2>
+    <h2>💹 Alternative Investments</h2>
     <div id="itemList"></div>
-    <h3>🎒 Owned Items</h3>
+    <h3>🎒 Owned Investments</h3>
     <table id="inv">
-      <thead><tr><th>Item</th><th class="right">Value</th><th class="right">Upkeep/mo</th><th>Action</th></tr></thead>
+      <thead><tr><th>Asset</th><th class="right">Value</th><th class="right">Upkeep/mo</th><th>Action</th></tr></thead>
       <tbody></tbody>
     </table>
+  </section>
+
+  <section id="panel-timeline" class="panel">
+    <h2>📆 Life Timeline</h2>
+    <p class="mini">Track the biggest swings in your fortune. Only the latest 60 major events are shown.</p>
+    <div class="timeline-list">
+      <table>
+        <thead><tr><th>#</th><th>Day</th><th>Event</th><th class="right">Net Worth</th><th class="right">High Water</th></tr></thead>
+        <tbody id="timelineBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="panel-achievements" class="panel">
+    <h2>⭐ Achievements</h2>
+    <p class="mini">Hit milestones to flex your new lifestyle. These also influence leaderboard bragging rights.</p>
+    <div class="achievement-grid" id="achievementsList"></div>
+    <div class="stat-block">
+      <h3>Milestones</h3>
+      <ul id="milestones"></ul>
+    </div>
   </section>
 </div>
 
@@ -195,7 +390,6 @@ window.GAME_START = {{ {
   💼 Follow <a href="https://instagram.com/trackyoursheets" target="_blank">@trackyoursheets</a> for more finance sims, tips, and updates!
 </footer>
 
-<script src="/static/js/game.js?v=7"></script>
-
+<script src="/static/js/game.js?v=20"></script>
 </body>
 </html>
