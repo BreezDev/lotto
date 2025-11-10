@@ -40,5 +40,26 @@
     "monthly_drain": 20000,
     "reputation": 18,
     "desc": "Construct rural schools."
+  },
+  {
+    "name": "Mental Wellness Coalition",
+    "price": 150000,
+    "monthly_drain": 12000,
+    "reputation": 14,
+    "desc": "Counseling access and hotlines worldwide."
+  },
+  {
+    "name": "Green Cities Challenge",
+    "price": 400000,
+    "monthly_drain": 23000,
+    "reputation": 17,
+    "desc": "Urban tree planting and climate tech pilots."
+  },
+  {
+    "name": "Space STEM Lab",
+    "price": 600000,
+    "monthly_drain": 28000,
+    "reputation": 22,
+    "desc": "Inspires students with space exploration grants."
   }
 ]

@@ -52,5 +52,32 @@
     "prop_tax_rate_annual": 0.015,
     "upkeep_monthly": 15000,
     "desc": "Iconic ultra-luxury residence."
+  },
+  {
+    "name": "Mediterranean Villa",
+    "price": 7200000,
+    "app_rate_annual": 0.045,
+    "rent_monthly": 32000,
+    "prop_tax_rate_annual": 0.013,
+    "upkeep_monthly": 7800,
+    "desc": "Cliffside escape with infinity pools and a helipad."
+  },
+  {
+    "name": "Ski Resort Chalet",
+    "price": 2900000,
+    "app_rate_annual": 0.038,
+    "rent_monthly": 21000,
+    "prop_tax_rate_annual": 0.011,
+    "upkeep_monthly": 6200,
+    "desc": "Luxury chalet with year-round rental demand."
+  },
+  {
+    "name": "Eco Smart Home",
+    "price": 950000,
+    "app_rate_annual": 0.03,
+    "rent_monthly": 6800,
+    "prop_tax_rate_annual": 0.009,
+    "upkeep_monthly": 1400,
+    "desc": "Net-zero property with solar roof and battery backup."
   }
 ]

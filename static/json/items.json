@@ -70,5 +70,29 @@
     "upkeep_monthly": 0,
     "volatility_monthly": 0,
     "desc": "Cinematic living room."
+  },
+  {
+    "name": "Classic Car Collection",
+    "price": 950000,
+    "rate_annual": 0.03,
+    "upkeep_monthly": 1500,
+    "volatility_monthly": 0.05,
+    "desc": "Garage of collectibles that may spike in value."
+  },
+  {
+    "name": "Vineyard Investment",
+    "price": 550000,
+    "rate_annual": 0.025,
+    "upkeep_monthly": 4500,
+    "volatility_monthly": 0.04,
+    "desc": "Bottles your own label; seasonal swings."
+  },
+  {
+    "name": "Metaverse Studio",
+    "price": 350000,
+    "rate_annual": 0.05,
+    "upkeep_monthly": 1800,
+    "volatility_monthly": 0.12,
+    "desc": "Virtual world builds; trend-sensitive."
   }
 ]
