@@ -51,7 +51,7 @@
     <h2>🎯 Getting started</h2>
     <ul>
       <li><strong>Start screen:</strong> enter your jackpot (capped at $1,000,000,000 to keep the sim grounded), pick your state for accurate taxes, choose payout, profile, and lifestyle vibe. We preview after-tax cash instantly.</li>
-      <li><strong>Email backup:</strong> drop in an email to receive your starting summary via Resend. Configure the <code>RESEND_API_KEY</code> environment variable on the server and we’ll email snapshots on demand.</li>
+      <li><strong>Email backup:</strong> add your address to receive a welcome summary. You can trigger fresh snapshots anytime from inside the simulator.</li>
       <li><strong>Session magic & autosave:</strong> wallet, savings, state, email, and preferences persist via Flask sessions. The game also autosaves locally and supports manual JSON exports/imports.</li>
     </ul>
   </section>
@@ -63,7 +63,7 @@
       <li>Use quick actions to move cash to savings, withdraw, take loans, or pay down debt. Interest accrues automatically.</li>
       <li>Simulate time in bursts (day/week/month/year) or enable the <strong>auto-play loop</strong> from the top navigation. Choose how many days each tick advances.</li>
       <li>The ledger records every transaction and the timeline panel highlights the biggest swings.</li>
-      <li><strong>Backups:</strong> export or import save files, and trigger Resend emails of your snapshot from the Lifestyle tab.</li>
+      <li><strong>Backups:</strong> export or import save files, and email yourself a snapshot right from the Lifestyle tab.</li>
     </ul>
   </section>
 
@@ -106,7 +106,7 @@
   <section>
     <h2>💌 Email & backups</h2>
     <ul>
-      <li><strong>Resend integration:</strong> set <code>RESEND_API_KEY</code> on your server, enter an email on the start screen, and we’ll send summaries when you launch or press “Email Latest Snapshot.”</li>
+      <li><strong>Email snapshots:</strong> pop in your email on the start screen or Lifestyle tab and we’ll send summaries when you tap “Email Latest Snapshot.”</li>
       <li><strong>Import/Export:</strong> every save exports as JSON. Use the Import buttons (Portfolio quick actions or Lifestyle card) to restore progress on any browser or device.</li>
       <li>Local autosave can be cleared with one click if you want to start fresh without wiping the leaderboard entry.</li>
     </ul>

@@ -2,7 +2,7 @@
   {
     "name": "Ferrari Daytona SP3",
     "price": 2650000,
-    "dep_rate_annual": 0.16,
+    "dep_rate_annual": -0.04,
     "maint_monthly": 6200,
     "class": "Legendary",
     "desc": "Limited-run V12 homage with sculpted aero." 
@@ -34,7 +34,7 @@
   {
     "name": "Pagani Huayra Codalunga",
     "price": 7200000,
-    "dep_rate_annual": 0.18,
+    "dep_rate_annual": -0.03,
     "maint_monthly": 9200,
     "class": "Ultimate",
     "desc": "Five-piece tailered roadster with hand-stitched interior art." 
@@ -82,7 +82,7 @@
   {
     "name": "Rolls-Royce Boat Tail",
     "price": 28000000,
-    "dep_rate_annual": 0.12,
+    "dep_rate_annual": -0.01,
     "maint_monthly": 15000,
     "class": "Bespoke",
     "desc": "Coachbuilt yachting lounge with parasol deck." 
@@ -90,7 +90,7 @@
   {
     "name": "Bentley Mulliner Batur",
     "price": 2100000,
-    "dep_rate_annual": 0.13,
+    "dep_rate_annual": 0.10,
     "maint_monthly": 4200,
     "class": "Grand",
     "desc": "Limited grand tourer previewing Bentley's future design language." 
@@ -253,6 +253,54 @@
     "dep_rate_annual": 0.15,
     "maint_monthly": 480,
     "class": "Grand",
-    "desc": "Last-of-the-line supercharged V8 coupe." 
+    "desc": "Last-of-the-line supercharged V8 coupe."
+  },
+  {
+    "name": "Porsche 911 Carrera T",
+    "price": 126000,
+    "dep_rate_annual": 0.09,
+    "maint_monthly": 420,
+    "class": "Sport",
+    "desc": "Lightweight tourer with manual gearbox thrills."
+  },
+  {
+    "name": "Tesla Model 3 Performance",
+    "price": 59990,
+    "dep_rate_annual": 0.11,
+    "maint_monthly": 110,
+    "class": "Sport EV",
+    "desc": "Quick electric sedan built for effortless road trips."
+  },
+  {
+    "name": "Toyota RAV4 Hybrid Limited",
+    "price": 42000,
+    "dep_rate_annual": 0.09,
+    "maint_monthly": 95,
+    "class": "Daily",
+    "desc": "Comfortable all-weather SUV sipping fuel while hauling gear."
+  },
+  {
+    "name": "Honda Civic Type R",
+    "price": 43990,
+    "dep_rate_annual": 0.1,
+    "maint_monthly": 160,
+    "class": "Hot Hatch",
+    "desc": "Track-tuned hatchback with red bucket seats and big smiles."
+  },
+  {
+    "name": "1969 Ford Bronco Restomod",
+    "price": 185000,
+    "dep_rate_annual": -0.02,
+    "maint_monthly": 260,
+    "class": "Classic",
+    "desc": "Lovingly restored icon that keeps appreciating in value."
+  },
+  {
+    "name": "Mini Cooper SE",
+    "price": 34900,
+    "dep_rate_annual": 0.12,
+    "maint_monthly": 80,
+    "class": "City EV",
+    "desc": "Zippy electric runabout perfect for downtown missions."
   }
 ]

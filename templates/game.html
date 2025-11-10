@@ -26,6 +26,9 @@
   nav button,nav select{background:#101833;color:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 14px;font-weight:600;cursor:pointer;transition:all .25s ease}
   nav button:hover{background:var(--brand);border-color:transparent;transform:translateY(-1px)}
   nav select{padding:9px 12px}
+  nav .quick-money{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;color:#cfe1ff}
+  nav .quick-money span{display:inline-flex;align-items:center;gap:6px;background:rgba(124,92,255,0.18);border:1px solid rgba(124,92,255,0.35);padding:6px 12px;border-radius:999px}
+  nav .quick-money strong{color:#fff;font-weight:700}
   .wrap{max-width:1250px;margin:auto;padding:22px}
   .grid{display:grid;gap:18px;grid-template-columns:repeat(12,1fr)}
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px;display:none;box-shadow:0 18px 45px rgba(5,8,16,0.65)}
@@ -57,6 +60,8 @@
   input[type=range]{width:100%;padding:0;background:transparent}
   button.primary{background:var(--brand);border-color:transparent;font-weight:800}
   button.ghost{background:transparent;color:#9ab7ff;border:1px dashed var(--line)}
+  button.btn-danger{background:#ef4444;border-color:transparent;color:#fff}
+  button.btn-danger:hover{background:#dc2626}
   table{width:100%;border-collapse:collapse}
   th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
   th{color:#b9c7e0;text-transform:uppercase;letter-spacing:.04em;font-size:12px}
@@ -73,6 +78,11 @@
   .flex{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
   .toast{position:fixed;right:20px;bottom:20px;background:#0e1526;border:1px solid var(--line);padding:14px 16px;border-radius:14px;box-shadow:0 12px 38px rgba(0,0,0,.4);z-index:200;display:none;font-weight:600}
   .toast.show{display:block;animation:rise .5s ease}
+  .fun-popup{position:fixed;top:84px;right:18px;background:#101a33;border:1px solid var(--brand);padding:16px 18px;border-radius:18px;color:#e9efff;box-shadow:0 18px 48px rgba(5,8,16,.6);opacity:0;transform:translateY(-12px);transition:.3s ease;pointer-events:none;z-index:210;max-width:260px}
+  .fun-popup.show{opacity:1;transform:translateY(0)}
+  .fun-popup.good{border-color:#22c55e}
+  .fun-popup.ouch{border-color:#ef4444}
+  .fun-popup p{margin:0;font-weight:600;font-size:14px}
   .modal{position:fixed;inset:0;background:rgba(5,8,16,0.75);display:none;align-items:center;justify-content:center;padding:22px;z-index:250}
   .modal.show{display:flex}
   .modal .box{background:#0f1730;border:1px solid var(--line);border-radius:22px;max-width:540px;width:100%;padding:26px;box-shadow:0 22px 60px rgba(0,0,0,0.65)}
@@ -91,6 +101,7 @@
   .achievement{background:#101a33;border:1px solid var(--line);border-radius:16px;padding:16px;position:relative}
   .achievement.complete{border-color:#22c55e;box-shadow:0 10px 26px rgba(34,197,94,0.25)}
   .achievement.complete::after{content:"✔";position:absolute;top:10px;right:14px;color:#22c55e;font-weight:700}
+  .board-cell{display:inline-block;padding:4px 10px;border-radius:999px;background:rgba(124,92,255,0.16);color:#cfe1ff}
   #gameOver{position:fixed;inset:0;background:rgba(5,8,16,0.92);display:none;align-items:center;justify-content:center;z-index:300;padding:24px}
   #gameOver.active{display:flex}
   #gameOver .box{max-width:420px;background:#0f1730;border-radius:22px;padding:28px;border:1px solid var(--brand);text-align:center;box-shadow:0 18px 46px rgba(0,0,0,.55)}
@@ -121,6 +132,14 @@
   .timeline-list tbody tr:nth-child(even){background:rgba(255,255,255,0.02)}
   .timeline-list td{font-size:13px}
   .empty{color:#7c8dae;font-style:italic}
+  .board-list{display:grid;gap:12px;margin-top:16px}
+  .board-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center;background:#101a33;border:1px solid var(--line);border-radius:16px;padding:14px}
+  .board-row strong{display:block;font-size:15px}
+  .board-row span{display:block;font-size:12px;color:#9db0d6}
+  .board-actions{display:flex;gap:8px;align-items:center}
+  .board-pay{font-weight:700;color:#e5ecff}
+  .floating-balances{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(15,24,48,0.92);border:1px solid var(--line);border-radius:999px;padding:10px 18px;display:none;gap:14px;align-items:center;color:#dbe6ff;z-index:180;box-shadow:0 14px 40px rgba(5,8,16,.55)}
+  .floating-balances span{font-size:13px;font-weight:600}
   @media(max-width:980px){
     .span-8,.span-6,.span-5,.span-4,.span-3{grid-column:span 12}
     .topline{flex-direction:column;align-items:flex-start}
@@ -131,7 +150,10 @@
   }
   @media(max-width:640px){
     header{position:static}
+    nav .right{gap:12px}
+    nav .quick-money{width:100%;justify-content:space-between}
     nav .right button,nav .right select{flex:1}
+    .floating-balances{display:flex;flex-wrap:wrap;justify-content:center}
     .top-actions{flex-direction:column;align-items:flex-start}
   }
 </style>
@@ -157,6 +179,11 @@ window.CATALOG_FALLBACK = {{ catalog_data|tojson }};
       <a href="/guide">📘 Guide</a>
     </div>
     <div class="right">
+      <div class="quick-money">
+        <span>Wallet <strong id="navWallet">$0</strong></span>
+        <span>Savings <strong id="navSavings">$0</strong></span>
+        <span>Net <strong id="navNet">$0</strong></span>
+      </div>
       <span class="pill">Events <input id="evt" type="checkbox"></span>
       <select id="autoSpeed">
         <option value="1">Auto • 1 Day</option>
@@ -188,7 +215,22 @@ window.CATALOG_FALLBACK = {{ catalog_data|tojson }};
     </div>
   </div>
 </div>
+<div id="boardModal" class="modal">
+  <div class="box">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px">
+      <div>
+        <div class="tagline">Board of Directors</div>
+        <h3 id="boardModalTitle">Board</h3>
+        <p class="mini" id="boardSeatInfo" style="margin:4px 0 0">0/0 seats filled</p>
+      </div>
+      <button class="ghost" type="button" onclick="closeBoardModal()">Close</button>
+    </div>
+    <div id="boardMemberList" class="board-list"></div>
+  </div>
+</div>
 <div id="toast" class="toast">Saved!</div>
+<div id="funPopup" class="fun-popup"><p>You're on a roll!</p></div>
+<div id="floatingBalances" class="floating-balances"></div>
 <div id="gameOver">
   <div class="box">
     <h2>💥 Game Over</h2>
@@ -380,11 +422,11 @@ window.CATALOG_FALLBACK = {{ catalog_data|tojson }};
       </div>
       <div class="card">
         <div class="tagline">EMAIL BACKUPS</div>
-        <label style="margin:0">Send saves via Resend</label>
+        <label style="margin:0">Send saves to your inbox</label>
         <input id="emailInput" type="email" placeholder="you@example.com">
         <button id="saveEmail" class="ghost">Save Email</button>
         <button id="sendEmailBtn" class="primary">Email Latest Snapshot</button>
-        <p class="mini" id="emailStatus">We keep your email local and send via the Resend API when configured.</p>
+        <p class="mini" id="emailStatus">We keep your email local and only send snapshots when you ask.</p>
       </div>
     </div>
 
@@ -427,6 +469,11 @@ window.CATALOG_FALLBACK = {{ catalog_data|tojson }};
             <option>Sibling</option>
             <option>Relative</option>
             <option>Friend</option>
+            <option>Mentor</option>
+            <option>Chef</option>
+            <option>Bodyguard</option>
+            <option>Pet</option>
+            <option>Trainer</option>
           </select>
         </label>
         <label>Name

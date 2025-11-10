@@ -64,7 +64,7 @@
           <th>Taxes Paid</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="leaderboardBody">
         {% for p in players %}
         <tr>
           <td class="rank">#{{ loop.index }}</td>
@@ -73,16 +73,16 @@
             {% if p['goal'] %}<div class="pill">{{ p['goal'] }}</div>{% endif %}
           </td>
           <td>{{ p['state'] }}</td>
-          <td>${{ '%.0f'|format(p['net']) }}</td>
-          <td>${{ '%.0f'|format(p['high_net'] or p['net']) }}</td>
+          <td>${{ '{:,.0f}'.format(p['net']) }}</td>
+          <td>${{ '{:,.0f}'.format(p['high_net'] or p['net']) }}</td>
           <td>Day {{ p['day'] or 0 }}</td>
           <td>{{ '%.0f'|format(p['rep']) }}</td>
           <td>{{ '%.0f'|format(p['happiness'] or 0) }}%</td>
           <td>
-            <div>${{ '%.0f'|format(p['charity_given'] or 0) }} total</div>
+            <div>${{ '{:,.0f}'.format(p['charity_given'] or 0) }} total</div>
             {% if p['top_charity'] %}<div class="pill">{{ p['top_charity'] }} • {{ p['charity_count'] }} orgs</div>{% else %}<div class="pill" style="background:rgba(239,68,68,0.18);color:#fca5a5">No foundations yet</div>{% endif %}
           </td>
-          <td>${{ '%.0f'|format(p['taxes_paid'] or 0) }}</td>
+          <td>${{ '{:,.0f}'.format(p['taxes_paid'] or 0) }}</td>
         </tr>
         {% else %}
         <tr><td colspan="9" class="empty">No runs posted yet. Finish the tutorial in game and press “Update Leaderboard.”</td></tr>
@@ -96,6 +96,72 @@
 if ('serviceWorker' in navigator){
   navigator.serviceWorker.register('/static/js/sw.js').catch(()=>{});
 }
+const leaderboardBody = document.querySelector('#leaderboardBody');
+const hasIntl = typeof Intl !== 'undefined' && Intl.NumberFormat;
+const currencyStandard = hasIntl ? new Intl.NumberFormat(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0}) : null;
+const currencyCompact = hasIntl ? new Intl.NumberFormat(undefined,{style:'currency',currency:'USD',notation:'compact',maximumFractionDigits:1}) : null;
+const numberFormatter = hasIntl ? new Intl.NumberFormat(undefined,{maximumFractionDigits:0}) : null;
+
+function formatCurrency(value){
+  const val = Number(value||0);
+  if (!Number.isFinite(val)) return '$0';
+  if (!hasIntl){
+    const full = `$${Math.round(val).toLocaleString()}`;
+    return full.length > 12 ? `$${(val/1_000_000).toFixed(1)}M` : full;
+  }
+  const full = currencyStandard.format(val);
+  return full.length > 12 ? currencyCompact.format(val) : full;
+}
+
+function formatNumber(value){
+  const val = Number(value||0);
+  if (!Number.isFinite(val)) return '0';
+  return hasIntl ? numberFormatter.format(val) : Math.round(val).toLocaleString();
+}
+
+function escapeHtml(value){
+  return String(value ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function renderLeaderboard(rows){
+  if (!leaderboardBody) return;
+  if (!rows.length){
+    leaderboardBody.innerHTML = '<tr><td colspan="9" class="empty">No runs posted yet. Finish the tutorial in game and press “Update Leaderboard.”</td></tr>';
+    return;
+  }
+  leaderboardBody.innerHTML = rows.map((p, idx)=>{
+    const goal = p.goal ? `<div class="pill">${escapeHtml(p.goal)}</div>` : '';
+    const topCharity = p.top_charity ? `<div class="pill">${escapeHtml(p.top_charity)} • ${formatNumber(p.charity_count)} orgs</div>` : '<div class="pill" style="background:rgba(239,68,68,0.18);color:#fca5a5">No foundations yet</div>';
+    return `
+      <tr>
+        <td class="rank">#${idx+1}</td>
+        <td><div>${escapeHtml(p.name || 'Player')}</div>${goal}</td>
+        <td>${escapeHtml(p.state || '')}</td>
+        <td>${formatCurrency(p.net)}</td>
+        <td>${formatCurrency(p.high_net || p.net)}</td>
+        <td>Day ${formatNumber(p.day || 0)}</td>
+        <td>${formatNumber(p.rep)}</td>
+        <td>${formatNumber(p.happiness || 0)}%</td>
+        <td><div>${formatCurrency(p.charity_given || 0)} total</div>${topCharity}</td>
+        <td>${formatCurrency(p.taxes_paid || 0)}</td>
+      </tr>`;
+  }).join('');
+}
+
+async function refreshLeaderboard(initial=false){
+  try {
+    const res = await fetch('/api/leaderboard');
+    if (!res.ok) throw new Error(res.statusText);
+    const data = await res.json();
+    if (Array.isArray(data)) renderLeaderboard(data);
+  } catch(err){
+    if (!initial) console.warn('Could not refresh leaderboard', err);
+  }
+}
+
+refreshLeaderboard(true);
+setInterval(()=> refreshLeaderboard(false), 45000);
+document.addEventListener('visibilitychange', ()=>{ if (!document.hidden) refreshLeaderboard(false); });
 </script>
 </body>
 </html>

@@ -1,7 +1,34 @@
 /* LottoLife Simulator 2.0 — full-featured simulation */
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
-const fmt = (n, opt={}) => Number(n||0).toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:opt.noCents?0:2});
+const fmt = (n, opt={}) => {
+  const value = Number(n || 0);
+  if (!Number.isFinite(value)) return '$0';
+  if (typeof Intl === 'undefined' || !Intl.NumberFormat){
+    const digits = opt.noCents ? 0 : Math.min(2, opt.maximumFractionDigits || 2);
+    return `$${value.toFixed(digits)}`;
+  }
+  const digits = opt.noCents ? 0 : Math.min(2, opt.maximumFractionDigits || 2);
+  const baseFormatter = new Intl.NumberFormat(undefined, {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: digits,
+    minimumFractionDigits: opt.noCents ? 0 : Math.min(2, digits)
+  });
+  let formatted = baseFormatter.format(value);
+  if (opt.trimCents) formatted = formatted.replace(/\.00$/, '');
+  const needsCompact = (opt.compact || formatted.length > (opt.maxLength || 14)) && Math.abs(value) >= 1000;
+  if (needsCompact) {
+    const compactFormatter = new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: 'USD',
+      notation: 'compact',
+      maximumFractionDigits: opt.noCents ? 0 : 1
+    });
+    return compactFormatter.format(value);
+  }
+  return formatted;
+};
 const pct = (n, digits=1) => `${(Number(n||0)*100).toFixed(digits)}%`;
 const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 const STORAGE_KEY = 'lotto-life-save-v2';
@@ -51,6 +78,9 @@ const S = {
   goalValue: null,
   hadDebt: false,
   gameOverShown: false,
+  funTicker: 0,
+  funCooldown: 0,
+  boardFocus: null,
   flags: {imported:false, emailed:false},
   character: {name: start.playerName || 'Player', age: 28, ageProgress: 0, pronouns: 'They/Them', avatar: '💰', career: 'Newly wealthy', bio: ''},
   family: {members: []},
@@ -83,6 +113,83 @@ function sanitizeAvatar(value){
   if (!trimmed) return '💰';
   const grapheme = Array.from(trimmed)[0];
   return grapheme || '💰';
+}
+
+const FRIEND_NAME_BANK = ['Jordan','Sky','River','Nova','Kai','Milo','Zara','Atlas','Luca','Rowan','Ember','Riley','Harper','Noor','Imani','Avery','Ezra','Mika','Hayes','Orion'];
+const BABY_NAME_BANK = ['Aurora','Jules','Lennon','Milan','Sage','Phoenix','Lyric','Aria','Indie','Skye','Zion','Noa','Blair','Cleo','Rumi'];
+const FRIEND_NOTE_BANK = [
+  'Met during a midnight charity gala.',
+  'Always booking surprise jet getaways.',
+  'Knows every sommelier in the city.',
+  'Hosts rooftop yoga for the crew.',
+  'Brings board games and rare vinyl nights.',
+  'Plans impromptu hiking retreats.',
+  'Knits matching sweaters for the squad.',
+  'Drops exclusive sneaker plugs on weekends.',
+  'Runs an underground supper club.',
+  'Keeps a spreadsheet of dream destinations.'
+];
+const FRIEND_ROLE_BANK = ['Friend','Best Friend','Travel Buddy','Mentor','Creative Partner','Hype Person'];
+const FUN_PLACES = ['in Monaco','in Tokyo','in a hidden speakeasy','on a private island','at a midnight gallery','under desert stars','on a mountaintop deck','at your sky loft'];
+const FAMILY_OUTING_ACTIVITIES = ['sunset cruise','chef\'s table tasting','stadium suite game night','moonlight beach walk','escape room showdown','helicopter skyline tour'];
+const FUN_POPUP_LINES = {
+  family: [
+    'Family time leveled up {place}! 💞',
+    '{name} is smiling ear to ear after that hangout.',
+    'Home feels cozier than ever right now.'
+  ],
+  biz: [
+    'Boardroom buzz: deals are vibing {place}.',
+    'Your execs just toasted a milestone!',
+    'Shareholders are grinning at the latest move.'
+  ],
+  lifestyle: [
+    'VIP perks unlocked another suite {place}.',
+    'Style team just dropped a fresh lookbook on you.',
+    'You ordered dessert for the table and the chef cheered.'
+  ],
+  events: [
+    'Plot twist! {title} just hit your storyline.',
+    'Life event unlocked: {title}.',
+    'Your phone is lighting up after {title}.'
+  ],
+  charity: [
+    'Hearts warmed: your giving ripple inspired a trend.',
+    'Communities are celebrating your latest grant!',
+    'Headlines are praising your generosity tonight.'
+  ],
+  default: [
+    'Big main-character energy right now.',
+    'Add this to the highlight reel!',
+    'Living the dream and it shows.'
+  ]
+};
+let funPopupTimer = null;
+
+function randomFrom(list){
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+function seedFriendCircle(){
+  if (!S.family || !Array.isArray(S.family.members)) S.family = {members: []};
+  const friendCount = S.family.members.filter(m => ['Friend','Best Friend','Travel Buddy','Mentor','Creative Partner','Hype Person'].includes(m.role)).length;
+  if (friendCount >= 3) return;
+  const needed = 3 - friendCount;
+  for (let i=0; i<needed; i++){
+    const name = randomFrom(FRIEND_NAME_BANK);
+    const role = randomFrom(FRIEND_ROLE_BANK);
+    const allowance = -Math.round(200 + Math.random()*800);
+    const note = `${randomFrom(FRIEND_NOTE_BANK)} ${randomFrom(FUN_PLACES)}`;
+    S.family.members.push({
+      id:newId(),
+      name,
+      role,
+      age: Math.round(24 + Math.random()*18),
+      impactMonthly: allowance,
+      livesWithYou: false,
+      notes: note
+    });
+  }
 }
 
 function familyMonthlyImpact(){
@@ -138,6 +245,37 @@ function moodLabel(){
   if (h >= 40) return 'Uneasy';
   if (h >= 20) return 'Stressed';
   return 'Burnout';
+}
+
+function showFunPopup(message, vibe='neutral'){
+  const wrap = $('#funPopup');
+  if (!wrap) return;
+  wrap.classList.remove('good','ouch','neutral','show');
+  wrap.classList.add('show', vibe);
+  const text = wrap.querySelector('p');
+  if (text) text.textContent = message;
+  clearTimeout(funPopupTimer);
+  funPopupTimer = setTimeout(()=> wrap.classList.remove('show'), 4200);
+}
+
+function maybeShowFunPopup(title, dWallet, options={}){
+  if (typeof document === 'undefined') return;
+  const allowed = ['events','family','lifestyle','biz','charity'];
+  const tag = options.tag || 'default';
+  if (!options.forcePopup && !allowed.includes(tag)) return;
+  const now = Date.now();
+  if (!options.forcePopup && now - (S.funCooldown || 0) < 4500) return;
+  S.funTicker = (S.funTicker || 0) + 1;
+  if (!options.forcePopup && Math.random() > 0.35) return;
+  const bank = FUN_POPUP_LINES[tag] || FUN_POPUP_LINES.default;
+  const template = randomFrom(bank);
+  const vibe = (dWallet > 0 || options.happinessDelta > 0 || options.repDelta > 0) ? 'good' : ((dWallet < 0 || options.happinessDelta < 0) ? 'ouch' : 'neutral');
+  const message = template
+    .replace('{name}', S.playerName || 'You')
+    .replace('{title}', title.replace(/^Event:\s*/,'').trim())
+    .replace('{place}', randomFrom(FUN_PLACES));
+  S.funCooldown = now;
+  showFunPopup(message, vibe);
 }
 
 function toNumber(value, fallback=0){
@@ -255,10 +393,19 @@ function restoreLocal(){
       S.family = {...S.family, ...data.family, members};
     }
     if (!Array.isArray(S.family.members)) S.family.members = [];
+    seedFriendCircle();
     S.primaryHouseId = data.primaryHouseId ?? S.primaryHouseId;
     S.businesses = (S.businesses || []).map(b=>({
       ...b,
-      boardMembers: Array.isArray(b.boardMembers) ? b.boardMembers : [],
+      boardMembers: Array.isArray(b.boardMembers)
+        ? b.boardMembers.map(member=>({
+            id: member.id || newId(),
+            name: member.name || 'Director',
+            role: member.role || member.expertise || 'Director',
+            expertise: member.expertise || '',
+            compensation: Math.max(0, Number(member.compensation || 150000))
+          }))
+        : [],
       boardSeats: b.boardSeats ?? (b.growth_level>=3 ? 3 : 0),
       ceo: b.ceo || S.playerName
     }));
@@ -293,8 +440,11 @@ function updateEmailUI(){
     input.value = S.playerEmail || '';
   }
   const status = $('#emailStatus');
-  if (status && S.playerEmail && /Resend API/.test(status.textContent)){
-    status.textContent = `Using ${S.playerEmail} for backups.`;
+  if (status && S.playerEmail){
+    const current = status.textContent || '';
+    if (!current || /Using|We keep|Add an email/i.test(current)){
+      status.textContent = `Using ${S.playerEmail} for backups.`;
+    }
   }
 }
 
@@ -479,10 +629,19 @@ function applySnapshot(data, label='Imported save applied.'){
       S.family = {...S.family, ...data.family, members};
     }
     if (!Array.isArray(S.family.members)) S.family.members = [];
+    seedFriendCircle();
     S.primaryHouseId = data.primaryHouseId ?? S.primaryHouseId;
     S.businesses = (S.businesses || []).map(b=>({
       ...b,
-      boardMembers: Array.isArray(b.boardMembers) ? b.boardMembers : [],
+      boardMembers: Array.isArray(b.boardMembers)
+        ? b.boardMembers.map(member=>({
+            id: member.id || newId(),
+            name: member.name || 'Director',
+            role: member.role || member.expertise || 'Director',
+            expertise: member.expertise || '',
+            compensation: Math.max(0, Number(member.compensation || 150000))
+          }))
+        : [],
       boardSeats: b.boardSeats ?? (b.growth_level>=3 ? 3 : 0),
       ceo: b.ceo || S.playerName
     }));
@@ -580,7 +739,7 @@ if (sendEmailBtn){
     }
     S.playerEmail = value;
     updateEmailUI();
-    setHelperText('emailStatus', 'Sending snapshot via Resend...');
+    setHelperText('emailStatus', 'Sending your snapshot...');
     try {
       const body = {
         email: value,
@@ -607,12 +766,12 @@ if (sendEmailBtn){
         updateAchievements();
       } else {
         toast('Email failed');
-        setHelperText('emailStatus', 'Email failed. Check your Resend API key.');
+        setHelperText('emailStatus', 'Email did not go through. Try again later or export a backup.');
       }
     } catch(err){
       console.error(err);
       toast('Email failed');
-      setHelperText('emailStatus', 'Email failed. Check your Resend API key.');
+      setHelperText('emailStatus', 'Email did not go through. Try again later or export a backup.');
     }
   });
 }
@@ -657,6 +816,15 @@ function paintTop(){
   $('#kHigh').textContent = fmt(S.highNet);
   $('#kHappy').textContent = `${Math.round(clamp(S.happiness,0,100))}%`;
   $('#kRep').textContent = Math.round(S.reputation);
+
+  const navWallet = $('#navWallet');
+  if (navWallet) navWallet.textContent = fmt(S.wallet, {compact:true, trimCents:true});
+  const navSavings = $('#navSavings');
+  if (navSavings) navSavings.textContent = fmt(S.savings, {compact:true, trimCents:true});
+  const navNet = $('#navNet');
+  if (navNet) navNet.textContent = fmt(S.net, {compact:true, trimCents:true});
+  const floating = $('#floatingBalances');
+  if (floating) floating.innerHTML = `<span>Wallet ${fmt(S.wallet,{compact:true, trimCents:true})}</span><span>Savings ${fmt(S.savings,{compact:true, trimCents:true})}</span>`;
 
   $('#apy').value = S.apy;
   $('#infl').value = S.infl;
@@ -779,6 +947,7 @@ function log(title, dWallet=0, dAssets=0, options={}){
   }
   if (options.happinessDelta){ S.happiness = clamp(S.happiness + options.happinessDelta, 0, 100); }
   if (options.repDelta){ S.reputation = Math.max(0, S.reputation + options.repDelta); }
+  maybeShowFunPopup(title, dWallet, options);
   paintTop();
 }
 function logEvent(title, dW=0, dA=0, options={}){
@@ -900,15 +1069,21 @@ function paintCompanies(){
   tb.innerHTML='';
   S.businesses.forEach(b=>{
     const payrollWeek = (b.employees * b.salary_per_employee_annual)/52;
+    const board = Array.isArray(b.boardMembers) ? b.boardMembers : [];
     const tr = document.createElement('tr');
     const lvl = b.ipo ? 'IPO' : (b.growth_level>=3?'Board':'Growth');
     const boardSeats = b.boardSeats || 0;
-    const boardCount = (b.boardMembers && b.boardMembers.length) || 0;
+    const boardCount = board.length;
+    const boardLines = board.length ? board.map(m=>esc(`${m.name}${m.role?` – ${m.role}`:''}`)).join('&#10;') : esc('No directors yet');
     const boardLabel = boardSeats ? `${boardCount}/${boardSeats}` : '—';
     const boardBtn = (b.growth_level>=3) ? rowActionBtn('+ Board',`addBoard('${b.id}')`) : '';
+    const manageBtn = boardSeats ? rowActionBtn('Board',`manageBoard('${b.id}')`,'ghost') : '';
     const ceoBtn = (b.growth_level>=2) ? rowActionBtn('Set CEO',`setCeo('${b.id}')`,'ghost') : '';
-    tr.innerHTML = `<td>${esc(b.name)}</td><td class="right">${b.employees}</td><td class="right">${fmt(payrollWeek)}</td><td class="right">${fmt(b.weekly_revenue)}</td><td class="right">${(b.gross_margin*100).toFixed(0)}%</td><td>${lvl}</td><td class="right">${boardLabel}</td><td>${rowActionBtn('+ Hire',`hire('${b.id}')`,'btn-good')} ${rowActionBtn('− Fire',`fire('${b.id}')`)} ${ceoBtn} ${boardBtn} ${b.ipo?'':rowActionBtn('Go IPO',`ipo('${b.id}')`,'primary')}</td>`;
+    tr.innerHTML = `<td>${esc(b.name)}</td><td class="right">${b.employees}</td><td class="right">${fmt(payrollWeek,{compact:true})}</td><td class="right">${fmt(b.weekly_revenue,{compact:true})}</td><td class="right">${(b.gross_margin*100).toFixed(0)}%</td><td>${lvl}</td><td class="right"><span class="board-cell" title="${boardLines}">${boardLabel}</span></td><td>${rowActionBtn('+ Hire',`hire('${b.id}')`,'btn-good')} ${rowActionBtn('− Fire',`fire('${b.id}')`)} ${ceoBtn} ${boardBtn} ${manageBtn} ${b.ipo?'':rowActionBtn('Go IPO',`ipo('${b.id}')`,'primary')}</td>`;
     tb.appendChild(tr);
+    if (S.boardFocus === b.id){
+      updateBoardModal(b);
+    }
   });
   if (!S.businesses.length){ tb.innerHTML = '<tr><td colspan="8" class="empty">No companies yet.</td></tr>'; }
 }
@@ -941,7 +1116,9 @@ function paintFamily(){
   tb.innerHTML = '';
   members.forEach(member=>{
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${esc(member.name)}</td><td>${esc(member.role)}</td><td class="right">${member.age ? member.age : '—'}</td><td class="right">${fmt(member.impactMonthly || 0)}</td><td>${member.livesWithYou ? 'Yes' : 'No'}</td><td>${esc(member.notes || '')}</td><td>${rowActionBtn('Remove',`removeFamily('${member.id}')`,'btn-danger')}</td>`;
+    const hang = rowActionBtn('Hangout',`familyOuting('${member.id}')`,'ghost');
+    const romance = ['Spouse','Partner'].includes(member.role || '') ? rowActionBtn('New Baby',`familyBaby('${member.id}')`,'primary') : '';
+    tr.innerHTML = `<td>${esc(member.name)}</td><td>${esc(member.role)}</td><td class="right">${member.age ? member.age : '—'}</td><td class="right">${fmt(member.impactMonthly || 0)}</td><td>${member.livesWithYou ? 'Yes' : 'No'}</td><td>${esc(member.notes || '')}</td><td>${hang} ${romance} ${rowActionBtn('Remove',`removeFamily('${member.id}')`,'btn-danger')}</td>`;
     tb.appendChild(tr);
   });
   if (!members.length){
@@ -985,6 +1162,11 @@ async function loadCatalog(cat){
     console.warn(`Catalog load failed for ${cat}`, err);
   }
   if (!payload.length) payload = fallback;
+  payload.sort((a,b)=>{
+    const priceA = typeof a.price === 'number' ? a.price : 0;
+    const priceB = typeof b.price === 'number' ? b.price : 0;
+    return priceA - priceB;
+  });
   S.catalogs[cat] = payload;
   if (!mountSel) return;
   const mount = $(mountSel);
@@ -1101,8 +1283,14 @@ if (modalShell){
     if (evt.target === modalShell) closeCatalogModal();
   });
 }
+const boardModalShell = document.getElementById('boardModal');
+if (boardModalShell){
+  boardModalShell.addEventListener('click', evt=>{
+    if (evt.target === boardModalShell) closeBoardModal();
+  });
+}
 document.addEventListener('keydown', evt=>{
-  if (evt.key === 'Escape') closeCatalogModal();
+  if (evt.key === 'Escape'){ closeCatalogModal(); closeBoardModal(); }
 });
 
 function purchaseOK(price){
@@ -1179,6 +1367,37 @@ window.setPrimaryResidence = function(id){
   paintProps(); paintTop();
   updateAchievements();
 };
+window.familyOuting = function(id){
+  if (!S.family || !Array.isArray(S.family.members)) return;
+  const member = S.family.members.find(m=>m.id===id);
+  if (!member){ toast('Family member not found.'); return; }
+  const cost = Math.round(400 + Math.random()*4600);
+  const joy = clamp(2 + Math.random()*3, 1, 6);
+  const activity = randomFrom(FAMILY_OUTING_ACTIVITIES);
+  member.notes = `${member.notes ? member.notes + ' | ' : ''}Shared a ${activity}.`;
+  log(`Went out with ${member.name}`, -cost, 0, {tag:'family', happinessDelta:joy, repDelta: member.role === 'Mentor' ? 1 : 0, forcePopup:true});
+  paintFamily();
+};
+window.familyBaby = function(partnerId){
+  if (!S.family || !Array.isArray(S.family.members)) S.family = {members: []};
+  const partner = S.family.members.find(m=>m.id===partnerId && ['Spouse','Partner'].includes(m.role));
+  if (!partner){ toast('Add a spouse or partner first.'); return; }
+  const babyName = randomFrom(BABY_NAME_BANK);
+  const allowance = -Math.round(1200 + Math.random()*2800);
+  S.family.members.push({
+    id:newId(),
+    name: babyName,
+    role: 'Child',
+    age: 0,
+    impactMonthly: allowance,
+    livesWithYou: true,
+    notes: `New arrival with ${partner.name}!`
+  });
+  log(`Welcomed baby ${babyName} with ${partner.name}`, 0, 0, {tag:'family', happinessDelta:6, repDelta:2, forcePopup:true});
+  updateAchievements();
+  paintFamily();
+  paintTop();
+};
 window.removeFamily = function(id){
   if (!S.family || !Array.isArray(S.family.members)) return;
   const idx = S.family.members.findIndex(m=>m.id===id);
@@ -1253,14 +1472,85 @@ window.addBoard = function(id){
   if (b.boardMembers.length >= b.boardSeats){ toast('All board seats are already filled.'); return; }
   const name = (typeof prompt !== 'undefined') ? prompt(`New board member for ${b.name}?`, 'Director Name') : null;
   if (!name){ return; }
+  const rolePrompt = (typeof prompt !== 'undefined') ? prompt('Board role or seat?', 'Independent Director') : 'Director';
   const expertise = (typeof prompt !== 'undefined') ? prompt('What expertise do they bring? (optional)', 'Finance & Strategy') : '';
   const compensationPrompt = (typeof prompt !== 'undefined') ? prompt('Annual board retainer (USD)', '150000') : '150000';
   const compensation = Math.max(60000, Number(compensationPrompt||150000) || 150000);
-  b.boardMembers.push({id:newId(), name:name.trim(), expertise:expertise?expertise.trim():'', compensation});
+  b.boardMembers.push({
+    id:newId(),
+    name:name.trim(),
+    role: rolePrompt ? rolePrompt.trim() : 'Director',
+    expertise:expertise?expertise.trim():'',
+    compensation
+  });
   log(`${b.name}: added board member ${name.trim()}`, -(compensation/4), 0, {tag:'biz', repDelta:2, happinessDelta:1});
   toast(`Board seat filled at ${b.name}.`);
   paintCompanies();
   updateAchievements();
+};
+function updateBoardModal(biz){
+  const modal = $('#boardModal');
+  if (!modal) return;
+  const board = Array.isArray(biz.boardMembers) ? biz.boardMembers : [];
+  const title = $('#boardModalTitle');
+  if (title) title.textContent = `${biz.name} • Board`; 
+  const seatInfo = $('#boardSeatInfo');
+  if (seatInfo) seatInfo.textContent = `${board.length}/${biz.boardSeats || 0} seats filled`;
+  const list = $('#boardMemberList');
+  if (!list) return;
+  if (!board.length){
+    list.innerHTML = '<div class="empty">No directors yet. Use “+ Board” from the Businesses tab.</div>';
+    return;
+  }
+  list.innerHTML = board.map(member=>{
+    const role = member.role || member.expertise || 'Director';
+    const pay = fmt(member.compensation || 0, {compact:true, trimCents:true});
+    return `<div class="board-row"><div><strong>${esc(member.name || 'Director')}</strong><span>${esc(role)}</span></div><div class="board-pay">${pay}</div><div class="board-actions"><button class="ghost" onclick="editBoardMember('${biz.id}','${member.id}')">Edit</button><button class="btn-danger" onclick="removeBoardMember('${biz.id}','${member.id}')">Remove</button></div></div>`;
+  }).join('');
+}
+window.manageBoard = function(id){
+  const biz = S.businesses.find(x=>x.id===id);
+  if (!biz){ toast('Business not found.'); return; }
+  S.boardFocus = id;
+  updateBoardModal(biz);
+  const modal = $('#boardModal');
+  if (modal) modal.classList.add('show');
+};
+window.closeBoardModal = function(){
+  const modal = $('#boardModal');
+  if (modal) modal.classList.remove('show');
+  S.boardFocus = null;
+};
+window.removeBoardMember = function(bizId, memberId){
+  const biz = S.businesses.find(x=>x.id===bizId);
+  if (!biz || !Array.isArray(biz.boardMembers)) return;
+  const idx = biz.boardMembers.findIndex(m=>m.id===memberId);
+  if (idx<0) return;
+  const member = biz.boardMembers[idx];
+  biz.boardMembers.splice(idx,1);
+  log(`${biz.name}: ${member.name || 'Director'} left the board`, 0, 0, {tag:'biz', happinessDelta:-1});
+  updateBoardModal(biz);
+  paintCompanies();
+};
+window.editBoardMember = function(bizId, memberId){
+  const biz = S.businesses.find(x=>x.id===bizId);
+  if (!biz || !Array.isArray(biz.boardMembers)) return;
+  const member = biz.boardMembers.find(m=>m.id===memberId);
+  if (!member) return;
+  const newName = (typeof prompt !== 'undefined') ? prompt('Board member name', member.name || 'Director') : member.name;
+  if (newName) member.name = newName.trim() || member.name;
+  const newRole = (typeof prompt !== 'undefined') ? prompt('Board role / seat', member.role || member.expertise || 'Director') : member.role;
+  if (newRole) member.role = newRole.trim() || member.role;
+  const newExpertise = (typeof prompt !== 'undefined') ? prompt('Expertise tagline (optional)', member.expertise || '') : member.expertise;
+  if (typeof newExpertise === 'string') member.expertise = newExpertise.trim();
+  const compPrompt = (typeof prompt !== 'undefined') ? prompt('Annual board retainer (USD)', String(member.compensation || 150000)) : member.compensation;
+  if (compPrompt !== null && compPrompt !== undefined){
+    const parsed = Number(compPrompt);
+    if (Number.isFinite(parsed) && parsed >= 0) member.compensation = parsed;
+  }
+  toast('Board seat updated.');
+  updateBoardModal(biz);
+  paintCompanies();
 };
 window.setCeo = function(id){
   const b = S.businesses.find(x=>x.id===id); if(!b) return;
@@ -1414,12 +1704,10 @@ function applyDebtInterest(days){
     if (loan.principal<=0) return;
     const interest = loan.principal * (loan.rate/12) * months;
     if (interest){
-      S.wallet -= interest;
       total += interest;
     }
   });
   if (total) logEvent(`Debt interest (${days}d)`, -total, 0, {tag:'debtInterest', happinessDelta:-Math.min(5, total/500000)});
-  ensureLiquidity();
 }
 
 const EVENT_POOL = [
@@ -1513,7 +1801,6 @@ $('#depositBtn').addEventListener('click', ()=>{
   const amt = Number($('#depositInput').value||0);
   if (amt<=0){ toast('Enter amount to deposit.'); return; }
   if (S.wallet < amt){ toast('Not enough in wallet.'); return; }
-  S.wallet -= amt;
   S.savings += amt;
   logEvent('Deposited to savings', -amt, 0, {timeline:false});
 });
@@ -1522,7 +1809,6 @@ $('#withdrawBtn').addEventListener('click', ()=>{
   if (amt<=0){ toast('Enter amount to withdraw.'); return; }
   if (S.savings < amt){ toast('Not enough in savings.'); return; }
   S.savings -= amt;
-  S.wallet += amt;
   logEvent('Withdrew from savings', +amt, 0, {timeline:false});
 });
 $('#takeLoan').addEventListener('click', ()=>{
@@ -1650,6 +1936,7 @@ function paintEverything(){
 }
 
 restoreLocal();
+seedFriendCircle();
 updateEmailUI();
 Promise.allSettled([
   loadCatalog('cars'),
